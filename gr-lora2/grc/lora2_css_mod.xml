@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<block>
+  <name>CSS Modulator</name>
+  <key>lora2_css_mod</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.css_mod($M)</make>
+  <param>
+    <name>M</name>
+    <key>M</key>
+	<type>int</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>short</type>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+</block>

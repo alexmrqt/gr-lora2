@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<block>
+  <name>css_phase_corr</name>
+  <key>lora2_css_phase_corr</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.css_phase_corr($M, $len_reg)</make>
+  <param>
+    <name>M</name>
+    <key>M</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Integrator length</name>
+    <key>len_reg</key>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <vlen>$M</vlen>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <vlen>$M</vlen>
+  </source>
+  <source>
+    <name>phase</name>
+    <type>float</type>
+    <vlen>1</vlen>
+  </source>
+  <doc>
+  </doc>
+</block>
