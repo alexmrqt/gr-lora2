@@ -6,7 +6,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: LoRa Test
-# Generated: Sat Oct 27 18:45:59 2018
+# Generated: Wed Nov  7 10:59:22 2018
 # GNU Radio version: 3.7.12.0
 ##################################################
 
@@ -34,8 +34,6 @@ from gnuradio import qtgui
 from gnuradio.eng_option import eng_option
 from gnuradio.filter import firdes
 from gnuradio.qtgui import Range, RangeWidget
-from grc_css_demod import grc_css_demod  # grc-generated hier_block
-from grc_css_demod_coh import grc_css_demod_coh  # grc-generated hier_block
 from grc_lora_add_preamble import grc_lora_add_preamble  # grc-generated hier_block
 from optparse import OptionParser
 import lora2
@@ -79,6 +77,7 @@ class lora_test(gr.top_block, Qt.QWidget):
         self.chan_bw = chan_bw = 125000
         self.M = M = 2**SF
         self.theta = theta = 0
+        self.sig_amp = sig_amp = 0
         self.samp_rate = samp_rate = chan_bw
         self.noise_amp = noise_amp = 0
         self.f_delta = f_delta = 0
@@ -90,33 +89,36 @@ class lora_test(gr.top_block, Qt.QWidget):
         self._theta_range = Range(0, 2*numpy.pi, 0.1, 0, 200)
         self._theta_win = RangeWidget(self._theta_range, self.set_theta, "theta", "counter_slider", float)
         self.top_grid_layout.addWidget(self._theta_win)
+        self._sig_amp_range = Range(0, 2, 0.1, 0, 200)
+        self._sig_amp_win = RangeWidget(self._sig_amp_range, self.set_sig_amp, "sig_amp", "counter_slider", float)
+        self.top_grid_layout.addWidget(self._sig_amp_win)
         self._noise_amp_range = Range(0, 10, 0.1, 0, 200)
         self._noise_amp_win = RangeWidget(self._noise_amp_range, self.set_noise_amp, "noise_amp", "counter_slider", float)
         self.top_grid_layout.addWidget(self._noise_amp_win)
         self._f_delta_range = Range(-samp_rate/2, samp_rate/2, 1, 0, 200)
         self._f_delta_win = RangeWidget(self._f_delta_range, self.set_f_delta, "f_delta", "counter_slider", float)
         self.top_grid_layout.addWidget(self._f_delta_win)
-        self.qtgui_time_sink_x_1 = qtgui.time_sink_f(
+        self.qtgui_time_sink_x_2 = qtgui.time_sink_c(
         	40*M, #size
-        	samp_rate, #samp_rate
-        	"Frequency of modulated signal", #name
-        	1 #number of inputs
+        	1.0, #samp_rate
+        	"", #name
+        	2 #number of inputs
         )
-        self.qtgui_time_sink_x_1.set_update_time(0.10)
-        self.qtgui_time_sink_x_1.set_y_axis(-1, 1)
+        self.qtgui_time_sink_x_2.set_update_time(0.10)
+        self.qtgui_time_sink_x_2.set_y_axis(-1, 1)
 
-        self.qtgui_time_sink_x_1.set_y_label('Amplitude', "")
+        self.qtgui_time_sink_x_2.set_y_label('Amplitude', "")
 
-        self.qtgui_time_sink_x_1.enable_tags(-1, True)
-        self.qtgui_time_sink_x_1.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_1.enable_autoscale(False)
-        self.qtgui_time_sink_x_1.enable_grid(False)
-        self.qtgui_time_sink_x_1.enable_axis_labels(True)
-        self.qtgui_time_sink_x_1.enable_control_panel(True)
-        self.qtgui_time_sink_x_1.enable_stem_plot(False)
+        self.qtgui_time_sink_x_2.enable_tags(-1, True)
+        self.qtgui_time_sink_x_2.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
+        self.qtgui_time_sink_x_2.enable_autoscale(False)
+        self.qtgui_time_sink_x_2.enable_grid(False)
+        self.qtgui_time_sink_x_2.enable_axis_labels(True)
+        self.qtgui_time_sink_x_2.enable_control_panel(True)
+        self.qtgui_time_sink_x_2.enable_stem_plot(False)
 
         if not True:
-          self.qtgui_time_sink_x_1.disable_legend()
+          self.qtgui_time_sink_x_2.disable_legend()
 
         labels = ['', '', '', '', '',
                   '', '', '', '', '']
@@ -131,79 +133,28 @@ class lora_test(gr.top_block, Qt.QWidget):
         alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
                   1.0, 1.0, 1.0, 1.0, 1.0]
 
-        for i in xrange(1):
+        for i in xrange(4):
             if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_1.set_line_label(i, "Data {0}".format(i))
+                if(i % 2 == 0):
+                    self.qtgui_time_sink_x_2.set_line_label(i, "Re{{Data {0}}}".format(i/2))
+                else:
+                    self.qtgui_time_sink_x_2.set_line_label(i, "Im{{Data {0}}}".format(i/2))
             else:
-                self.qtgui_time_sink_x_1.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_1.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_1.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_1.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_1.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_1.set_line_alpha(i, alphas[i])
+                self.qtgui_time_sink_x_2.set_line_label(i, labels[i])
+            self.qtgui_time_sink_x_2.set_line_width(i, widths[i])
+            self.qtgui_time_sink_x_2.set_line_color(i, colors[i])
+            self.qtgui_time_sink_x_2.set_line_style(i, styles[i])
+            self.qtgui_time_sink_x_2.set_line_marker(i, markers[i])
+            self.qtgui_time_sink_x_2.set_line_alpha(i, alphas[i])
 
-        self._qtgui_time_sink_x_1_win = sip.wrapinstance(self.qtgui_time_sink_x_1.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_1_win)
-        self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
-        	64, #size
-        	samp_rate, #samp_rate
-        	"Demodulated symbols", #name
-        	2 #number of inputs
-        )
-        self.qtgui_time_sink_x_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0.set_y_axis(0, M)
-
-        self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
-
-        self.qtgui_time_sink_x_0.enable_tags(-1, True)
-        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0.enable_autoscale(False)
-        self.qtgui_time_sink_x_0.enable_grid(False)
-        self.qtgui_time_sink_x_0.enable_axis_labels(True)
-        self.qtgui_time_sink_x_0.enable_control_panel(True)
-        self.qtgui_time_sink_x_0.enable_stem_plot(False)
-
-        if not True:
-          self.qtgui_time_sink_x_0.disable_legend()
-
-        labels = ["Non-coherent", "Coherent", '', '', '',
-                  '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-                  "magenta", "yellow", "dark red", "dark green", "blue"]
-        styles = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-                   -1, -1, -1, -1, -1]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-                  1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in xrange(2):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_0.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_0.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_0.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_0.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_0.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win)
+        self._qtgui_time_sink_x_2_win = sip.wrapinstance(self.qtgui_time_sink_x_2.pyqwidget(), Qt.QWidget)
+        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_2_win)
+        self.lora2_lora_preamble_detect_0 = lora2.lora_preamble_detect(9, 8, 0x12, 0.9)
         self.lora2_css_mod_0 = lora2.css_mod(M)
         self.grc_lora_add_preamble_0 = grc_lora_add_preamble(
             SF=9,
             preamble_len=8,
             sync_word=0x12,
-        )
-        self.grc_css_demod_coh_0 = grc_css_demod_coh(
-            M=M,
-            len_phase_int=256,
-        )
-        self.grc_css_demod_0 = grc_css_demod(
-            M=M,
         )
         self.channels_channel_model_0_0 = channels.channel_model(
         	noise_voltage=noise_amp,
@@ -214,34 +165,38 @@ class lora_test(gr.top_block, Qt.QWidget):
         	block_tags=False
         )
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
+        self.blocks_tag_gate_0 = blocks.tag_gate(gr.sizeof_gr_complex * 1, False)
+        self.blocks_tag_gate_0.set_single_key("")
         self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_gr_complex, 1, 10*M, 'packet_len')
-        self.blocks_short_to_float_0_0 = blocks.short_to_float(1, 1)
-        self.blocks_short_to_float_0 = blocks.short_to_float(1, 1)
+        self.blocks_multiply_const_vxx_1 = blocks.multiply_const_vcc((sig_amp, ))
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((numpy.exp(1j*theta), ))
+        self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_delay_0_0 = blocks.delay(gr.sizeof_gr_complex*1, 3)
         self.analog_random_source_x_0 = blocks.vector_source_s(map(int, numpy.random.randint(0, M-1, 1000)), True)
-        self.analog_quadrature_demod_cf_0 = analog.quadrature_demod_cf(1.0)
+        self.analog_quadrature_demod_cf_0_0 = analog.quadrature_demod_cf(1.0)
+        self.analog_agc_xx_0 = analog.agc_cc(1e-4, 1.0, 1.0)
+        self.analog_agc_xx_0.set_max_gain(65536)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_quadrature_demod_cf_0, 0), (self.qtgui_time_sink_x_1, 0))
+        self.connect((self.analog_agc_xx_0, 0), (self.lora2_lora_preamble_detect_0, 0))
+        self.connect((self.analog_quadrature_demod_cf_0_0, 0), (self.blocks_float_to_complex_0, 0))
         self.connect((self.analog_random_source_x_0, 0), (self.lora2_css_mod_0, 0))
-        self.connect((self.blocks_delay_0_0, 0), (self.grc_css_demod_0, 0))
-        self.connect((self.blocks_delay_0_0, 0), (self.grc_css_demod_coh_0, 0))
+        self.connect((self.blocks_delay_0_0, 0), (self.blocks_multiply_const_vxx_1, 0))
+        self.connect((self.blocks_float_to_complex_0, 0), (self.qtgui_time_sink_x_2, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.channels_channel_model_0_0, 0))
-        self.connect((self.blocks_short_to_float_0, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.blocks_short_to_float_0_0, 0), (self.qtgui_time_sink_x_0, 1))
+        self.connect((self.blocks_multiply_const_vxx_1, 0), (self.analog_agc_xx_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.grc_lora_add_preamble_0, 0))
-        self.connect((self.blocks_throttle_0, 0), (self.blocks_multiply_const_vxx_0, 0))
+        self.connect((self.blocks_tag_gate_0, 0), (self.blocks_multiply_const_vxx_0, 0))
+        self.connect((self.blocks_throttle_0, 0), (self.blocks_tag_gate_0, 0))
         self.connect((self.channels_channel_model_0_0, 0), (self.blocks_delay_0_0, 0))
-        self.connect((self.grc_css_demod_0, 0), (self.blocks_short_to_float_0, 0))
-        self.connect((self.grc_css_demod_coh_0, 0), (self.blocks_short_to_float_0_0, 0))
-        self.connect((self.grc_lora_add_preamble_0, 0), (self.analog_quadrature_demod_cf_0, 0))
         self.connect((self.grc_lora_add_preamble_0, 0), (self.blocks_throttle_0, 0))
         self.connect((self.lora2_css_mod_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
+        self.connect((self.lora2_lora_preamble_detect_0, 0), (self.analog_quadrature_demod_cf_0_0, 0))
+        self.connect((self.lora2_lora_preamble_detect_0, 1), (self.qtgui_time_sink_x_2, 1))
 
     def closeEvent(self, event):
         self.settings = Qt.QSettings("GNU Radio", "lora_test")
@@ -268,9 +223,6 @@ class lora_test(gr.top_block, Qt.QWidget):
 
     def set_M(self, M):
         self.M = M
-        self.qtgui_time_sink_x_0.set_y_axis(0, self.M)
-        self.grc_css_demod_coh_0.set_M(self.M)
-        self.grc_css_demod_0.set_M(self.M)
         self.blocks_stream_to_tagged_stream_0.set_packet_len(10*self.M)
         self.blocks_stream_to_tagged_stream_0.set_packet_len_pmt(10*self.M)
         self.set_T(float(self.M)/self.chan_bw)
@@ -282,13 +234,18 @@ class lora_test(gr.top_block, Qt.QWidget):
         self.theta = theta
         self.blocks_multiply_const_vxx_0.set_k((numpy.exp(1j*self.theta), ))
 
+    def get_sig_amp(self):
+        return self.sig_amp
+
+    def set_sig_amp(self, sig_amp):
+        self.sig_amp = sig_amp
+        self.blocks_multiply_const_vxx_1.set_k((self.sig_amp, ))
+
     def get_samp_rate(self):
         return self.samp_rate
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
-        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
         self.blocks_throttle_0.set_sample_rate(self.samp_rate)
 
     def get_noise_amp(self):
