@@ -35,7 +35,8 @@ GR_PYTHON_INSTALL(
     css_phase_corr.py
     css_mod.py
 	css_mod_algo.py
-    lora_preamble_detect.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    lora_preamble_detect.py
+    css_sync_and_vectorize.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <block>
-  <name>css_phase_corr</name>
+  <name>CSS Phase Corrector</name>
   <key>lora2_css_phase_corr</key>
   <category>[lora2]</category>
   <import>import lora2</import>

@@ -20,5 +20,6 @@
 install(FILES
     lora2_css_phase_corr.xml
     lora2_css_mod.xml
-    lora2_lora_preamble_detect.xml DESTINATION share/gnuradio/grc/blocks
+    lora2_lora_preamble_detect.xml
+    lora2_css_sync_and_vectorize.xml DESTINATION share/gnuradio/grc/blocks
 )
