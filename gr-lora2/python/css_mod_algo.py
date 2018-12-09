@@ -22,19 +22,23 @@
 import numpy
 
 class css_mod_algo():
-    def __init__(self, M):
-        self.M = M
+    def __init__(self, M, interp = 1):
+        self.M = float(M)
+        self.Q = float(interp)
+        self.MQ = float(self.M * self.Q)
+        self.MQ_int = self.M * self.Q
 
-        self.k = numpy.linspace(0, self.M-1, self.M)
-        self.base_chirp_freq = (self.k + self.M) / 2.0
+        self.k = numpy.linspace(0.0, self.MQ-1.0, self.MQ)
 
     def modulate(self, input_items):
         ninput_items = len(input_items)
-        output_items = numpy.zeros(self.M * ninput_items, dtype=numpy.complex64)
+        output_items = numpy.zeros(self.MQ * ninput_items, dtype=numpy.complex64)
 
         for i in range(0, ninput_items):
-            out_phase = 2 * numpy.pi * (self.base_chirp_freq + input_items[i])/float(self.M) * self.k
+            out_freq = self.k/(2.0*self.Q) - self.M/2.0 + input_items[i] \
+                    - self.M * numpy.round(self.k/(self.MQ) - 0.5 + input_items[i]/self.M)
+            out_phase = 2.0 * numpy.pi * out_freq / self.MQ * self.k
 
-            output_items[i*self.M:(i+1)*self.M] = numpy.exp(1j * out_phase)
+            output_items[i*self.MQ_int:(i+1)*self.MQ_int] = numpy.exp(1j * out_phase)
 
         return output_items

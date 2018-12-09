@@ -28,14 +28,14 @@ class css_mod(gr.interp_block):
     """
     docstring for block css_mod
     """
-    def __init__(self, M):
+    def __init__(self, M, interp):
         gr.interp_block.__init__(self,
             name="css_mod",
             in_sig=[numpy.int16],
             out_sig=[numpy.complex64],
-            interp=M)
+            interp=M*interp)
 
-        self.modulator = css_mod_algo.css_mod_algo(M)
+        self.modulator = css_mod_algo.css_mod_algo(M,interp)
 
 
     def work(self, input_items, output_items):
