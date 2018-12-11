@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<block>
+  <name>LoRa Implicit Get Payload</name>
+  <key>lora2_lora_implicit_get_payload</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.lora_implicit_get_payload($payload_len)</make>
+  <param>
+	<name>Payload length (items)</name>
+    <key>payload_len</key>
+    <type>int</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>short</type>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>short</type>
+  </source>
+</block>

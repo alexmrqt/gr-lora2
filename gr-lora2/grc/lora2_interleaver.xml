@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<block>
+  <name>LoRa Interleaver</name>
+  <key>lora2_interleaver</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.interleaver($SF, $CR)</make>
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+  <param>
+    <name>Spreading Factor</name>
+    <key>SF</key>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Coding Rate</name>
+    <key>CR</key>
+    <type>int</type>
+  </param>
+
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>short</type>
+  </sink>
+
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <source>
+    <name>out</name>
+    <type>short</type>
+  </source>
+</block>

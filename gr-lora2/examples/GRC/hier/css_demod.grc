@@ -214,7 +214,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(720, 480)</value>
+      <value>(720, 592)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -265,7 +265,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(456, 492)</value>
+      <value>(456, 604)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -304,11 +304,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>True</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(224, 288)</value>
+      <value>(656, 256)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -328,7 +328,7 @@
     </param>
     <param>
       <key>vlen</key>
-      <value>1</value>
+      <value>M</value>
     </param>
   </block>
   <block>
@@ -355,7 +355,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(936, 512)</value>
+      <value>(936, 624)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -394,11 +394,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(440, 300)</value>
+      <value>(312, 196)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -449,7 +449,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 372)</value>
+      <value>(456, 336)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -481,7 +481,7 @@
     </param>
     <param>
       <key>vlen</key>
-      <value>1</value>
+      <value>M</value>
     </param>
     <param>
       <key>vector</key>
@@ -516,7 +516,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(632, 272)</value>
+      <value>(968, 240)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -583,6 +583,49 @@
     </param>
   </block>
   <block>
+    <key>lora2_css_sync_and_vectorize</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(304, 252)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>lora2_css_sync_and_vectorize_0</value>
+    </param>
+    <param>
+      <key>M</key>
+      <value>M</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
     <key>pad_sink</key>
     <param>
       <key>comment</key>
@@ -594,7 +637,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1104, 476)</value>
+      <value>(1104, 588)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -637,7 +680,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(24, 284)</value>
+      <value>(24, 252)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -688,12 +731,6 @@
   </connection>
   <connection>
     <source_block_id>blocks_multiply_conjugate_cc_0</source_block_id>
-    <sink_block_id>blocks_stream_to_vector_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_stream_to_vector_0</source_block_id>
     <sink_block_id>fft_vxx_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
@@ -711,8 +748,14 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>pad_source_0</source_block_id>
+    <source_block_id>lora2_css_sync_and_vectorize_0</source_block_id>
     <sink_block_id>blocks_multiply_conjugate_cc_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>pad_source_0</source_block_id>
+    <sink_block_id>lora2_css_sync_and_vectorize_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
