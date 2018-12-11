@@ -36,7 +36,9 @@ GR_PYTHON_INSTALL(
     css_mod.py
 	css_mod_algo.py
     lora_preamble_detect.py
-    css_sync_and_vectorize.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    css_sync_and_vectorize.py
+    lora_implicit_get_payload.py
+    lora_add_reversed_chirps.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################

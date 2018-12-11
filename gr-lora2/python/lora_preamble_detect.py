@@ -39,15 +39,16 @@ class lora_preamble_detect(gr.sync_block):
 
         #Generate ideal preamble samples
         M = 2**SF
-        modulator = css_mod_algo.css_mod_algo(M)
+        modulator = css_mod_algo.css_mod_algo(M, interp=1)
 
         preamble_start = modulator.modulate(numpy.zeros(preamble_len))
         preamble_sync_word = modulator.modulate([sync_word, sync_word])
-        preamble_downchirps = numpy.conjugate(modulator.modulate([0,0,0]))
-        preamble_downchirps = preamble_downchirps[0:2*M + M/4]
+        #preamble_downchirps = numpy.conjugate(modulator.modulate([0,0,0]))
+        #preamble_downchirps = preamble_downchirps[0:(2*M + M/4)]
 
-        self.preamble = numpy.concatenate((preamble_start, preamble_sync_word,
-            preamble_downchirps))
+        #self.preamble = numpy.concatenate((preamble_start, preamble_sync_word,
+        #    preamble_downchirps))
+        self.preamble = numpy.concatenate((preamble_start, preamble_sync_word))
 
         #Compute norm of preamble
         self.preamble_norm_sq = numpy.linalg.norm(self.preamble)**2
@@ -73,7 +74,8 @@ class lora_preamble_detect(gr.sync_block):
 
         #Add tag at the end of preambles, if detected
         for pre_end_idx in numpy.where(preamble_det)[0]:
-            self.add_item_tag(0, self.nitems_written(0) + pre_end_idx, pmt.intern('pkt_start'), pmt.PMT_NIL)
+            self.add_item_tag(0, self.nitems_written(0) + pre_end_idx + 1,
+                    pmt.intern('pkt_start'), pmt.PMT_NIL)
 
         #Correlation output
         out1[:] = corr

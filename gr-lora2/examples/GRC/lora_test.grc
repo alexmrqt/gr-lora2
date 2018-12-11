@@ -202,6 +202,33 @@
     </param>
   </block>
   <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(424, 84)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>chan_margin</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>75000</value>
+    </param>
+  </block>
+  <block>
     <key>variable_qtgui_range</key>
     <param>
       <key>comment</key>
@@ -328,6 +355,60 @@
     </param>
   </block>
   <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(232, 84)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>interp</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>2</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(336, 76)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>n_syms</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>10</value>
+    </param>
+  </block>
+  <block>
     <key>variable_qtgui_range</key>
     <param>
       <key>comment</key>
@@ -343,7 +424,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(968, 8)</value>
+      <value>(912, 8)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -425,7 +506,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -433,7 +514,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(16, 744)</value>
+      <value>(1040, 8)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -559,11 +640,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(312, 880)</value>
+      <value>(576, 576)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -575,7 +656,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>analog_agc_xx_0</value>
+      <value>analog_agc_xx_0_0</value>
     </param>
     <param>
       <key>max_gain</key>
@@ -614,7 +695,7 @@
     </param>
     <param>
       <key>const</key>
-      <value>M/4</value>
+      <value>M/2</value>
     </param>
     <param>
       <key>affinity</key>
@@ -665,54 +746,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(408, 700)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>gain</key>
-      <value>1.0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>analog_quadrature_demod_cf_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-  </block>
-  <block>
-    <key>analog_quadrature_demod_cf</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
       <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(720, 884)</value>
+      <value>(600, 948)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -720,11 +758,11 @@
     </param>
     <param>
       <key>gain</key>
-      <value>1.0</value>
+      <value>1.0/numpy.pi</value>
     </param>
     <param>
       <key>id</key>
-      <value>analog_quadrature_demod_cf_0_0</value>
+      <value>analog_quadrature_demod_cf_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -795,104 +833,6 @@
     </param>
   </block>
   <block>
-    <key>blocks_delay</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>delay</key>
-      <value>3</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(448, 324)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>180</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_delay_0_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>num_ports</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>complex</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_float_to_complex</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(912, 864)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_float_to_complex_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
     <key>blocks_multiply_const_vxx</key>
     <param>
       <key>alias</key>
@@ -904,7 +844,7 @@
     </param>
     <param>
       <key>const</key>
-      <value>numpy.exp(1j*theta)</value>
+      <value>sig_amp*numpy.exp(1j*theta)</value>
     </param>
     <param>
       <key>affinity</key>
@@ -916,7 +856,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(744, 324)</value>
+      <value>(504, 364)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -959,11 +899,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>True</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(616, 460)</value>
+      <value>(944, 764)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1006,11 +946,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>True</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(616, 540)</value>
+      <value>(944, 804)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1057,7 +997,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(408, 180)</value>
+      <value>(160, 180)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1081,11 +1021,11 @@
     </param>
     <param>
       <key>packet_len</key>
-      <value>10*M</value>
+      <value>n_syms</value>
     </param>
     <param>
       <key>type</key>
-      <value>complex</value>
+      <value>short</value>
     </param>
     <param>
       <key>vlen</key>
@@ -1112,7 +1052,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(904, 316)</value>
+      <value>(664, 356)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1141,61 +1081,6 @@
     <param>
       <key>single_key</key>
       <value>""</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_throttle</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(912, 188)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_throttle_0</value>
-    </param>
-    <param>
-      <key>ignoretag</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>samples_per_second</key>
-      <value>samp_rate</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>complex</value>
     </param>
     <param>
       <key>vlen</key>
@@ -1340,7 +1225,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>2</value>
     </param>
     <param>
       <key>epsilon</key>
@@ -1352,7 +1237,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(560, 296)</value>
+      <value>(320, 336)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1399,11 +1284,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(360, 460)</value>
+      <value>(480, 764)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1442,11 +1327,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(360, 544)</value>
+      <value>(424, 808)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1489,11 +1374,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(664, 172)</value>
+      <value>(384, 168)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1504,6 +1389,10 @@
       <value>grc_lora_add_preamble_0</value>
     </param>
     <param>
+      <key>len_tag_key</key>
+      <value>"packet_len"</value>
+    </param>
+    <param>
       <key>maxoutbuf</key>
       <value>0</value>
     </param>
@@ -1512,12 +1401,12 @@
       <value>0</value>
     </param>
     <param>
-      <key>preamble_len</key>
-      <value>8</value>
+      <key>pre_end_tag_key</key>
+      <value>"pre_end"</value>
     </param>
     <param>
-      <key>SF</key>
-      <value>9</value>
+      <key>preamble_len</key>
+      <value>8</value>
     </param>
     <param>
       <key>sync_word</key>
@@ -1575,7 +1464,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(216, 188)</value>
+      <value>(616, 172)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1584,6 +1473,14 @@
     <param>
       <key>id</key>
       <value>lora2_css_mod_0</value>
+    </param>
+    <param>
+      <key>interp</key>
+      <value>interp</value>
+    </param>
+    <param>
+      <key>len_tag_key</key>
+      <value>'packet_len'</value>
     </param>
     <param>
       <key>M</key>
@@ -1599,7 +1496,66 @@
     </param>
   </block>
   <block>
-    <key>lora2_lora_preamble_detect</key>
+    <key>lora2_lora_add_reversed_chirps</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(832, 160)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>lora2_lora_add_reversed_chirps_0</value>
+    </param>
+    <param>
+      <key>interp</key>
+      <value>interp</value>
+    </param>
+    <param>
+      <key>len_tag_key</key>
+      <value>"packet_len"</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>pre_end_tag_key</key>
+      <value>"pre_end"</value>
+    </param>
+    <param>
+      <key>rev_chirps_end_tag_key</key>
+      <value>"rev_chirps_end"</value>
+    </param>
+    <param>
+      <key>SF</key>
+      <value>SF</value>
+    </param>
+  </block>
+  <block>
+    <key>lora2_lora_implicit_get_payload</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -1618,7 +1574,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(496, 880)</value>
+      <value>(704, 764)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1626,7 +1582,93 @@
     </param>
     <param>
       <key>id</key>
-      <value>lora2_lora_preamble_detect_0</value>
+      <value>lora2_lora_implicit_get_payload_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>payload_len</key>
+      <value>n_syms</value>
+    </param>
+  </block>
+  <block>
+    <key>lora2_lora_implicit_get_payload</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(704, 804)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>lora2_lora_implicit_get_payload_0_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>payload_len</key>
+      <value>n_syms</value>
+    </param>
+  </block>
+  <block>
+    <key>lora2_lora_preamble_detect</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(752, 576)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>lora2_lora_preamble_detect_0_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -1642,7 +1684,7 @@
     </param>
     <param>
       <key>SF</key>
-      <value>9</value>
+      <value>SF</value>
     </param>
     <param>
       <key>sync_word</key>
@@ -1685,11 +1727,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(856, 504)</value>
+      <value>(1096, 760)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -1965,7 +2007,7 @@
     </param>
     <param>
       <key>srate</key>
-      <value>samp_rate</value>
+      <value>1.0</value>
     </param>
     <param>
       <key>stemplot</key>
@@ -2052,11 +2094,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(624, 680)</value>
+      <value>(816, 928)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -2332,7 +2374,7 @@
     </param>
     <param>
       <key>srate</key>
-      <value>samp_rate</value>
+      <value>1.0</value>
     </param>
     <param>
       <key>stemplot</key>
@@ -2423,7 +2465,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1104, 876)</value>
+      <value>(1088, 580)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -2695,7 +2737,7 @@
     </param>
     <param>
       <key>size</key>
-      <value>40*M</value>
+      <value>64*M</value>
     </param>
     <param>
       <key>srate</key>
@@ -2755,6 +2797,65 @@
     </param>
   </block>
   <block>
+    <key>rational_resampler_xxx</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>decim</key>
+      <value>interp</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>fbw</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(352, 576)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>rational_resampler_xxx_0</value>
+    </param>
+    <param>
+      <key>interp</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>taps</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>ccc</value>
+    </param>
+  </block>
+  <block>
     <key>virtual_sink</key>
     <param>
       <key>comment</key>
@@ -2766,7 +2867,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1096, 188)</value>
+      <value>(1128, 188)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2816,11 +2917,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(200, 700)</value>
+      <value>(392, 948)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2843,34 +2944,28 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>True</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(112, 900)</value>
+      <value>(1008, 364)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>180</value>
     </param>
     <param>
       <key>id</key>
-      <value>virtual_source_0_0</value>
+      <value>virtual_source_1</value>
     </param>
     <param>
       <key>stream_id</key>
-      <value>recvd_sig</value>
+      <value>mod_sig</value>
     </param>
   </block>
   <connection>
-    <source_block_id>analog_agc_xx_0</source_block_id>
-    <sink_block_id>lora2_lora_preamble_detect_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>analog_const_source_x_0</source_block_id>
-    <sink_block_id>lora2_css_mod_0</sink_block_id>
+    <source_block_id>analog_agc_xx_0_0</source_block_id>
+    <sink_block_id>lora2_lora_preamble_detect_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -2881,38 +2976,8 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>analog_quadrature_demod_cf_0_0</source_block_id>
-    <sink_block_id>blocks_float_to_complex_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
     <source_block_id>analog_random_source_x_0</source_block_id>
-    <sink_block_id>lora2_css_mod_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_delay_0_0</source_block_id>
-    <sink_block_id>grc_css_demod_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_delay_0_0</source_block_id>
-    <sink_block_id>grc_css_demod_coh_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_delay_0_0</source_block_id>
-    <sink_block_id>virtual_sink_0_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_float_to_complex_0</source_block_id>
-    <sink_block_id>qtgui_time_sink_x_2</sink_block_id>
+    <sink_block_id>blocks_stream_to_tagged_stream_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -2947,56 +3012,86 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>blocks_throttle_0</source_block_id>
-    <sink_block_id>blocks_tag_gate_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_throttle_0</source_block_id>
-    <sink_block_id>virtual_sink_0</sink_block_id>
+    <source_block_id>channels_channel_model_0_0</source_block_id>
+    <sink_block_id>rational_resampler_xxx_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
     <source_block_id>channels_channel_model_0_0</source_block_id>
-    <sink_block_id>blocks_delay_0_0</sink_block_id>
+    <sink_block_id>virtual_sink_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
     <source_block_id>grc_css_demod_0</source_block_id>
-    <sink_block_id>blocks_short_to_float_0</sink_block_id>
+    <sink_block_id>lora2_lora_implicit_get_payload_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
     <source_block_id>grc_css_demod_coh_0</source_block_id>
-    <sink_block_id>blocks_short_to_float_0_0</sink_block_id>
+    <sink_block_id>lora2_lora_implicit_get_payload_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
     <source_block_id>grc_lora_add_preamble_0</source_block_id>
-    <sink_block_id>blocks_throttle_0</sink_block_id>
+    <sink_block_id>lora2_css_mod_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
     <source_block_id>lora2_css_mod_0</source_block_id>
-    <sink_block_id>blocks_stream_to_tagged_stream_0</sink_block_id>
+    <sink_block_id>lora2_lora_add_reversed_chirps_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>lora2_lora_preamble_detect_0</source_block_id>
+    <source_block_id>lora2_lora_add_reversed_chirps_0</source_block_id>
+    <sink_block_id>virtual_sink_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>lora2_lora_implicit_get_payload_0</source_block_id>
+    <sink_block_id>blocks_short_to_float_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>lora2_lora_implicit_get_payload_0_0</source_block_id>
+    <sink_block_id>blocks_short_to_float_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>lora2_lora_preamble_detect_0_0</source_block_id>
     <sink_block_id>qtgui_time_sink_x_2</sink_block_id>
     <source_key>1</source_key>
     <sink_key>1</sink_key>
   </connection>
   <connection>
-    <source_block_id>lora2_lora_preamble_detect_0</source_block_id>
-    <sink_block_id>analog_quadrature_demod_cf_0_0</sink_block_id>
+    <source_block_id>lora2_lora_preamble_detect_0_0</source_block_id>
+    <sink_block_id>grc_css_demod_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>lora2_lora_preamble_detect_0_0</source_block_id>
+    <sink_block_id>grc_css_demod_coh_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>lora2_lora_preamble_detect_0_0</source_block_id>
+    <sink_block_id>qtgui_time_sink_x_2</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>rational_resampler_xxx_0</source_block_id>
+    <sink_block_id>analog_agc_xx_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -3007,8 +3102,8 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>virtual_source_0_0</source_block_id>
-    <sink_block_id>analog_agc_xx_0</sink_block_id>
+    <source_block_id>virtual_source_1</source_block_id>
+    <sink_block_id>blocks_tag_gate_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

@@ -26,13 +26,13 @@ class css_mod_algo():
         self.M = float(M)
         self.Q = float(interp)
         self.MQ = float(self.M * self.Q)
-        self.MQ_int = self.M * self.Q
+        self.MQ_int = int(self.M * self.Q)
 
         self.k = numpy.linspace(0.0, self.MQ-1.0, self.MQ)
 
     def modulate(self, input_items):
         ninput_items = len(input_items)
-        output_items = numpy.zeros(self.MQ * ninput_items, dtype=numpy.complex64)
+        output_items = numpy.zeros(self.MQ_int * ninput_items, dtype=numpy.complex64)
 
         for i in range(0, ninput_items):
             out_freq = self.k/(2.0*self.Q) - self.M/2.0 + input_items[i] \
