@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<block>
+  <name>loRa Add Reversed Chirps</name>
+  <key>lora2_lora_add_reversed_chirps</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.lora_add_reversed_chirps($SF, $interp, $len_tag_key, $pre_end_tag_key, $rev_chirps_end_tag_key)</make>
+
+  <param>
+    <name>SF</name>
+	<key>SF</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Interpolation</name>
+	<key>interp</key>
+    <type>int</type>
+  </param>
+  <param>
+    <name>Length Tag Key</name>
+	<key>len_tag_key</key>
+    <type>string</type>
+  </param>
+  <param>
+    <name>Preamble End Tag Key</name>
+	<key>pre_end_tag_key</key>
+    <type>string</type>
+  </param>
+  <param>
+    <name>Rev Chirps End Tag Key</name>
+	<key>rev_chirps_end_tag_key</key>
+    <type>string</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+</block>
