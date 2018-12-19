@@ -30,7 +30,8 @@ offset= SF-(CR+4)
 for x in range( 0, SF ):
 
     # auxiliar variable for the first iteration
-    aux= numpy.flip( flipped_horiz.diagonal( -x+offset ), 0 )
+    # aux= numpy.flip( flipped_horiz.diagonal( -x+offset ), 0 )
+    aux= numpy.flipud( flipped_horiz.diagonal( -x+offset ) )
     
 
     # multiple iterations for the size of the matrix:
@@ -46,7 +47,7 @@ for x in range( 0, SF ):
     for y in range( 1, (CR+4+x) / SF +1 ):
 
         # concatenate the first iteration with each new iteration
-        aux= numpy.concatenate( ( aux, numpy.flip( flipped_horiz.diagonal( y*SF-x+offset ), 0 ) ), axis=0 )
+        aux= numpy.concatenate( ( aux, numpy.flipud( flipped_horiz.diagonal( y*SF-x+offset ) ) ), axis=0)
 
     # concatenate vertically the auxilliar vectors
     out= numpy.vstack( (out, aux) )
