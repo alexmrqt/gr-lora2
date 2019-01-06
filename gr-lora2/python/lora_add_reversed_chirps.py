@@ -29,36 +29,32 @@ class lora_add_reversed_chirps(gr.basic_block):
     """
     docstring for block lora_add_reversed_chirps
     """
-    def __init__(self, SF, interp, len_tag_key, pre_end_tag_key, rev_chirps_end_tag_key):
+    def __init__(self, SF, interp, len_tag_key, payload_tag_key, rev_chirps_tag_key):
         gr.basic_block.__init__(self,
             name="lora_add_reversed_chirps",
             in_sig=[numpy.complex64],
             out_sig=[numpy.complex64])
+
+        self.set_tag_propagation_policy(gr.TPP_DONT)
 
         self.M = 2**SF
         self.interp = interp
         modulator = css_mod_algo.css_mod_algo(self.M, self.interp)
 
         self.len_tag_key = pmt.intern(len_tag_key)
-        self.pre_end_tag_key = pmt.intern(pre_end_tag_key)
-        self.rev_chirps_end_tag_key = pmt.intern(rev_chirps_end_tag_key)
+        self.payload_tag_key = pmt.intern(payload_tag_key)
+        self.rev_chirps_tag_key = pmt.intern(rev_chirps_tag_key)
 
         #Generate rev chirps
         self.rev_chirps = numpy.conjugate(modulator.modulate([0,0,0]))
         self.rev_chirps = self.rev_chirps[0:(2*self.M + self.M/4)*interp]
 
-        #Set to True in order to add rev_chirps at the begining of next call
-        self.flag_add_rev_chirps = False
-
     def forecast(self, noutput_items, ninput_items_required):
         #When no chirps is to be appened, this block is a sync block
-        if self.flag_add_rev_chirps == False:
-            ninput_items_required[0] = noutput_items
-        else:
-            ninput_items_required[0] = noutput_items + len(self.rev_chirps)
+        ninput_items_required[0] = noutput_items
 
     def copy_and_shift_tags_in_window(self, which_input, in_ptr, out_ptr, length):
-        tags_orig = self.get_tags_in_window(which_input, in_ptr, length)
+        tags_orig = self.get_tags_in_window(which_input, in_ptr, in_ptr+length)
 
         for tag in tags_orig:
             tag_offset = tag.offset - self.nitems_read(0) - in_ptr
@@ -84,26 +80,8 @@ class lora_add_reversed_chirps(gr.basic_block):
         ninput_consumed = 0
         noutput_produced = 0
 
-        #Add rev_chirps at the begining of output buffer if needed
-        if self.flag_add_rev_chirps == True:
-            if len_out0 >= len(self.rev_chirps):
-                output_items[0][0:len(self.rev_chirps)] = self.rev_chirps
-
-                #Append rev_chirps_end_tag
-                self.add_item_tag(0,
-                        self.nitems_written(0) + len(self.rev_chirps)-1,
-                        self.rev_chirps_end_tag_key, pmt.PMT_NIL)
-
-                self.flag_add_rev_chirps = False
-
-                out0_ptr = len(self.rev_chirps)
-                noutput_produced += len(self.rev_chirps)
-            else:
-                self.consume(0, ninput_consumed)
-                return noutput_produced
-
-        #Retrieve tags with pre_end_tag_key
-        tags = self.get_tags_in_window(0, 0, len(in0), self.pre_end_tag_key)
+        #Retrieve tags with payload_tag_key
+        tags = self.get_tags_in_window(0, 0, len(in0), self.payload_tag_key)
 
         #If no tags is present, copy input to output and return.
         if len(tags) == 0:
@@ -117,15 +95,17 @@ class lora_add_reversed_chirps(gr.basic_block):
 
         #Add reversed chirps for each preamble (if output buffer large enough)
         for i in range(0, len(tags)):
-            in0_stop_idx = in0_ptr + tags[i].offset - self.nitems_read(0)
-            out0_stop_idx = out0_ptr + tags[i].offset - self.nitems_read(0)
-            #Go to the end of the symbol marked by pre_end_tag_key
-            in0_stop_idx += self.M*self.interp - 1
-            out0_stop_idx += self.M*self.interp - 1
+            in0_stop_idx = in0_ptr + tags[i].offset - self.nitems_read(0) - 1
+            
+            if in0_stop_idx >= 0:
+                out0_stop_idx = out0_ptr + tags[i].offset - self.nitems_read(0) - 1
 
-            #Copy data preceding the tag
-            #Case 1: data fits in output buffer
-            if out0_stop_idx < len_out0:
+                #If data does not fit in output buffer
+                if out0_stop_idx >= len_out0:
+                    out0_stop_idx = len_out0 - 1
+                    in0_stop_idx = in0_ptr + (out0_stop_idx - out0_ptr)
+
+                #Copy data preceding the tag
                 output_items[0][out0_ptr:(out0_stop_idx+1)] = \
                         in0[in0_ptr:(in0_stop_idx+1)]
 
@@ -134,45 +114,63 @@ class lora_add_reversed_chirps(gr.basic_block):
                         in0_stop_idx-in0_ptr+1)
 
                 #Update counters and pointers
-                ninput_consumed += in0_stop_idx - in0_ptr+1
-                noutput_produced+= out0_stop_idx - out0_ptr+1
-                in0_ptr = in0_stop_idx+1
-                out0_ptr = out0_stop_idx+1
-            #Case 2: data does not fit in output buffer
-            else:
-                out0_stop_idx = len_out0-1
-                in0_stop_idx = in0_ptr + (out0_stop_idx - out0_ptr)
-
-                output_items[0][out0_ptr:(out0_stop_idx+1)] = \
-                        in0[in0_ptr:(in0_stop_idx+1)]
-
-                #Handle tags associated with this data
-                self.copy_and_shift_tags_in_window(0, in0_ptr, out0_ptr,
-                        in0_stop_idx-in0_ptr+1)
-
-                #Update counters and break
                 ninput_consumed += in0_stop_idx - in0_ptr + 1
-                noutput_produced += out0_stop_idx - out0_ptr + 1
+                noutput_produced+= out0_stop_idx - out0_ptr + 1
+                in0_ptr = in0_stop_idx + 1
+                out0_ptr = out0_stop_idx + 1
 
-                break
+                if ninput_consumed == len(in0):
+                    break
 
             #Append reversed chirps
             out0_stop_idx = out0_ptr + len(self.rev_chirps) - 1
-            #Case 1: If data fits in output buffer, then append reversed chirps
-            if out0_stop_idx < len_out0:
+            #We want to be able to fit reversed chirps plus the first payload item.
+            if (out0_stop_idx+1) < len_out0:
+                #Append reversed chirps
                 output_items[0][out0_ptr:(out0_stop_idx+1)] = self.rev_chirps
 
-                #Append rev_chirps_end_tag
-                self.add_item_tag(0, self.nitems_written(0) + out0_stop_idx,
-                        self.rev_chirps_end_tag_key, pmt.PMT_NIL)
+                #Add a tag to denote begining of reversed chirps sequence
+                self.add_item_tag(0, self.nitems_written(0) + out0_ptr,
+                        self.rev_chirps_tag_key, pmt.PMT_NIL)
 
                 #Update counters and pointers
-                noutput_produced+= len(self.rev_chirps)
+                noutput_produced += len(self.rev_chirps)
                 out0_ptr = out0_stop_idx+1
+
+                #Append the first item of the payload
+                output_items[0][out0_ptr] = in0[in0_ptr]
+
+                #Add payload tag
+                self.add_item_tag(0, self.nitems_written(0) + out0_ptr,
+                        self.payload_tag_key, pmt.PMT_NIL)
+
+                #Update counters and pointers
+                ninput_consumed += 1
+                noutput_produced += 1
+                in0_ptr += 1
+                out0_ptr += 1
+
             #Case 2: If data does not fit in output buffer, exit
             else:
-                self.flag_add_rev_chirps = True
-                break
+                self.consume(0, ninput_consumed)
+                return noutput_produced
+
+        #Try to copy data remaining in the output buffer to the output buffer
+        nitems_copiable = min(len_out0 - noutput_produced, len(in0) - ninput_consumed)
+        if nitems_copiable != 0:
+            in0_stop_idx = in0_ptr + nitems_copiable - 1
+            out0_stop_idx = out0_ptr + nitems_copiable - 1
+
+            output_items[0][out0_ptr:(out0_stop_idx+1)] = in0[in0_ptr:(in0_stop_idx+1)]
+
+            #Handle tags associated with this data
+            self.copy_and_shift_tags_in_window(0, in0_ptr, out0_ptr, nitems_copiable)
+
+            #Update counters and pointers
+            ninput_consumed += nitems_copiable
+            noutput_produced += nitems_copiable
+            in0_ptr = in0_stop_idx + 1
+            out0_ptr = out0_stop_idx + 1
 
         self.consume(0, ninput_consumed)
         return noutput_produced

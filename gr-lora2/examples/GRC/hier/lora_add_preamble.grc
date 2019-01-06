@@ -94,61 +94,7 @@
     </param>
   </block>
   <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(304, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>M</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>2**SF</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(712, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>k</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>numpy.linspace(0, M-1, M)</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
+    <key>variable_tag_object</key>
     <param>
       <key>comment</key>
       <value></value>
@@ -159,7 +105,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(888, 404)</value>
+      <value>(888, 208)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -167,11 +113,23 @@
     </param>
     <param>
       <key>id</key>
-      <value>min_buffer_len</value>
+      <value>pre_end_tag</value>
+    </param>
+    <param>
+      <key>key</key>
+      <value>pmt.intern(pre_end_tag_key)</value>
+    </param>
+    <param>
+      <key>offset</key>
+      <value>len(preamble_sync)-1</value>
+    </param>
+    <param>
+      <key>src</key>
+      <value>pmt.intern("src")</value>
     </param>
     <param>
       <key>value</key>
-      <value>M*len(preamble_sync) + len(preamble_end) + 340*M</value>
+      <value>pmt.PMT_NIL</value>
     </param>
   </block>
   <block>
@@ -186,34 +144,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(888, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>preamble_end</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>numpy.concatenate((rev_chirp, rev_chirp, rev_chirp[0:(M/4)]))</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(392, 92)</value>
+      <value>(200, 92)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -226,135 +157,6 @@
     <param>
       <key>value</key>
       <value>numpy.concatenate((numpy.zeros(preamble_len), [sync_word, sync_word]))</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(712, 76)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>rev_chirp</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>numpy.exp(-1j*numpy.pi*(k-M)*k/M)</value>
-    </param>
-  </block>
-  <block>
-    <key>parameter</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(208, 12)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>SF</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value>SF</value>
-    </param>
-    <param>
-      <key>short_id</key>
-      <value></value>
-    </param>
-    <param>
-      <key>hide</key>
-      <value>none</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>9</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_stream_mux</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(512, 240)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_stream_mux_0</value>
-    </param>
-    <param>
-      <key>lengths</key>
-      <value>M*len(preamble_sync), len(preamble_end)</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>num_inputs</key>
-      <value>2</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>complex</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
     </param>
   </block>
   <block>
@@ -373,11 +175,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>True</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(752, 244)</value>
+      <value>(480, 396)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -389,7 +191,7 @@
     </param>
     <param>
       <key>len_tag_key</key>
-      <value>packet_len</value>
+      <value>len_tag_key</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -401,11 +203,11 @@
     </param>
     <param>
       <key>packet_len</key>
-      <value>M*len(preamble_sync) + len(preamble_end)</value>
+      <value>len(preamble_sync)</value>
     </param>
     <param>
       <key>type</key>
-      <value>complex</value>
+      <value>short</value>
     </param>
     <param>
       <key>vlen</key>
@@ -444,11 +246,11 @@
     </param>
     <param>
       <key>type</key>
-      <value>complex</value>
+      <value>short</value>
     </param>
     <param>
       <key>lengthtagname</key>
-      <value>packet_len</value>
+      <value>len_tag_key</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -456,7 +258,7 @@
     </param>
     <param>
       <key>minoutbuf</key>
-      <value>min_buffer_len</value>
+      <value>0</value>
     </param>
     <param>
       <key>ninputs</key>
@@ -491,7 +293,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(56, 220)</value>
+      <value>(80, 388)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -519,7 +321,7 @@
     </param>
     <param>
       <key>tags</key>
-      <value>[]</value>
+      <value>[pre_end_tag]</value>
     </param>
     <param>
       <key>vlen</key>
@@ -528,108 +330,6 @@
     <param>
       <key>vector</key>
       <value>numpy.array(preamble_sync, dtype=numpy.int16).tolist()</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_vector_source_x</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(264, 292)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_vector_source_x_0_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>complex</value>
-    </param>
-    <param>
-      <key>repeat</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>tags</key>
-      <value>[]</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>vector</key>
-      <value>preamble_end</value>
-    </param>
-  </block>
-  <block>
-    <key>css_mod</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(288, 236)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>css_mod_0</value>
-    </param>
-    <param>
-      <key>M</key>
-      <value>M</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
     </param>
   </block>
   <block>
@@ -664,7 +364,7 @@
     </param>
   </block>
   <block>
-    <key>note</key>
+    <key>parameter</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -679,7 +379,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1000, 404)</value>
+      <value>(512, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -687,11 +387,27 @@
     </param>
     <param>
       <key>id</key>
-      <value>note_0</value>
+      <value>len_tag_key</value>
     </param>
     <param>
-      <key>note</key>
-      <value>TODO: Tune buffer length with SF</value>
+      <key>label</key>
+      <value>Length Tag Key</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>"packet_len"</value>
     </param>
   </block>
   <block>
@@ -718,7 +434,7 @@
     </param>
     <param>
       <key>type</key>
-      <value>complex</value>
+      <value>short</value>
     </param>
     <param>
       <key>label</key>
@@ -749,7 +465,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(80, 476)</value>
+      <value>(80, 492)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -773,7 +489,7 @@
     </param>
     <param>
       <key>type</key>
-      <value>complex</value>
+      <value>short</value>
     </param>
     <param>
       <key>vlen</key>
@@ -796,7 +512,54 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(392, 12)</value>
+      <value>(512, 100)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>pre_end_tag_key</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Preamble End Tag Key</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>hide</key>
+      <value>none</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>"pre_end"</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(200, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -843,7 +606,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(576, 12)</value>
+      <value>(392, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -875,12 +638,6 @@
     </param>
   </block>
   <connection>
-    <source_block_id>blocks_stream_mux_0</source_block_id>
-    <sink_block_id>blocks_stream_to_tagged_stream_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
     <source_block_id>blocks_stream_to_tagged_stream_0</source_block_id>
     <sink_block_id>blocks_tagged_stream_mux_0</sink_block_id>
     <source_key>0</source_key>
@@ -894,19 +651,7 @@
   </connection>
   <connection>
     <source_block_id>blocks_vector_source_x_0</source_block_id>
-    <sink_block_id>css_mod_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>blocks_vector_source_x_0_0</source_block_id>
-    <sink_block_id>blocks_stream_mux_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>1</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>css_mod_0</source_block_id>
-    <sink_block_id>blocks_stream_mux_0</sink_block_id>
+    <sink_block_id>blocks_stream_to_tagged_stream_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

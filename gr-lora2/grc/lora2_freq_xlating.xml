@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<block>
+  <name>Frequency Xlating</name>
+  <key>lora2_freq_xlating</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.freq_xlating($freq, $freq_tag_key)</make>
+  <param>
+    <name>Frequency shift</name>
+    <key>freq</key>
+    <type>float</type>
+  </param>
+
+  <param>
+    <name>Frequency shift yag key</name>
+    <key>freq_tag_key</key>
+    <type>string</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+</block>

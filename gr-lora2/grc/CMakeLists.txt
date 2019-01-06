@@ -24,5 +24,7 @@ install(FILES
     lora2_css_sync_and_vectorize.xml
     lora2_lora_implicit_get_payload.xml
     lora2_lora_add_reversed_chirps.xml
-    lora2_interleaver.xml DESTINATION share/gnuradio/grc/blocks
+    lora2_interleaver.xml
+    lora2_lora_add_preamble.xml
+    lora2_freq_xlating.xml DESTINATION share/gnuradio/grc/blocks
 )

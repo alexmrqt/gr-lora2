@@ -23,5 +23,6 @@
 ########################################################################
 install(FILES
     api.h
-    DESTINATION include/lora2
+    lora_add_preamble.h
+    freq_xlating.h DESTINATION include/lora2
 )

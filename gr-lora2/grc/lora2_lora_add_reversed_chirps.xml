@@ -4,7 +4,7 @@
   <key>lora2_lora_add_reversed_chirps</key>
   <category>[lora2]</category>
   <import>import lora2</import>
-  <make>lora2.lora_add_reversed_chirps($SF, $interp, $len_tag_key, $pre_end_tag_key, $rev_chirps_end_tag_key)</make>
+  <make>lora2.lora_add_reversed_chirps($SF, $interp, $len_tag_key, $payload_tag_key, $rev_chirps_tag_key)</make>
 
   <param>
     <name>SF</name>
@@ -22,13 +22,13 @@
     <type>string</type>
   </param>
   <param>
-    <name>Preamble End Tag Key</name>
-	<key>pre_end_tag_key</key>
+    <name>Payload Tag Key</name>
+	<key>payload_tag_key</key>
     <type>string</type>
   </param>
   <param>
-    <name>Rev Chirps End Tag Key</name>
-	<key>rev_chirps_end_tag_key</key>
+    <name>Rev Chirps Tag Key</name>
+	<key>rev_chirps_tag_key</key>
     <type>string</type>
   </param>
 

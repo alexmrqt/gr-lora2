@@ -25,9 +25,9 @@ include(GrPlatform) #define LIB_SUFFIX
 
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
-
 list(APPEND lora2_sources
-)
+    lora_add_preamble_impl.cc
+    freq_xlating_impl.cc )
 
 set(lora2_sources "${lora2_sources}" PARENT_SCOPE)
 if(NOT lora2_sources)
@@ -57,11 +57,10 @@ GR_LIBRARY_FOO(gnuradio-lora2 RUNTIME_COMPONENT "lora2_runtime" DEVEL_COMPONENT 
 include(GrTest)
 
 include_directories(${CPPUNIT_INCLUDE_DIRS})
-
 list(APPEND test_lora2_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_lora2.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/test_lora2.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora2.cc
-)
+    )
 
 add_executable(test-lora2 ${test_lora2_sources})
 
