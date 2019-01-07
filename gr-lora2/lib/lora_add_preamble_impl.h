@@ -32,7 +32,7 @@ namespace gr {
      private:
 		 static const int d_n_sync_syms = 2;
 		 int d_pre_len;
-		 short d_sync_word;
+		 short d_sync_word[2];
 		 pmt::pmt_t d_sync_word_tag_key;
 		 pmt::pmt_t d_payload_tag_key;
 

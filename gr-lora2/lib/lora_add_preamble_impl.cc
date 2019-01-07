@@ -48,10 +48,13 @@ namespace gr {
       : gr::tagged_stream_block("lora_add_preamble",
               gr::io_signature::make(1, 1, sizeof(short)),
               gr::io_signature::make(1, 1, sizeof(short)), len_tag_key),
-        d_pre_len(pre_len), d_sync_word(sync_word)
+        d_pre_len(pre_len)
     {
       d_sync_word_tag_key = pmt::intern(sync_word_tag_key);
       d_payload_tag_key = pmt::intern(payload_tag_key);
+
+	  d_sync_word[0] = (sync_word&0xF)*8;
+	  d_sync_word[1] = ((sync_word>>4)&0xF)*8;
 	}
 
     int
@@ -78,9 +81,9 @@ namespace gr {
       }
 
       //Add sync_word
-      *out = d_sync_word;
+      *out = d_sync_word[0];
       ++out;
-      *out = d_sync_word;
+      *out = d_sync_word[1];
       ++out;
 
       //Add payload

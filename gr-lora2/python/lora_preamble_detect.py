@@ -30,79 +30,63 @@ class lora_preamble_detect(gr.sync_block):
     """
     docstring for block lora_preamble_detect
     """
-    def __init__(self, SF, preamble_len, sync_word):
+    def __init__(self, SF, preamble_len):
         gr.sync_block.__init__(self,
             name="lora_preamble_detect",
             in_sig=[numpy.complex64],
             out_sig=[numpy.complex64])
 
+        self.debug = True
+
         self.M=2**SF
         self.preamble_len = preamble_len
-        self.sync_word = sync_word
 
         self.demodulator = css_demod_algo.css_demod_algo(self.M)
         self.preamble_value = 0
+        self.sync_value = [0, 0]
         self.sof_value = 0
-
-        self.count = 0
-        self.state = 0 #0: DETECT_PRE, 1: DETECT_SYNC, 2: DETECT_SOF
 
         #Buffers are initially set to -1
         self.conj_buffer = numpy.zeros(2, dtype=numpy.int16) - 1
-        self.buffer = None
-        if(preamble_len == 1):
-            self.buffer = numpy.zeros(2, dtype=numpy.int16) - 1
-        else:
-            self.buffer = numpy.zeros(preamble_len, dtype=numpy.int16) - 1
+        self.buffer = numpy.zeros(preamble_len + 4, dtype=numpy.int16) - 1
 
         self.set_output_multiple(self.M)
 
     def detect_preamble(self):
-        pattern = numpy.repeat(self.buffer[0], self.preamble_len)
+        #Buffer not full yet
+        if self.buffer[0] == -1:
+            return False
 
-        if (self.buffer == pattern).all():
+        pattern = numpy.repeat(self.buffer[0], self.preamble_len)
+        if (self.buffer[0:self.preamble_len] == pattern).all():
             self.preamble_value = self.buffer[0]
-            self.state = 1 #Go to DETECT_SYNC
+
+            if self.debug == True:
+                print('Preamble detected!')
+
+            return True
+
+        return False
 
     def detect_sync(self):
-        self.count += 1
+        self.sync_value[0] = numpy.mod(self.buffer[-4] - self.preamble_value, self.M)
+        self.sync_value[1] = numpy.mod(self.buffer[-3] - self.preamble_value, self.M)
 
-        if self.count == 2:
-            self.count = 0
+        if self.debug == True:
+            print('Sync word detected: ' + str(self.sync_value))
 
-            expected_val = self.preamble_value + self.sync_word
-            if (self.buffer[-1] == expected_val) and (self.buffer[-2] == expected_val):
-                self.state = 2 #Go to DETECT_SOF
-            else:
-                #Check for preamble presence
-                self.detect_preamble()
+        return True
 
-    def detect_sof(self, input_items, sym_idx):
-        self.count += 1
+    def detect_sof(self):
+        if self.conj_buffer[0] == self.conj_buffer[1]:
+            self.sof_value = self.conj_buffer[0]
 
-        #Shift buffer
-        self.conj_buffer = numpy.roll(self.conj_buffer, -1)
+            if self.debug == True:
+                print('SOF detected!')
 
-        #Demodulate with up-chirp
-        #(equivalent to non-coherently demodulate conjugate of signal)
-        self.conj_buffer[-1] = self.demodulator.demodulate(numpy.conjugate(input_items))[0]
+            return True
 
-        if self.count == 2:
-            self.count = 0
-
-            if self.conj_buffer[0] == self.conj_buffer[1]:
-                self.sof_value = self.conj_buffer[0]
-
-                self.tag_end_preamble(sym_idx)
-            else:
-                #Reset conjugate buffer
-                self.conj_buffer = numpy.zeros(2, dtype=numpy.int16) - 1
-
-                #Check for preamble presence
-                self.detect_preamble()
-
-            #Go to DETECT_PREAMBLE in all case
-            self.state = 0
+        return False
 
     def tag_end_preamble(self, sym_idx):
         #Compute time and frequency shift
@@ -117,10 +101,13 @@ class lora_preamble_detect(gr.sync_block):
         tag1_value = pmt.PMT_NIL
         tag2_key = pmt.intern('freq_offset')
         tag2_value = pmt.to_pmt(-freq_shift/float(self.M))
+        tag3_key = pmt.intern('sync_word')
+        tag3_value = pmt.to_pmt(self.sync_value)
 
         #Append tags
         self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
         self.add_item_tag(0, tag_offset, tag2_key, tag2_value)
+        self.add_item_tag(0, tag_offset, tag3_key, tag3_value)
 
 
     def work(self, input_items, output_items):
@@ -133,20 +120,32 @@ class lora_preamble_detect(gr.sync_block):
         #Demodulate received items
         syms = self.demodulator.demodulate(in0)
 
+        #Demodulate with up-chirp
+        #(equivalent to non-coherently demodulate conjugate of signal)
+        conj_syms = self.demodulator.demodulate(numpy.conjugate(in0))
+
         #Preamble detection
         for i in range(0, len(syms)):
             #Shift buffer
             self.buffer = numpy.roll(self.buffer, -1)
             self.buffer[-1] = syms[i]
 
-            if self.state == 0: #DETECT_PRE
-                self.detect_preamble()
-                continue
-            elif self.state == 1: #DETECT_SYNC
-                self.detect_sync()
-                continue
-            else: #DETECT_SOF
-                self.detect_sof(in0[i*self.M:(i+1)*self.M], i)
-                continue
+            #Shift buffer
+            self.conj_buffer = numpy.roll(self.conj_buffer, -1)
+            self.conj_buffer[-1] = conj_syms[i]
+
+            if self.detect_preamble() and self.detect_sync() and self.detect_sof():
+                self.tag_end_preamble(i)
+
+            #if self.state == 0: #DETECT_PRE
+            #    self.detect_preamble()
+
+            #    continue
+            #elif self.state == 1: #DETECT_SYNC
+            #    self.detect_sync()
+            #    continue
+            #else: #DETECT_SOF
+            #    self.detect_sof(i)
+            #    continue
 
         return len(output_items[0])

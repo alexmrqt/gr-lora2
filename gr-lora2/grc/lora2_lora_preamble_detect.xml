@@ -4,7 +4,7 @@
   <key>lora2_lora_preamble_detect</key>
   <category>[lora2]</category>
   <import>import lora2</import>
-  <make>lora2.lora_preamble_detect($SF, $preamble_len, $sync_word)</make>
+  <make>lora2.lora_preamble_detect($SF, $preamble_len)</make>
   <param>
     <name>SF</name>
     <key>SF</key>
@@ -14,12 +14,6 @@
   <param>
     <name>Preamble length [6-65535]</name>
     <key>preamble_len</key>
-    <type>int</type>
-  </param>
-
-  <param>
-    <name>Sync word</name>
-    <key>sync_word</key>
     <type>int</type>
   </param>
 
