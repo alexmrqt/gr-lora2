@@ -39,9 +39,9 @@ GR_PYTHON_INSTALL(
     css_sync_and_vectorize.py
     lora_implicit_get_payload.py
     lora_add_reversed_chirps.py
-    interleaver.py
     css_demod_algo.py
-    DESTINATION ${GR_PYTHON_DIR}/lora2
+    lora_interleaver.py
+    lora_deinterleaver.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################
@@ -52,3 +52,5 @@ include(GrTest)
 set(GR_TEST_TARGET_DEPS gnuradio-lora2)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
 GR_ADD_TEST(qa_lora_add_preamble ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_add_preamble.py)
+GR_ADD_TEST(qa_lora_interleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_interleaver.py)
+GR_ADD_TEST(qa_lora_deinterleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_deinterleaver.py)
