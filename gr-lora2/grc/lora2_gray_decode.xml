@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<block>
+  <name>Gray Decoder</name>
+  <key>lora2_gray_decode</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.gray_decode()</make>
+
+  <sink>
+    <name>in</name>
+    <type>short</type>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>short</type>
+  </source>
+</block>

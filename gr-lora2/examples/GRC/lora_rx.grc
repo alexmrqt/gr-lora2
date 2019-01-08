@@ -606,11 +606,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(936, 652)</value>
+      <value>(904, 780)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>180</value>
     </param>
     <param>
       <key>id</key>
@@ -803,6 +803,45 @@
     <param>
       <key>id</key>
       <value>lora2_freq_xlating_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>lora2_gray_encode</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(952, 656)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>lora2_gray_encode_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -2235,7 +2274,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -2764,7 +2803,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1088, 632)</value>
+      <value>(632, 760)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -2772,7 +2811,7 @@
     </param>
     <param>
       <key>_rotation</key>
-      <value>0</value>
+      <value>180</value>
     </param>
     <param>
       <key>grid</key>
@@ -3595,13 +3634,19 @@
   </connection>
   <connection>
     <source_block_id>grc_css_demod_0</source_block_id>
-    <sink_block_id>blocks_short_to_float_0</sink_block_id>
+    <sink_block_id>lora2_gray_encode_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
     <source_block_id>lora2_freq_xlating_0</source_block_id>
     <sink_block_id>grc_css_demod_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>lora2_gray_encode_0</source_block_id>
+    <sink_block_id>blocks_short_to_float_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
