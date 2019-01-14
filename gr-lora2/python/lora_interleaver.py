@@ -55,13 +55,13 @@ class lora_interleaver(gr.sync_block):
         flipped_horiz= numpy.fliplr( input_mat )
 
         # placeholder for the concatenation
-        out_mat= numpy.array([], dtype=numpy.int).reshape(0,CR+4)
+        out_mat= numpy.array([], dtype=numpy.int).reshape(0,self.CR+4)
 
         # non-square matrix offset
-        offset= SF-(CR+4)
+        offset= self.SF-(self.CR+4)
 
         # diagonal concatenation
-        for x in range( 0, SF ):
+        for x in range( 0, self.SF ):
 
             # auxiliar variable for the first iteration
             # aux= numpy.flip( flipped_horiz.diagonal( -x+offset ), 0 )
@@ -78,10 +78,10 @@ class lora_interleaver(gr.sync_block):
             # 18+x / 8 = #of iterations
             # (CR+4+x) / SF
 
-            for y in range( 1, (CR+4+x) / SF +1 ):
+            for y in range( 1, (self.CR+4+x) / self.SF +1 ):
 
                 # concatenate the first iteration with each new iteration
-                aux= numpy.concatenate( ( aux, numpy.flipud( flipped_horiz.diagonal( y*SF-x+offset ) ) ), axis=0)
+                aux= numpy.concatenate( ( aux, numpy.flipud( flipped_horiz.diagonal( y*self.SF-x+offset ) ) ), axis=0)
 
             # concatenate vertically the auxilliar vectors
             out_mat= numpy.vstack( (out_mat, aux) )
