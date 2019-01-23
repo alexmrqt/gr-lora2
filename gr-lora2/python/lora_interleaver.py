@@ -36,8 +36,11 @@ class lora_interleaver(gr.sync_block):
         self.SF = SF
         self.CR = CR
 
-        #We want len(input_items) = len(output_items) = N*SF*CR
-        self.set_output_multiple(self.SF*self.CR)
+        #Length of one block of data
+        self.len_block = self.SF * (self.CR+4)
+
+        #We want len(input_items) = len(output_items) = N*SF*(CR+4)
+        self.set_output_multiple(self.len_block)
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
@@ -45,56 +48,60 @@ class lora_interleaver(gr.sync_block):
 
         # signal processing starts here -----
 
-        # convert the vector into a matrix
-        input_mat= in0
+        # How many blocks of SF * (CR+4) in in0?
+        n_blocks = len(in0) / self.len_block
 
-        # print the input matrix
-        print input_mat
+        for i in range(0, n_blocks):
+            # convert the vector into a matrix
+            input_vect = in0[i*self.len_block:(i+1)*self.len_block]
+            input_mat = input_vect.reshape((self.CR+4, self.SF))
 
-        # flipping horizontally the input matrix
-        flipped_horiz= numpy.fliplr( input_mat )
+            # print the input matrix
+            #print(input_mat)
 
-        # placeholder for the concatenation
-        out_mat= numpy.array([], dtype=numpy.int).reshape(0,self.CR+4)
+            # flipping horizontally the input matrix
+            flipped_horiz= numpy.fliplr( input_mat )
 
-        # non-square matrix offset
-        offset= self.SF-(self.CR+4)
+            # placeholder for the concatenation
+            out_mat= numpy.array([], dtype=numpy.int).reshape(0,self.CR+4)
 
-        # diagonal concatenation
-        for x in range( 0, self.SF ):
+            # non-square matrix offset
+            offset= self.SF-(self.CR+4)
 
-            # auxiliar variable for the first iteration
-            # aux= numpy.flip( flipped_horiz.diagonal( -x+offset ), 0 )
-            aux= numpy.flipud( flipped_horiz.diagonal( -x+offset ) )
+            # diagonal concatenation
+            for x in range( 0, self.SF ):
+
+                # auxiliar variable for the first iteration
+                # aux= numpy.flip( flipped_horiz.diagonal( -x+offset ), 0 )
+                aux= numpy.flipud( flipped_horiz.diagonal( -x+offset ) )
 
 
-            # multiple iterations for the size of the matrix:
-            # ex: 18x8
-            # |   ||   ||   ||   |
-            # |   ||   ||   ||   |
-            # |   ||   ||   ||   |
-            #     8   16   24   32 
-            #
-            # 18+x / 8 = #of iterations
-            # (CR+4+x) / SF
+                # multiple iterations for the size of the matrix:
+                # ex: 18x8
+                # |   ||   ||   ||   |
+                # |   ||   ||   ||   |
+                # |   ||   ||   ||   |
+                #     8   16   24   32
+                #
+                # 18+x / 8 = #of iterations
+                # (CR+4+x) / SF
 
-            for y in range( 1, (self.CR+4+x) / self.SF +1 ):
+                for y in range( 1, (self.CR+4+x) / self.SF +1 ):
 
-                # concatenate the first iteration with each new iteration
-                aux= numpy.concatenate( ( aux, numpy.flipud( flipped_horiz.diagonal( y*self.SF-x+offset ) ) ), axis=0)
+                    # concatenate the first iteration with each new iteration
+                    aux= numpy.concatenate( ( aux, numpy.flipud( flipped_horiz.diagonal( y*self.SF-x+offset ) ) ), axis=0)
 
-            # concatenate vertically the auxilliar vectors
-            out_mat= numpy.vstack( (out_mat, aux) )
+                # concatenate vertically the auxilliar vectors
+                out_mat= numpy.vstack( (out_mat, aux) )
 
-        # print the output
-        print out_mat
+            # print the output
+            #print(out_mat)
 
-        # convert the output matrix into a vector
-        out_vect= out_mat.reshape(-1)
+            # convert the output matrix into a vector
+            out_vect = out_mat.reshape(-1)
 
-        # <+signal processing here+>
-        # For the moment, this block only copy input to output
-        out[:] = out_vect
+            # Put output vector into the output buffer
+            out[i*self.len_block:(i+1)*self.len_block] = out_vect
 
         #Tell GNURadio how many items were produced
         return len(output_items[0])
