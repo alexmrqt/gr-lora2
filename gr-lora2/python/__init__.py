@@ -44,6 +44,8 @@ from lora_interleaver import lora_interleaver
 from lora_deinterleaver import lora_deinterleaver
 from gray_encode import gray_encode
 from gray_decode import gray_decode
+from lora_hamming_decode import lora_hamming_decode
+
 
 
 

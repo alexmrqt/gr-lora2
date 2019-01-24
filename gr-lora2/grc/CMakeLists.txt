@@ -29,5 +29,6 @@ install(FILES
     lora2_lora_interleaver.xml
     lora2_lora_deinterleaver.xml
     lora2_gray_encode.xml
-    lora2_gray_decode.xml DESTINATION share/gnuradio/grc/blocks
+    lora2_gray_decode.xml
+    lora2_lora_hamming_decode.xml DESTINATION share/gnuradio/grc/blocks
 )

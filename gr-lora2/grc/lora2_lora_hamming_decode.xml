@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<block>
+  <name>LoRa Hamming Decode</name>
+  <key>lora2_lora_hamming_decode</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.lora_hamming_decode($CR)</make>
+  <param>
+    <name>CR</name>
+    <key>CR</key>
+    <type>int</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+</block>
