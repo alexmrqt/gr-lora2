@@ -43,55 +43,9 @@ class lora_deinterleaver(gr.sync_block):
         in0 = input_items[0]
         out = output_items[0]
 
-        # signal processing starts here -----
-
-        # input vector
-        input_vect= in0
-        print input_vect
-
-        # convert the vector into a matrix
-        input_mat= input_vect.reshape((self.CR+4,self.SF))
-
-        # print the input matrix
-        print input_mat
-
-        # transpose input matrix
-        transposed= numpy.transpose( input_mat )
-
-        # split matrix into row vectors
-        array= numpy.split( transposed, self.SF )
-
-        # placeholder for the concatenation
-        out_mat= numpy.array([], dtype=numpy.int).reshape(0,self.CR+4)
-
-        # shift index
-        i=0
-
-        # vector loop
-        for v in array:
-
-            # circular shift each vector by i
-            v= numpy.roll( v, i )
-
-            # store the vector in the new matrix
-            out_mat= numpy.vstack( (out_mat, v) )
-
-            # increse de shift index
-            i=i+1
-
-        # flip vertially the result matrix
-        out_mat= numpy.flipud( out_mat )
-
-        # print output
-        print out_mat
-
-        # vector version of the output
-        output_vect= out_mat.reshape(-1)
-        print output_vect
-
         # <+signal processing here+>
         # For the moment, this block only copy input to output
-        out[:] = output_vect
+        out[:] = in0
 
         #Tell GNURadio how many items were produced
         return len(output_items[0])
