@@ -22,76 +22,70 @@
 import numpy
 from gnuradio import gr
 
-class lora_deinterleaver(gr.sync_block):
+class lora_deinterleaver(gr.basic_block):
     """
     docstring for block lora_deinterleaver
     """
-    def __init__(self, SF, CR):
-        gr.sync_block.__init__(self,
+    def __init__(self, SF, CR, reduced_rate = False):
+        gr.basic_block.__init__(self,
             name="lora_deinterleaver",
-            in_sig=[numpy.int8],
+            in_sig=[numpy.int16],
             out_sig=[numpy.int8])
 
         #Storing arguments as attributes
         self.SF = SF
         self.CR = CR
+        self.reduced_rate = reduced_rate
 
-        #We want len(input_items) = len(output_items) = N*SF*CR
-        self.set_output_multiple(self.SF*self.CR)
+        #Length of one block of data
+        self.len_block_in = self.CR+4
 
-    def work(self, input_items, output_items):
+        #In reduced rate mode, two codewords are discarded from the output
+        #block.
+        self.len_block_out = self.SF * (self.CR+4)
+        if self.reduced_rate:
+            self.len_block_out = (self.SF-2) * (self.CR+4)
+
+        self.set_output_multiple(self.len_block_out)
+
+    def forecast(self, noutput_items, ninput_items_required):
+        #setup size of input_items[i] for work call
+        for i in range(len(ninput_items_required)):
+            n_blocks = noutput_items // self.len_block_out
+
+            ninput_items_required[i] = n_blocks * self.len_block_in
+
+    def general_work(self, input_items, output_items):
         in0 = input_items[0]
         out = output_items[0]
 
         # signal processing starts here -----
 
-        # input vector
-        input_vect= in0
-        print input_vect
+        # How many blocks should we produce?
+        n_blocks = min(len(in0) // self.len_block_in, len(out) // self.len_block_out)
 
-        # convert the vector into a matrix
-        input_mat= input_vect.reshape((self.CR+4,self.SF))
+        for j in range(0, n_blocks):
+            vect_short = in0[j*self.len_block_in:(j+1)*self.len_block_in]
+            vect_bin = [numpy.binary_repr(ele, self.SF) for ele in vect_short]
+            vect_bin = [numpy.frombuffer(ele.encode(), dtype='S1') for ele in vect_bin]
+            vect_bin = numpy.array(vect_bin).flatten()
 
-        # print the input matrix
-        print input_mat
+            mtx = numpy.flipud(vect_bin.reshape((self.CR+4, self.SF)).transpose())
+        
+            # In reduced rate mode, the last two line of the interleaving matrix
+            # are removed.
+            if self.reduced_rate:
+                mtx = mtx[:-2,:]
+                
+            #Cyclic shift each column of mtx by its column index
+            for i in range(0, mtx.shape[1]):
+                mtx[:,i] = numpy.roll(mtx[:,i], i)
 
-        # transpose input matrix
-        transposed= numpy.transpose( input_mat )
+            #Reverse column order
+            mtx = numpy.fliplr(mtx)
 
-        # split matrix into row vectors
-        array= numpy.split( transposed, self.SF )
+            # Put output vector into the output buffer
+            out[j*self.len_block_out:(j+1)*self.len_block_out] = mtx.flatten()
 
-        # placeholder for the concatenation
-        out_mat= numpy.array([], dtype=numpy.int).reshape(0,self.CR+4)
-
-        # shift index
-        i=0
-
-        # vector loop
-        for v in array:
-
-            # circular shift each vector by i
-            v= numpy.roll( v, i )
-
-            # store the vector in the new matrix
-            out_mat= numpy.vstack( (out_mat, v) )
-
-            # increse de shift index
-            i=i+1
-
-        # flip vertially the result matrix
-        out_mat= numpy.flipud( out_mat )
-
-        # print output
-        print out_mat
-
-        # vector version of the output
-        output_vect= out_mat.reshape(-1)
-        print output_vect
-
-        # <+signal processing here+>
-        # For the moment, this block only copy input to output
-        out[:] = output_vect
-
-        #Tell GNURadio how many items were produced
-        return len(output_items[0])
+        self.consume(0, n_blocks * self.len_block_in)
+        return n_blocks * self.len_block_out

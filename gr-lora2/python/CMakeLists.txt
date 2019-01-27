@@ -44,7 +44,8 @@ GR_PYTHON_INSTALL(
     lora_deinterleaver.py
     gray_encode.py
     gray_decode.py
-    lora_hamming_decode.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    lora_hamming_decode.py
+    lora_low_rate_opt_rx.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################
@@ -60,3 +61,4 @@ GR_ADD_TEST(qa_lora_deinterleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DI
 GR_ADD_TEST(qa_gray_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_encode.py)
 GR_ADD_TEST(qa_gray_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_decode.py)
 GR_ADD_TEST(qa_lora_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_decode.py)
+GR_ADD_TEST(qa_lora_low_rate_opt_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_rx.py)

@@ -63,7 +63,7 @@ class lora_interleaver(gr.sync_block):
             flipped_horiz= numpy.fliplr( input_mat )
 
             # placeholder for the concatenation
-            out_mat= numpy.array([], dtype=numpy.int).reshape(0,self.CR+4)
+            out_mat= numpy.array([], dtype=numpy.int8).reshape(0,self.CR+4)
 
             # non-square matrix offset
             offset= self.SF-(self.CR+4)

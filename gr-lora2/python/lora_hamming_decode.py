@@ -39,19 +39,19 @@ class lora_hamming_decode(gr.basic_block):
 
     def forecast(self, noutput_items, ninput_items_required):
         #How many block of data shall we produce?
-        n_blocks = noutput_items/4
+        n_blocks = noutput_items // 4
 
         ninput_items_required[0] = n_blocks * self.cw_len
 
     #Trivial decoder that only outputs the systematic part of the codeword
     def decode_one_block(self, data_block):
-        return data_block[0:4]
+        return data_block[-4:]
 
     def general_work(self, input_items, output_items):
         in0 = input_items[0]
 
         #How many blocks have we got in the input buffer / can we fit in the output buffer?
-        n_blocks = min(len(in0)/self.cw_len, len(output_items[0])/4)
+        n_blocks = min(len(in0)//self.cw_len, len(output_items[0])//4)
 
         #With this information, we can directly compute how many items will be
         #consumed and produced.
@@ -61,6 +61,9 @@ class lora_hamming_decode(gr.basic_block):
         for i in range(0, n_blocks):
             output_items[0][i*4:(i+1)*4] = self.decode_one_block(\
                     in0[i*self.cw_len:(i+1)*self.cw_len])
+
+        if len(in0) > 0:
+            print(output_items[0])
 
         self.consume(0, ninput_items_consumed)
         return noutput_items_produced
