@@ -62,8 +62,5 @@ class lora_hamming_decode(gr.basic_block):
             output_items[0][i*4:(i+1)*4] = self.decode_one_block(\
                     in0[i*self.cw_len:(i+1)*self.cw_len])
 
-        if len(in0) > 0:
-            print(output_items[0])
-
         self.consume(0, ninput_items_consumed)
         return noutput_items_produced

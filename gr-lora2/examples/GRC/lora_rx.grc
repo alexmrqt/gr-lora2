@@ -380,7 +380,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>7.5e3</value>
+      <value>0</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -618,14 +618,10 @@
     </param>
   </block>
   <block>
-    <key>blocks_null_sink</key>
+    <key>blocks_message_debug</key>
     <param>
       <key>alias</key>
       <value></value>
-    </param>
-    <param>
-      <key>bus_conns</key>
-      <value>[[0,],]</value>
     </param>
     <param>
       <key>comment</key>
@@ -641,27 +637,15 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(96, 784)</value>
+      <value>(88, 888)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>180</value>
+      <value>0</value>
     </param>
     <param>
       <key>id</key>
-      <value>blocks_null_sink_0</value>
-    </param>
-    <param>
-      <key>type</key>
-      <value>byte</value>
-    </param>
-    <param>
-      <key>num_inputs</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>vlen</key>
-      <value>1</value>
+      <value>blocks_message_debug_0_0</value>
     </param>
   </block>
   <block>
@@ -975,6 +959,53 @@
     <param>
       <key>minoutbuf</key>
       <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>lora2_lora_header_decode</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>check_crc</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(200, 772)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>180</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>lora2_lora_header_decode_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>SF</key>
+      <value>SF</value>
     </param>
   </block>
   <block>
@@ -3284,9 +3315,15 @@
   </connection>
   <connection>
     <source_block_id>lora2_lora_hamming_decode_0</source_block_id>
-    <sink_block_id>blocks_null_sink_0</sink_block_id>
+    <sink_block_id>lora2_lora_header_decode_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>lora2_lora_header_decode_0</source_block_id>
+    <sink_block_id>blocks_message_debug_0_0</sink_block_id>
+    <source_key>hdr</source_key>
+    <sink_key>print</sink_key>
   </connection>
   <connection>
     <source_block_id>lora2_lora_implicit_get_payload_0</source_block_id>

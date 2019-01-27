@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<block>
+  <name>LoRa Header Decode</name>
+  <key>lora2_lora_header_decode</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.lora_header_decode($SF, $check_crc)</make>
+
+  <param>
+    <name>SF</name>
+    <key>SF</key>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Check CRC</name>
+    <key>check_crc</key>
+    <type>bool</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+
+  <source>
+    <name>hdr</name>
+    <type>message</type>
+  </source>
+</block>

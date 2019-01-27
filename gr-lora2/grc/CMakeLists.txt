@@ -31,5 +31,6 @@ install(FILES
     lora2_gray_encode.xml
     lora2_gray_decode.xml
     lora2_lora_hamming_decode.xml
-    lora2_lora_low_rate_opt_rx.xml DESTINATION share/gnuradio/grc/blocks
+    lora2_lora_low_rate_opt_rx.xml
+    lora2_lora_header_decode.xml DESTINATION share/gnuradio/grc/blocks
 )
