@@ -49,6 +49,39 @@ def mtx_det_algo(A):
         
     return out
 
+def reduced_row_echelon_form(mtx):        
+    for i in range(0,mtx.shape[0]):
+        #Find lines with a 1 in column i
+        non0_indices = mtx[i:,i].nonzero()[0] + i
+        
+        if len(non0_indices) == 0:
+            raise Exception('reduced_row_echelon_form: Aborting.')
+        
+        pivot_row = mtx[non0_indices[0],:].copy()
+        
+        #Remove 1 in column (except where pivot where found)
+        for non0_idx in non0_indices[1:]:
+            mtx[non0_idx,:] = numpy.bitwise_xor(mtx[non0_idx,:], pivot_row)
+        
+        #Swap pivot line to ith line
+        mtx[non0_indices[0],:] = mtx[i,:]
+        mtx[i,:] = pivot_row
+    
+    return mtx
+
+def back_subtitution(u_mtx, b):
+    x = numpy.matrix(numpy.zeros(u_mtx.shape[0], dtype=numpy.int)).transpose()
+    x[-1] = b[-1]
+    for i in range(2, u_mtx.shape[0]):
+        x[-i] = b[-i] ^ mtx_mul_GF2(u_mtx[-i,-(i-1):], x[-(i-1):])[0,0]
+    
+    return x
+
+def solve_lin_system(A, b):
+    A = reduced_row_echelon_form(numpy.concatenate((A, b), axis=1))
+    
+    return back_subtitution(A[:,:-1], A[:,-1])
+
 def mtx_inv_algo(mtx):
     out = numpy.matrix(numpy.zeros(mtx.shape),dtype=numpy.int8)
     

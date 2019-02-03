@@ -8,7 +8,7 @@ Created on Fri Feb  1 16:17:16 2019
 
 import copy
 import numpy
-from gf2_utils import sum_GF2, mtx_mul_GF2, mtx_inv_GF2
+from gf2_utils import sum_GF2, solve_lin_system
 
 def lfsr(poly, seed, n_bits):
     sr = seed
@@ -37,38 +37,31 @@ def find_poly_lfsr(seq, L):
     for i in range(0, L):
         S[i,:] = seq[i:i+L]
     S = numpy.fliplr(numpy.flipud(S))
-    
-    #Invert S
-    invS = mtx_inv_GF2(S)
-    
+
     #Retrieve last vector of outputs
     s = numpy.flipud(numpy.matrix(seq[-L:]).transpose())
-    
-    #resolve equation to find polyniomial
-    return mtx_mul_GF2(invS, s).flatten()
 
-def search_poly_lfsr(seq, Lmin):
-    Lmax = len(seq)//2
+    #resolve equation to find polyniomial
+    return solve_lin_system(S, s).flatten()
+
+def search_poly_lfsr(seq, L):
+    print('search_poly_lfsr: trying with L = ' + str(L))
     
-    for L in range(Lmin,Lmax+1):
-        print('search_poly_lfsr: trying with L = ' + str(L))
+    #This estimate should be the same for all items in the sequence
+    try:
+        poly = find_poly_lfsr(seq[0:2*L], L)
+        for i in range(1,len(seq)-2*L):
+            seq_tmp = seq[i:i + 2*L]
+            can_poly = find_poly_lfsr(seq_tmp, L).tolist()
+            
+            if (can_poly != poly).any():
+                return
+
+    except Exception as e:
+        return
         
-        try:
-            #Initial estimate of the polyniomial
-            init_poly = find_poly_lfsr(seq[0:2*L], L)
-            
-#            #This estimate should be the same for all items in the sequence
-#            for i in range(1,len(seq)-2*L):
-#                seq_tmp = seq[i:i + 2*L]
-#                if (find_poly_lfsr(seq_tmp, L) != init_poly).any():
-#                    break
-            
-            print('search_poly_lfsr: found!')
-            return init_poly.tolist()[0]
-        except Exception as e:
-            continue
-    
-    print('search_poly_lfsr: no polyniomial found.')
+    print('search_poly_lfsr: found!')
+    return poly
 
 def construct_lfsr_trellis(poly):
     L = len(poly)
@@ -172,50 +165,56 @@ def search_seed_lfsr(trellis, seq):
         
         return -1
 
-def search_seed_lfsr2(poly, seq):
-    hq = []
+def search_seed_lfsr2(poly, seq, chunksize = 16):
     final_node = None
     
     L = len(poly)
     poly_int = 0
     for i in range(0, L):
         poly_int |= (poly[i])<<(L-i-1)
-
-    #Initialize
-    for i in range(0,2**L):
-        hq.append(Node(i, 0, None))
-    
-    #Search
-    while len(hq) != 0:
-        u_node = hq.pop()
         
-        next_output = u_node.state_id&0x01
-        xor = u_node.state_id&poly_int
-        next_input = 0
-        while xor != 0:
-            next_input ^= xor&0x01
-            xor >>= 1
+    #Splitting the problem in chunks to save memory...
+    n_chunk = int(numpy.ceil(2**(L-chunksize)))
+    for i in range(0, n_chunk):
+        #Initialize
+        #Nodes are stored as triplet (state_idx, time_idx, predecessor_idx)
+        state_start = i*2**chunksize
+        state_end = min((i+1)*2**chunksize, 2**L)
+        hq = [(i, 0, None) for i in range(state_start, state_end)]
         
-        next_state_id = (u_node.state_id>>1)|(next_input<<(L-1))
-        
-        #If state is not useless (leading to itself), and distance is 0
-        if (next_state_id != u_node.state_id) and (next_output ^ seq[u_node.time_idx] == 0):
-            v_node = Node(next_state_id, u_node.time_idx + 1, u_node)       
-            hq.append(v_node)
+        #Search
+        while len(hq) != 0:
+            u_node = hq.pop()
             
-            if v_node.time_idx == (len(seq) - 1):
-                final_node = v_node
-                break
+            #If next output matches the sequence
+            if seq[u_node[1]] == (u_node[0]&0x01):
+                next_input = 0
+                xor = u_node[0]&poly_int
+                while xor != 0:
+                    next_input ^= xor&0x01
+                    xor >>= 1
+                
+                next_state_id = (u_node[0]>>1)|(next_input<<(L-1))
+                
+                #If state is not useless (leading to itself)
+                if next_state_id != u_node[0]:
+                    v_node = (next_state_id, u_node[1] + 1, u_node)
+                    hq.append(v_node)
+                    
+                    if v_node[1] == (len(seq) - 1):
+                        final_node = v_node
+                        break
+        
+        #Traceback
+        if final_node is not None:
+            node = final_node
+            
+            while node[2] is not None:
+                node = node[2]
+            
+            return node[0]
+        elif i < (n_chunk - 1):
+            print('search_seed_lfsr: chunk ' + str(i+1) + '/' + str(n_chunk))
     
-    #Traceback
-    if final_node is not None:
-        node = final_node
-        
-        while node.pred is not None:
-            node = node.pred
-        
-        return node.state_id
-    else:
-        print('search_seed_lfsr: cannot find a seed with given sequence.')
-        
-        return -1
+    print('search_seed_lfsr: cannot find a seed with given sequence.')    
+    return -1
