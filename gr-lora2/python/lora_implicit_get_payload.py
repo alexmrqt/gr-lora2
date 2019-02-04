@@ -27,13 +27,20 @@ class lora_implicit_get_payload(gr.basic_block):
     """
     docstring for block lora_implicit_get_payload
     """
-    def __init__(self, payload_len):
+    def __init__(self, payload_len, CR, has_crc):
         gr.basic_block.__init__(self,
             name="lora_implicit_get_payload",
             in_sig=[numpy.int16],
             out_sig=[numpy.int16])
 
         self.payload_len = payload_len
+
+        #Compute length as number of LoRa symbols
+        n_bits = (payload_len + 2*has_crc) * 8
+        #Number of bits before hamming coding
+        n_bits *= (4+CR)/4 #Number of bits after hamming coding
+        #There is SF bits per symbol
+        self.n_syms = int(numpy.ceil(float(n_bits)/self.SF))
         self.set_output_multiple(payload_len)
 
 
@@ -43,7 +50,6 @@ class lora_implicit_get_payload(gr.basic_block):
             ninput_items_required[i] = noutput_items
 
     def general_work(self, input_items, output_items):
-        #output_items[0][:] = input_items[0]
         in0 = input_items[0]
         tags = self.get_tags_in_window(0, 0, len(in0), pmt.intern('pkt_start'))
 
@@ -56,16 +62,22 @@ class lora_implicit_get_payload(gr.basic_block):
 
         for i in range(0, len(tags)):
             in0_start_idx = tags[i].offset - self.nitems_read(0)
-            in0_stop_idx = in0_start_idx + self.payload_len - 1
-            out0_stop_idx = out0_ptr + self.payload_len - 1
+            in0_stop_idx = in0_start_idx + self.n_syms - 1
+            out0_stop_idx = out0_ptr + self.n_syms - 1
 
             #If we have a full payload, that fits into the output buffer
             if out0_stop_idx < len_out0 and in0_stop_idx < len_in0:
                 output_items[0][out0_ptr:(out0_stop_idx+1)] = \
                         in0[in0_start_idx:(in0_stop_idx+1)]
 
-                out0_ptr += self.payload_len
-                noutput_produced += self.payload_len
+                #Add a packet_len tag to the begining of the packet
+                tag_offset = out0_ptr + self.nitems_written(0)
+                tag_key = pmt.intern('packet_len')
+                tag_value = pmt.from_long(self.payload_len)
+                self.add_item_tag(0, tag_offset, tag_key, tag_value)
+
+                out0_ptr += self.n_syms
+                noutput_produced += self.n_syms
                 ninput_consumed = in0_stop_idx
             #Else, drop every input symbols up to the payload start
             else:
