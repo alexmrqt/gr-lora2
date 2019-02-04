@@ -148,25 +148,32 @@ def decode_hdr(vect, SF):
 SF=9
 CR=4
 
-#File containing the packet
-f = scipy.fromfile(open("capture_Ping_4_8.raw"), dtype=scipy.uint16)
-#f = scipy.fromfile(open("capture_Ping_4_7.raw"), dtype=scipy.uint16)
-#f = f[0:SF*10]
-#f = scipy.fromfile(open("capture_Ping_4_6.raw"), dtype=scipy.uint16)
-#f = f[1:SF*10]
-#f = scipy.fromfile(open("capture_Ping_4_5.raw"), dtype=scipy.uint16)
-#f = scipy.fromfile(open("capture_rndm1_4_8.raw"), dtype=scipy.uint16)
-#f = scipy.fromfile(open("capture_rndm2_4_8.raw"), dtype=scipy.uint16)
-#f = scipy.fromfile(open("capture_rndm3_4_8.raw"), dtype=scipy.uint16)
-#f = scipy.fromfile(open("capture_rndm4_4_8.raw"), dtype=scipy.uint16)
-#f = scipy.fromfile(open("capture_rndm5_4_8.raw"), dtype=scipy.uint16)
-#f = scipy.fromfile(open("capture_rndm6_4_8.raw"), dtype=scipy.uint16)
-#f = scipy.fromfile(open("capture_rndm7_4_8.raw"), dtype=scipy.uint16)
-#f = scipy.fromfile(open("capture_rndm8_4_8.raw"), dtype=scipy.uint16)
-#f = scipy.fromfile(open("capture_rndm9_4_8.raw"), dtype=scipy.uint16)
-#f = scipy.fromfile(open("capture_rndm13_4_8.raw"), dtype=scipy.uint16)
-#f = f[0:SF*10]
+##File containing the header
+#f = scipy.fromfile(open("capture_Ping_4_8.raw"), dtype=scipy.uint16)
+##f = scipy.fromfile(open("capture_Ping_4_7.raw"), dtype=scipy.uint16)
+##f = f[0:SF*10]
+##f = scipy.fromfile(open("capture_Ping_4_6.raw"), dtype=scipy.uint16)
+##f = f[1:SF*10]
+##f = scipy.fromfile(open("capture_Ping_4_5.raw"), dtype=scipy.uint16)
+##f = scipy.fromfile(open("capture_rndm1_4_8.raw"), dtype=scipy.uint16)
+##f = scipy.fromfile(open("capture_rndm2_4_8.raw"), dtype=scipy.uint16)
+##f = scipy.fromfile(open("capture_rndm3_4_8.raw"), dtype=scipy.uint16)
+##f = scipy.fromfile(open("capture_rndm4_4_8.raw"), dtype=scipy.uint16)
+##f = scipy.fromfile(open("capture_rndm5_4_8.raw"), dtype=scipy.uint16)
+##f = scipy.fromfile(open("capture_rndm6_4_8.raw"), dtype=scipy.uint16)
+##f = scipy.fromfile(open("capture_rndm7_4_8.raw"), dtype=scipy.uint16)
+##f = scipy.fromfile(open("capture_rndm8_4_8.raw"), dtype=scipy.uint16)
+##f = scipy.fromfile(open("capture_rndm9_4_8.raw"), dtype=scipy.uint16)
+##f = scipy.fromfile(open("capture_rndm13_4_8.raw"), dtype=scipy.uint16)
+##f = f[0:SF*10]
+#
+#rest = decode_hdr(f, SF)
+#print('Remaining bits in header')
+#print(rest)
 
-rest = decode_hdr(f, SF)
-print('Remaining bits in header')
-print(rest)
+#File containing the payload
+f = scipy.fromfile(open("capture_zeros_4_8.raw"), dtype=scipy.uint8)
+print(numpy.packbits(f))
+
+f1=numpy.concatenate(([1,1,1,1,1,1,1,1],f))
+print(numpy.packbits(f1))

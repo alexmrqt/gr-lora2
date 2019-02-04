@@ -105,7 +105,34 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(256, 12)</value>
+      <value>(128, 772)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>CR</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>4</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(392, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -132,7 +159,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 172)</value>
+      <value>(112, 92)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -159,7 +186,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(128, 172)</value>
+      <value>(232, 92)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -186,7 +213,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(184, 12)</value>
+      <value>(320, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -213,7 +240,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(432, 12)</value>
+      <value>(568, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -244,7 +271,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(920, 0)</value>
+      <value>(1136, 0)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -303,7 +330,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(336, 12)</value>
+      <value>(472, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -330,7 +357,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(640, 12)</value>
+      <value>(776, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -357,7 +384,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(536, 12)</value>
+      <value>(672, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -373,69 +400,6 @@
     </param>
   </block>
   <block>
-    <key>variable_qtgui_range</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(352, 176)</value>
-    </param>
-    <param>
-      <key>gui_hint</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>coarse_freq_adjust</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value></value>
-    </param>
-    <param>
-      <key>min_len</key>
-      <value>200</value>
-    </param>
-    <param>
-      <key>orient</key>
-      <value>Qt.Horizontal</value>
-    </param>
-    <param>
-      <key>start</key>
-      <value>-RF_samp_rate/2</value>
-    </param>
-    <param>
-      <key>step</key>
-      <value>2.0</value>
-    </param>
-    <param>
-      <key>stop</key>
-      <value>RF_samp_rate/2</value>
-    </param>
-    <param>
-      <key>rangeType</key>
-      <value>float</value>
-    </param>
-    <param>
-      <key>widget</key>
-      <value>counter_slider</value>
-    </param>
-  </block>
-  <block>
     <key>variable</key>
     <param>
       <key>comment</key>
@@ -447,7 +411,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(744, 12)</value>
+      <value>(880, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -474,7 +438,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(264, 84)</value>
+      <value>(976, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -501,7 +465,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(336, 84)</value>
+      <value>(1048, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -528,7 +492,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(8, 96)</value>
+      <value>(8, 92)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -563,7 +527,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(464, 508)</value>
+      <value>(600, 324)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -587,38 +551,11 @@
     </param>
   </block>
   <block>
-    <key>blocks_message_debug</key>
+    <key>blocks_file_sink</key>
     <param>
-      <key>alias</key>
-      <value></value>
+      <key>append</key>
+      <value>False</value>
     </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(1144, 248)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>blocks_message_debug_0</value>
-    </param>
-  </block>
-  <block>
-    <key>blocks_message_debug</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -636,8 +573,12 @@
       <value>1</value>
     </param>
     <param>
+      <key>file</key>
+      <value>/home/amarquet/Documents/postdoc-imt/projets-S5/2018/sdr/emetteur-recepteur-lora-sdr/scripts/capture_zeros_4_7.raw</value>
+    </param>
+    <param>
       <key>_coordinate</key>
-      <value>(88, 888)</value>
+      <value>(552, 924)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -645,7 +586,235 @@
     </param>
     <param>
       <key>id</key>
-      <value>blocks_message_debug_0_0</value>
+      <value>blocks_file_sink_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>byte</value>
+    </param>
+    <param>
+      <key>unbuffered</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_message_debug</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1120, 744)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_message_debug_0</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_null_sink</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>bus_conns</key>
+      <value>[[0,],]</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(776, 880)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_null_sink_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>byte</value>
+    </param>
+    <param>
+      <key>num_inputs</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_tag_debug</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>display</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(608, 244)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_tag_debug_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>complex</value>
+    </param>
+    <param>
+      <key>filter</key>
+      <value>""</value>
+    </param>
+    <param>
+      <key>name</key>
+      <value></value>
+    </param>
+    <param>
+      <key>num_inputs</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>vlen</key>
+      <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>digital_header_payload_demux</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(520, 476)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>guard_interval</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>header_len</key>
+      <value>8</value>
+    </param>
+    <param>
+      <key>header_padding</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>digital_header_payload_demux_0</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>short</value>
+    </param>
+    <param>
+      <key>items_per_symbol</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>length_tag_key</key>
+      <value>"packet_len_syms"</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>output_symbols</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>samp_rate</key>
+      <value>samp_rate</value>
+    </param>
+    <param>
+      <key>special_tags</key>
+      <value>()</value>
+    </param>
+    <param>
+      <key>timing_tag_key</key>
+      <value></value>
+    </param>
+    <param>
+      <key>trigger_tag_key</key>
+      <value>"pkt_start"</value>
     </param>
   </block>
   <block>
@@ -656,7 +825,7 @@
     </param>
     <param>
       <key>center_freq</key>
-      <value>-freq_offset+coarse_freq_adjust</value>
+      <value>-freq_offset</value>
     </param>
     <param>
       <key>comment</key>
@@ -676,7 +845,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(248, 344)</value>
+      <value>(400, 152)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -727,7 +896,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(752, 652)</value>
+      <value>(848, 396)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -766,7 +935,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(104, 96)</value>
+      <value>(192, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -809,7 +978,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(464, 644)</value>
+      <value>(568, 388)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -848,15 +1017,54 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(848, 784)</value>
+      <value>(408, 688)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>180</value>
+      <value>0</value>
     </param>
     <param>
       <key>id</key>
       <value>lora2_gray_encode_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>lora2_gray_encode</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(240, 880)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>lora2_gray_encode_0_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -891,11 +1099,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(624, 764)</value>
+      <value>(544, 668)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>180</value>
+      <value>0</value>
     </param>
     <param>
       <key>id</key>
@@ -912,6 +1120,57 @@
     <param>
       <key>reduced_rate</key>
       <value>True</value>
+    </param>
+    <param>
+      <key>SF</key>
+      <value>SF</value>
+    </param>
+  </block>
+  <block>
+    <key>lora2_lora_deinterleaver</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>CR</key>
+      <value>3</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(376, 860)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>lora2_lora_deinterleaver_0_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>reduced_rate</key>
+      <value>False</value>
     </param>
     <param>
       <key>SF</key>
@@ -942,15 +1201,58 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(400, 780)</value>
+      <value>(712, 684)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>180</value>
+      <value>0</value>
     </param>
     <param>
       <key>id</key>
       <value>lora2_lora_hamming_decode_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>lora2_lora_hamming_decode</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>CR</key>
+      <value>CR</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(552, 876)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>lora2_lora_hamming_decode_0_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -985,11 +1287,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(200, 772)</value>
+      <value>(912, 676)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>180</value>
+      <value>0</value>
     </param>
     <param>
       <key>id</key>
@@ -1006,49 +1308,6 @@
     <param>
       <key>SF</key>
       <value>SF</value>
-    </param>
-  </block>
-  <block>
-    <key>lora2_lora_implicit_get_payload</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(968, 652)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>lora2_lora_implicit_get_payload_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>payload_len</key>
-      <value>8</value>
     </param>
   </block>
   <block>
@@ -1071,11 +1330,11 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1000, 784)</value>
+      <value>(184, 688)</value>
     </param>
     <param>
       <key>_rotation</key>
-      <value>180</value>
+      <value>0</value>
     </param>
     <param>
       <key>id</key>
@@ -1110,7 +1369,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(224, 644)</value>
+      <value>(352, 388)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1134,97 +1393,6 @@
     </param>
     <param>
       <key>SF</key>
-      <value>SF</value>
-    </param>
-  </block>
-  <block>
-    <key>lora_lora_receiver</key>
-    <param>
-      <key>bandwidth</key>
-      <value>chan_bw</value>
-    </param>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>crc</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>center_freq</key>
-      <value>chan_freq</value>
-    </param>
-    <param>
-      <key>channel_list</key>
-      <value>[chan_freq]</value>
-    </param>
-    <param>
-      <key>cr</key>
-      <value>4</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>conj</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>decimation</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>disable_channelization</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>disable_drift_correction</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(936, 200)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>lora_lora_receiver_0</value>
-    </param>
-    <param>
-      <key>implicit</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>reduced_rate</key>
-      <value>False</value>
-    </param>
-    <param>
-      <key>samp_rate</key>
-      <value>chan_bw*interp</value>
-    </param>
-    <param>
-      <key>sf</key>
       <value>SF</value>
     </param>
   </block>
@@ -1264,7 +1432,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(720, 320)</value>
+      <value>(856, 128)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2607,7 +2775,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(16, 468)</value>
+      <value>(0, 156)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2750,7 +2918,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(40, 272)</value>
+      <value>(0, 328)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2833,7 +3001,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(688, 488)</value>
+      <value>(824, 304)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -3192,7 +3360,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(512, 344)</value>
+      <value>(664, 152)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3235,7 +3403,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(944, 364)</value>
+      <value>(1096, 172)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3244,6 +3412,141 @@
     <param>
       <key>id</key>
       <value>virtual_sink_0</value>
+    </param>
+    <param>
+      <key>stream_id</key>
+      <value>filtered_sig</value>
+    </param>
+  </block>
+  <block>
+    <key>virtual_sink</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(816, 516)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>virtual_sink_1</value>
+    </param>
+    <param>
+      <key>stream_id</key>
+      <value>to_hdr_demod</value>
+    </param>
+  </block>
+  <block>
+    <key>virtual_sink</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1120, 684)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>virtual_sink_2</value>
+    </param>
+    <param>
+      <key>stream_id</key>
+      <value>hdr_data</value>
+    </param>
+  </block>
+  <block>
+    <key>virtual_sink</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1056, 396)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>virtual_sink_3</value>
+    </param>
+    <param>
+      <key>stream_id</key>
+      <value>demod_syms</value>
+    </param>
+  </block>
+  <block>
+    <key>virtual_sink</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(968, 548)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>virtual_sink_4</value>
+    </param>
+    <param>
+      <key>stream_id</key>
+      <value>to_payload_demod</value>
+    </param>
+  </block>
+  <block>
+    <key>virtual_source</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(184, 396)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>virtual_source_0</value>
     </param>
     <param>
       <key>stream_id</key>
@@ -3262,7 +3565,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(32, 652)</value>
+      <value>(0, 684)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -3270,17 +3573,110 @@
     </param>
     <param>
       <key>id</key>
-      <value>virtual_source_0</value>
+      <value>virtual_source_1</value>
     </param>
     <param>
       <key>stream_id</key>
-      <value>filtered_sig</value>
+      <value>to_hdr_demod</value>
+    </param>
+  </block>
+  <block>
+    <key>virtual_source</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(320, 564)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>virtual_source_2</value>
+    </param>
+    <param>
+      <key>stream_id</key>
+      <value>hdr_data</value>
+    </param>
+  </block>
+  <block>
+    <key>virtual_source</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(312, 500)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>virtual_source_3</value>
+    </param>
+    <param>
+      <key>stream_id</key>
+      <value>demod_syms</value>
+    </param>
+  </block>
+  <block>
+    <key>virtual_source</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(32, 876)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>virtual_source_4</value>
+    </param>
+    <param>
+      <key>stream_id</key>
+      <value>to_payload_demod</value>
     </param>
   </block>
   <connection>
     <source_block_id>analog_quadrature_demod_cf_0</source_block_id>
     <sink_block_id>qtgui_time_sink_x_1</sink_block_id>
     <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>digital_header_payload_demux_0</source_block_id>
+    <sink_block_id>virtual_sink_1</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>digital_header_payload_demux_0</source_block_id>
+    <sink_block_id>virtual_sink_4</sink_block_id>
+    <source_key>1</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
@@ -3291,7 +3687,7 @@
   </connection>
   <connection>
     <source_block_id>grc_css_demod_0</source_block_id>
-    <sink_block_id>lora2_lora_implicit_get_payload_0</sink_block_id>
+    <sink_block_id>virtual_sink_3</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -3308,8 +3704,26 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>lora2_gray_encode_0_0</source_block_id>
+    <sink_block_id>lora2_lora_deinterleaver_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>lora2_lora_deinterleaver_0</source_block_id>
     <sink_block_id>lora2_lora_hamming_decode_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>lora2_lora_deinterleaver_0_0</source_block_id>
+    <sink_block_id>blocks_file_sink_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>lora2_lora_deinterleaver_0_0</source_block_id>
+    <sink_block_id>lora2_lora_hamming_decode_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -3320,16 +3734,22 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
+    <source_block_id>lora2_lora_hamming_decode_0_0</source_block_id>
+    <sink_block_id>blocks_null_sink_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
     <source_block_id>lora2_lora_header_decode_0</source_block_id>
-    <sink_block_id>blocks_message_debug_0_0</sink_block_id>
+    <sink_block_id>blocks_message_debug_0</sink_block_id>
     <source_key>hdr</source_key>
     <sink_key>print</sink_key>
   </connection>
   <connection>
-    <source_block_id>lora2_lora_implicit_get_payload_0</source_block_id>
-    <sink_block_id>lora2_lora_low_rate_opt_rx_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
+    <source_block_id>lora2_lora_header_decode_0</source_block_id>
+    <sink_block_id>virtual_sink_2</sink_block_id>
+    <source_key>hdr</source_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>lora2_lora_low_rate_opt_rx_0</source_block_id>
@@ -3345,15 +3765,15 @@
   </connection>
   <connection>
     <source_block_id>lora2_lora_preamble_detect_0_0</source_block_id>
-    <sink_block_id>lora2_freq_xlating_0</sink_block_id>
+    <sink_block_id>blocks_tag_debug_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>lora_lora_receiver_0</source_block_id>
-    <sink_block_id>blocks_message_debug_0</sink_block_id>
-    <source_key>frames</source_key>
-    <sink_key>print</sink_key>
+    <source_block_id>lora2_lora_preamble_detect_0_0</source_block_id>
+    <sink_block_id>lora2_freq_xlating_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
   </connection>
   <connection>
     <source_block_id>low_pass_filter_0</source_block_id>
@@ -3375,12 +3795,6 @@
   </connection>
   <connection>
     <source_block_id>rational_resampler_xxx_0</source_block_id>
-    <sink_block_id>lora_lora_receiver_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>rational_resampler_xxx_0</source_block_id>
     <sink_block_id>low_pass_filter_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
@@ -3388,6 +3802,30 @@
   <connection>
     <source_block_id>virtual_source_0</source_block_id>
     <sink_block_id>lora2_lora_preamble_detect_0_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>virtual_source_1</source_block_id>
+    <sink_block_id>lora2_lora_low_rate_opt_rx_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>virtual_source_2</source_block_id>
+    <sink_block_id>digital_header_payload_demux_0</sink_block_id>
+    <source_key>out</source_key>
+    <sink_key>header_data</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>virtual_source_3</source_block_id>
+    <sink_block_id>digital_header_payload_demux_0</sink_block_id>
+    <source_key>0</source_key>
+    <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>virtual_source_4</source_block_id>
+    <sink_block_id>lora2_gray_encode_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

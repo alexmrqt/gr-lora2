@@ -41,6 +41,7 @@ class lora_header_decode(gr.sync_block):
         # after decoding.
         self.len_block = (SF-2) * 4
         self.check_crc = check_crc
+        self.SF = SF
 
         self.message_port_register_out(pmt.intern("hdr"))
 
@@ -81,10 +82,17 @@ class lora_header_decode(gr.sync_block):
             has_crc = (numpy.packbits(vect[11])>>7)[0]
             rem_bits = vect[20:].tolist()
 
+            #Compute length as number of LoRa symbols
+            n_bits = (length + 2*has_crc) * 8 #Number of bits before hamming coding
+            n_bits *= (4+CR)/4 #Number of bits after hamming coding
+            n_syms = int(numpy.ceil(float(n_bits)/self.SF)) #There is SF bits per symbol
+
             #Construct message
             out_msg = pmt.make_dict()
             out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len'),
                     pmt.from_long(long(length)))
+            out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len_syms'),
+                    pmt.from_long(long(n_syms)))
             out_msg = pmt.dict_add(out_msg, pmt.intern('CR'),
                     pmt.from_long(long(CR)))
             if has_crc:
