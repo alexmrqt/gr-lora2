@@ -29,8 +29,8 @@ class lora_deinterleaver(gr.basic_block):
     def __init__(self, SF, CR, reduced_rate = False):
         gr.basic_block.__init__(self,
             name="lora_deinterleaver",
-            in_sig=[numpy.int16],
-            out_sig=[numpy.int8])
+            in_sig=[numpy.uint16],
+            out_sig=[numpy.uint8])
 
         #Storing arguments as attributes
         self.SF = SF
@@ -40,9 +40,9 @@ class lora_deinterleaver(gr.basic_block):
         #Length of one block of data
         self.len_block_in = self.CR+4
 
+        self.len_block_out = self.SF * (self.CR+4)
         #In reduced rate mode, two codewords are discarded from the output
         #block.
-        self.len_block_out = self.SF * (self.CR+4)
         if self.reduced_rate:
             self.len_block_out = (self.SF-2) * (self.CR+4)
 

@@ -22,86 +22,78 @@
 import numpy
 from gnuradio import gr
 
-class lora_interleaver(gr.sync_block):
+class lora_interleaver(gr.basic_block):
     """
     docstring for block lora_interleaver
     """
-    def __init__(self, SF, CR):
-        gr.sync_block.__init__(self,
+    def __init__(self, SF, CR, reduced_rate = False):
+        gr.basic_block.__init__(self,
             name="lora_interleaver",
-            in_sig=[numpy.int8],
-            out_sig=[numpy.int8])
+            in_sig=[numpy.uint8],
+            out_sig=[numpy.uint16])
 
         #Storing arguments as attributes
         self.SF = SF
         self.CR = CR
+        self.reduced_rate = reduced_rate
+
+        #For binary to short conversion
+        self.base2 = [2**i  for i in range(SF-1, -1, -1)]
+        #self.base2 = [2**i  for i in range(0, SF)]
 
         #Length of one block of data
-        self.len_block = self.SF * (self.CR+4)
+        self.len_block_in = self.SF * (self.CR+4)
+        #In reduced rate mode, we need two codeword less
+        if self.reduced_rate:
+            self.len_block_in = (self.SF-2) * (self.CR+4)
 
-        #We want len(input_items) = len(output_items) = N*SF*(CR+4)
-        self.set_output_multiple(self.len_block)
+        self.len_block_out = self.CR+4
 
-    def work(self, input_items, output_items):
+        self.set_output_multiple(self.len_block_out)
+
+    def forecast(self, noutput_items, ninput_items_required):
+        #setup size of input_items[i] for work call
+        for i in range(len(ninput_items_required)):
+            n_blocks = noutput_items // self.len_block_out
+
+            ninput_items_required[i] = n_blocks * self.len_block_in
+
+    def general_work(self, input_items, output_items):
         in0 = input_items[0]
         out = output_items[0]
 
         # signal processing starts here -----
 
-        # How many blocks of SF * (CR+4) in in0?
-        n_blocks = len(in0) / self.len_block
+        # How many blocks should we produce?
+        n_blocks = min(len(in0) // self.len_block_in, len(out) // self.len_block_out)
 
-        for i in range(0, n_blocks):
-            # convert the vector into a matrix
-            input_vect = in0[i*self.len_block:(i+1)*self.len_block]
-            input_mat = input_vect.reshape((self.CR+4, self.SF))
+        for j in range(0, n_blocks):
+            vect_bin = in0[j*self.len_block_in:(j+1)*self.len_block_in]
 
-            # print the input matrix
-            #print(input_mat)
+            # In reduced rate mode, the last two line of the interleaving matrix
+            # will be padded with zeros.
+            if self.reduced_rate:
+                mtx = numpy.array(vect_bin).reshape(((self.SF-2), self.CR+4))
+            else:
+                mtx = numpy.array(vect_bin).reshape((self.SF, self.CR+4))
 
-            # flipping horizontally the input matrix
-            flipped_horiz= numpy.fliplr( input_mat )
+            #Reverse column order
+            mtx = numpy.fliplr(mtx)
 
-            # placeholder for the concatenation
-            out_mat= numpy.array([], dtype=numpy.int8).reshape(0,self.CR+4)
+            #Cyclic shift each column of mtx by its column index
+            for i in range(0, mtx.shape[1]):
+                mtx[:,i] = numpy.roll(mtx[:,i], -i)
 
-            # non-square matrix offset
-            offset= self.SF-(self.CR+4)
+            #Add two all-zeros lines in reduced rate mode
+            if self.reduced_rate:
+                mtx = numpy.concatenate( (mtx, numpy.zeros((2, self.CR+4))) )
 
-            # diagonal concatenation
-            for x in range( 0, self.SF ):
+            mtx = numpy.flipud(mtx)
 
-                # auxiliar variable for the first iteration
-                # aux= numpy.flip( flipped_horiz.diagonal( -x+offset ), 0 )
-                aux= numpy.flipud( flipped_horiz.diagonal( -x+offset ) )
-
-
-                # multiple iterations for the size of the matrix:
-                # ex: 18x8
-                # |   ||   ||   ||   |
-                # |   ||   ||   ||   |
-                # |   ||   ||   ||   |
-                #     8   16   24   32
-                #
-                # 18+x / 8 = #of iterations
-                # (CR+4+x) / SF
-
-                for y in range( 1, (self.CR+4+x) / self.SF +1 ):
-
-                    # concatenate the first iteration with each new iteration
-                    aux= numpy.concatenate( ( aux, numpy.flipud( flipped_horiz.diagonal( y*self.SF-x+offset ) ) ), axis=0)
-
-                # concatenate vertically the auxilliar vectors
-                out_mat= numpy.vstack( (out_mat, aux) )
-
-            # print the output
-            #print(out_mat)
-
-            # convert the output matrix into a vector
-            out_vect = out_mat.reshape(-1)
-
-            # Put output vector into the output buffer
-            out[i*self.len_block:(i+1)*self.len_block] = out_vect
+            #Convert to binary scalar
+            out[j*self.len_block_out:(j+1)*self.len_block_out] = \
+                    numpy.dot(self.base2, mtx)
 
         #Tell GNURadio how many items were produced
+        self.consume(0, n_blocks * self.len_block_in)
         return len(output_items[0])

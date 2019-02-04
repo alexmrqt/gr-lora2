@@ -4,7 +4,7 @@
   <key>lora2_lora_interleaver</key>
   <category>[lora2]</category>
   <import>import lora2</import>
-  <make>lora2.lora_interleaver($SF, $CR)</make>
+  <make>lora2.lora_interleaver($SF, $CR, $reduced_rate)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
@@ -20,6 +20,12 @@
     <name>CR</name>
     <key>CR</key>
     <type>int</type>
+  </param>
+
+  <param>
+    <name>Reduced rate</name>
+    <key>reduced_rate</key>
+    <type>bool</type>
   </param>
 
   <!-- Make one 'sink' node per input. Sub-nodes:
@@ -39,6 +45,6 @@
        * optional (set to 1 for optional inputs) -->
   <source>
     <name>out</name>
-    <type>byte</type>
+    <type>short</type>
   </source>
 </block>
