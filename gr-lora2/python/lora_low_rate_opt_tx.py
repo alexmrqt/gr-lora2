@@ -22,13 +22,13 @@
 import numpy
 from gnuradio import gr
 
-class lora_low_rate_opt_rx(gr.sync_block):
+class lora_low_rate_opt_tx(gr.sync_block):
     """
-    docstring for block lora_low_rate_opt_rx
+    docstring for block lora_low_rate_opt_tx
     """
     def __init__(self):
         gr.sync_block.__init__(self,
-            name="lora_low_rate_opt_rx",
+            name="lora_low_rate_opt_tx",
             in_sig=[numpy.uint16],
             out_sig=[numpy.uint16])
 
@@ -37,6 +37,6 @@ class lora_low_rate_opt_rx(gr.sync_block):
         in0 = input_items[0]
         out = output_items[0]
 
-        out[:] = numpy.right_shift(in0, 2)
+        out[:] = numpy.left_shift(in0, 2)
 
         return len(output_items[0])

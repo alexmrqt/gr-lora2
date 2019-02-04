@@ -19,24 +19,23 @@
 # Boston, MA 02110-1301, USA.
 # 
 
-import numpy
-from gnuradio import gr
-
-class lora_low_rate_opt_rx(gr.sync_block):
-    """
-    docstring for block lora_low_rate_opt_rx
-    """
-    def __init__(self):
-        gr.sync_block.__init__(self,
-            name="lora_low_rate_opt_rx",
-            in_sig=[numpy.uint16],
-            out_sig=[numpy.uint16])
+from gnuradio import gr, gr_unittest
+from gnuradio import blocks
+from lora_lfsr import lora_lfsr
 
 
-    def work(self, input_items, output_items):
-        in0 = input_items[0]
-        out = output_items[0]
+class qa_lora_whiten(gr_unittest.TestCase):
+    def setUp(self):
+        self.tb = gr.top_block()
 
-        out[:] = numpy.right_shift(in0, 2)
+    def tearDown(self):
+        self.tb = None
 
-        return len(output_items[0])
+    def test_001_t(self):
+        # set up fg
+        self.tb.run()
+        # check data
+
+
+if __name__ == '__main__':
+    gr_unittest.run(qa_lora_whiten, "qa_lora_whiten.xml")
