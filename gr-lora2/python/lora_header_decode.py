@@ -90,7 +90,7 @@ class lora_header_decode(gr.sync_block):
             #Construct message
             out_msg = pmt.make_dict()
             out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len'),
-                    pmt.from_long(long(length)))
+                    pmt.from_long(long(length + 2*has_crc)))
             out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len_syms'),
                     pmt.from_long(long(n_syms)))
             out_msg = pmt.dict_add(out_msg, pmt.intern('CR'),
