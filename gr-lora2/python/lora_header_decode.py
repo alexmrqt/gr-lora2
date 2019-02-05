@@ -53,10 +53,43 @@ class lora_header_decode(gr.sync_block):
         res[3] = numpy.sum(vect[[0,1,2,3]])%2
         res[4] = numpy.sum(vect[[0,4,5,6,11]])%2
         res[5] = numpy.sum(vect[[1,4,7,8,10]])%2
-        res[6] = numpy.sum(vect[[1,5,6,9,10,11]])%2
+        res[6] = numpy.sum(vect[[2,5,7,9,10,11]])%2
         res[7] = numpy.sum(vect[[3,6,8,9,10,11]])%2
 
         return res
+
+    def compute_fields(self, vect):
+        #Retrieve fields
+        length = numpy.packbits(vect[0:8])[0]
+        CR = (numpy.packbits(vect[8:11])>>5)[0]
+        has_crc = (numpy.packbits(vect[11])>>7)[0]
+        rem_bits = vect[20:].tolist()
+
+        #Compute length as number of LoRa symbols
+        n_bits = (length + 2*has_crc) * 8 #Number of bits before hamming coding
+        n_bits *= (4+CR)/4 #Number of bits after hamming coding
+        n_syms = int(numpy.ceil(float(n_bits)/self.SF)) #There is SF bits per symbol
+
+        return (length, n_syms, CR, has_crc, rem_bits)
+
+    def construct_msg(self, length, n_syms, CR, has_crc, rem_bits):
+        #Construct message
+        out_msg = pmt.make_dict()
+        out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len'),
+                pmt.from_long(long(length + 2*has_crc)))
+        out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len_syms'),
+                pmt.from_long(long(n_syms)))
+        out_msg = pmt.dict_add(out_msg, pmt.intern('CR'),
+                pmt.from_long(long(CR)))
+        if has_crc:
+            out_msg = pmt.dict_add(out_msg, pmt.intern('has_crc'), pmt.PMT_T)
+        else:
+            out_msg = pmt.dict_add(out_msg, pmt.intern('has_crc'), pmt.PMT_F)
+        if len(rem_bits) != 0:
+            out_msg = pmt.dict_add(out_msg, pmt.intern('rem_bits'),
+                    pmt.init_u8vector(len(rem_bits), rem_bits))
+
+        return out_msg
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
@@ -69,42 +102,24 @@ class lora_header_decode(gr.sync_block):
             #Check CRC if needed
             if self.check_crc:
                 chk = vect[12:20]
-                computed_chk = self.compute_hdr_crc(vect[0:12])
+                computed_chk = self.compute_hdr_crc(vect[0:12].copy())
 
-                if (chk != computed_chk).any():
-                    print('CRC check failed : ' + str(chk) + ' != ' + str(computed_chk))
+                if (chk == computed_chk).all():
+                    fields = self.compute_fields(vect)
 
-                    continue
-
-            #Retrieve fields
-            length = numpy.packbits(vect[0:8])[0] #To be converted in symbols...
-            CR = (numpy.packbits(vect[8:11])>>5)[0]
-            has_crc = (numpy.packbits(vect[11])>>7)[0]
-            rem_bits = vect[20:].tolist()
-
-            #Compute length as number of LoRa symbols
-            n_bits = (length + 2*has_crc) * 8 #Number of bits before hamming coding
-            n_bits *= (4+CR)/4 #Number of bits after hamming coding
-            n_syms = int(numpy.ceil(float(n_bits)/self.SF)) #There is SF bits per symbol
-
-            #Construct message
-            out_msg = pmt.make_dict()
-            out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len'),
-                    pmt.from_long(long(length + 2*has_crc)))
-            out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len_syms'),
-                    pmt.from_long(long(n_syms)))
-            out_msg = pmt.dict_add(out_msg, pmt.intern('CR'),
-                    pmt.from_long(long(CR)))
-            if has_crc:
-                out_msg = pmt.dict_add(out_msg, pmt.intern('has_crc'), pmt.PMT_T)
+                    #Fire message!
+                    out_msg = self.construct_msg(fields[0], fields[1], fields[2],
+                            fields[3], fields[4])
+                    self.message_port_pub(pmt.intern("hdr"), out_msg)
+                else:
+                    print('CRC check failed : ')
             else:
-                out_msg = pmt.dict_add(out_msg, pmt.intern('has_crc'), pmt.PMT_F)
-            if len(rem_bits) != 0:
-                out_msg = pmt.dict_add(out_msg, pmt.intern('rem_bits'),
-                        pmt.init_u8vector(len(rem_bits), rem_bits))
+                fields = self.compute_fields(vect)
 
-            #Fire message!
-            self.message_port_pub(pmt.intern("hdr"), out_msg)
+                #Fire message!
+                out_msg = self.construct_msg(fields[0], fields[1], fields[2],
+                        fields[3], fields[4])
+                self.message_port_pub(pmt.intern("hdr"), out_msg)
 
         return len(in0)
 
