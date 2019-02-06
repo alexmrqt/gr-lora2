@@ -37,6 +37,8 @@ class lora_hamming_decode(gr.basic_block):
         self.CR = CR
         self.cw_len = CR + 4
 
+        self.set_tag_propagation_policy(gr.TPP_CUSTOM)
+
     def forecast(self, noutput_items, ninput_items_required):
         #How many block of data shall we produce?
         n_blocks = noutput_items // 4
@@ -46,6 +48,12 @@ class lora_hamming_decode(gr.basic_block):
     #Trivial decoder that only outputs the systematic part of the codeword
     def decode_one_block(self, data_block):
         return data_block[-4:]
+
+    def propagate_tags(self, tags, out_idx):
+        out_tag_offset = out_idx + self.nitems_written(0)
+
+        for tag in tags:
+            self.add_item_tag(0, out_tag_offset, tag.key, tag.value)
 
     def general_work(self, input_items, output_items):
         in0 = input_items[0]
@@ -59,8 +67,18 @@ class lora_hamming_decode(gr.basic_block):
         noutput_items_produced = n_blocks * 4
 
         for i in range(0, n_blocks):
-            output_items[0][i*4:(i+1)*4] = self.decode_one_block(\
-                    in0[i*self.cw_len:(i+1)*self.cw_len])
+            in_idx_start = i*self.cw_len
+            in_idx_stop = in_idx_start + self.cw_len - 1
+
+            out_idx_start = i*4
+            out_idx_stop = out_idx_start + 4 - 1
+
+            #Handle tag propagation
+            tags = self.get_tags_in_window(0, in_idx_start, in_idx_stop)
+            self.propagate_tags(tags, out_idx_start)
+
+            output_items[0][out_idx_start:out_idx_stop+1] = self.decode_one_block(\
+                    in0[in_idx_start:in_idx_stop+1])
 
         self.consume(0, ninput_items_consumed)
         return noutput_items_produced
