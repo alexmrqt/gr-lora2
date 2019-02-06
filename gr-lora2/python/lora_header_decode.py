@@ -107,12 +107,14 @@ class lora_header_decode(gr.sync_block):
                 if (chk == computed_chk).all():
                     fields = self.compute_fields(vect)
 
-                    #Fire message!
                     out_msg = self.construct_msg(fields[0], fields[1], fields[2],
                             fields[3], fields[4])
+
+                    #Fire message!
                     self.message_port_pub(pmt.intern("hdr"), out_msg)
                 else:
-                    print('CRC check failed : ')
+                    #Signal that HDR demodulation fail with a PMT_F
+                    self.message_port_pub(pmt.intern("hdr"), pmt.PMT_F)
             else:
                 fields = self.compute_fields(vect)
 
