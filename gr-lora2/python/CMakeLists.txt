@@ -48,7 +48,8 @@ GR_PYTHON_INSTALL(
     lora_low_rate_opt_rx.py
     lora_header_decode.py
     lora_whiten.py
-    lora_low_rate_opt_tx.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    lora_low_rate_opt_tx.py
+    lora_hamming_encode.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################
@@ -68,3 +69,4 @@ GR_ADD_TEST(qa_lora_low_rate_opt_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_
 GR_ADD_TEST(qa_lora_header_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_header_decode.py)
 GR_ADD_TEST(qa_lora_whiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_whiten.py)
 GR_ADD_TEST(qa_lora_low_rate_opt_tx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_tx.py)
+GR_ADD_TEST(qa_lora_hamming_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_encode.py)

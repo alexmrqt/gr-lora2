@@ -49,6 +49,7 @@ from lora_low_rate_opt_rx import lora_low_rate_opt_rx
 from lora_header_decode import lora_header_decode
 from lora_whiten import lora_whiten
 from lora_low_rate_opt_tx import lora_low_rate_opt_tx
+from lora_hamming_encode import lora_hamming_encode
 
 
 

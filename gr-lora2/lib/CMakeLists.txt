@@ -27,7 +27,8 @@ include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND lora2_sources
     lora_add_preamble_impl.cc
-    freq_xlating_impl.cc )
+    freq_xlating_impl.cc
+    )
 
 set(lora2_sources "${lora2_sources}" PARENT_SCOPE)
 if(NOT lora2_sources)

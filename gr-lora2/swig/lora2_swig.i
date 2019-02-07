@@ -15,3 +15,4 @@
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_add_preamble);
 %include "lora2/freq_xlating.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, freq_xlating);
+

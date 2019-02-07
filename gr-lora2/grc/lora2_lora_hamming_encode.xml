@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<block>
+  <name>lora_hamming_encode</name>
+  <key>lora2_lora_hamming_encode</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.lora_hamming_encode($CR)</make>
+
+  <param>
+    <name>CR</name>
+    <key>CR</key>
+    <type>int</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+</block>
