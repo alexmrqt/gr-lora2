@@ -59,35 +59,46 @@ class lora_header_decode(gr.sync_block):
         return res
 
     def compute_fields(self, vect):
+        out = {}
+
         #Retrieve fields
-        length = numpy.packbits(vect[0:8])[0]
-        CR = (numpy.packbits(vect[8:11])>>5)[0]
-        has_crc = (numpy.packbits(vect[11])>>7)[0]
-        rem_bits = vect[20:].tolist()
+        out['packet_len'] = numpy.packbits(vect[0:8])[0]
+        out['CR'] = (numpy.packbits(vect[8:11])>>5)[0]
+        out['has_crc'] = (numpy.packbits(vect[11])>>7)[0]
+        out['rem_bits'] = vect[20:].tolist()
 
         #Compute length as number of LoRa symbols
-        n_bits = (length + 2*has_crc) * 8 #Number of bits before hamming coding
-        n_bits *= (4+CR)/4 #Number of bits after hamming coding
-        n_syms = int(numpy.ceil(float(n_bits)/self.SF)) #There is SF bits per symbol
+        n_bits = (out['packet_len'] + 2*out['has_crc']) * 8 #Before hamming coding
+        n_bits *= (4+out['CR'])/4.0 #After hamming coding
+        #There is SF bits per symbol
+        out['packet_len_syms']= int(numpy.ceil(float(n_bits)/self.SF))
 
-        return (length, n_syms, CR, has_crc, rem_bits)
+        #Number of bits used to pad the payload
+        out['pad_len'] = out['packet_len_syms']*self.SF - n_bits
 
-    def construct_msg(self, length, n_syms, CR, has_crc, rem_bits):
+        return out
+
+    def construct_msg(self, parsed_header):
         #Construct message
         out_msg = pmt.make_dict()
         out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len'),
-                pmt.from_long(long(length + 2*has_crc)))
+                pmt.from_long(long(parsed_header['packet_len'])))
         out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len_syms'),
-                pmt.from_long(long(n_syms)))
+                pmt.from_long(long(parsed_header['packet_len_syms'])))
         out_msg = pmt.dict_add(out_msg, pmt.intern('CR'),
-                pmt.from_long(long(CR)))
-        if has_crc:
+                pmt.from_long(long(parsed_header['CR'])))
+        out_msg = pmt.dict_add(out_msg, pmt.intern('pad_len'),
+                pmt.from_long(long(parsed_header['pad_len'])))
+
+        if parsed_header['has_crc']:
             out_msg = pmt.dict_add(out_msg, pmt.intern('has_crc'), pmt.PMT_T)
         else:
             out_msg = pmt.dict_add(out_msg, pmt.intern('has_crc'), pmt.PMT_F)
-        if len(rem_bits) != 0:
+
+        if len(parsed_header['rem_bits']) != 0:
             out_msg = pmt.dict_add(out_msg, pmt.intern('rem_bits'),
-                    pmt.init_u8vector(len(rem_bits), rem_bits))
+                    pmt.init_u8vector(len(parsed_header['rem_bits']),
+                        parsed_header['rem_bits']))
 
         return out_msg
 
@@ -105,10 +116,9 @@ class lora_header_decode(gr.sync_block):
                 computed_chk = self.compute_hdr_crc(vect[0:12].copy())
 
                 if (chk == computed_chk).all():
-                    fields = self.compute_fields(vect)
+                    parsed_header = self.compute_fields(vect)
 
-                    out_msg = self.construct_msg(fields[0], fields[1], fields[2],
-                            fields[3], fields[4])
+                    out_msg = self.construct_msg(parsed_header)
 
                     #Fire message!
                     self.message_port_pub(pmt.intern("hdr"), out_msg)
@@ -116,11 +126,11 @@ class lora_header_decode(gr.sync_block):
                     #Signal that HDR demodulation fail with a PMT_F
                     self.message_port_pub(pmt.intern("hdr"), pmt.PMT_F)
             else:
-                fields = self.compute_fields(vect)
+                parsed_header = self.compute_fields(vect)
+
+                out_msg = self.construct_msg(parsed_header)
 
                 #Fire message!
-                out_msg = self.construct_msg(fields[0], fields[1], fields[2],
-                        fields[3], fields[4])
                 self.message_port_pub(pmt.intern("hdr"), out_msg)
 
         return len(in0)
