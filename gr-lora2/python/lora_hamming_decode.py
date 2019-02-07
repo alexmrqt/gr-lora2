@@ -37,6 +37,7 @@ class lora_hamming_decode(gr.basic_block):
         self.CR = CR
         self.cw_len = CR + 4
 
+        self.set_output_multiple(4)
         self.set_tag_propagation_policy(gr.TPP_CUSTOM)
 
     def forecast(self, noutput_items, ninput_items_required):
