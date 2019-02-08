@@ -62,13 +62,15 @@ class lora_header_decode(gr.sync_block):
         out = {}
 
         #Retrieve fields
-        out['packet_len'] = numpy.packbits(vect[0:8])[0]
+        out['payload_len'] = numpy.packbits(vect[0:8])[0]
         out['CR'] = (numpy.packbits(vect[8:11])>>5)[0]
         out['has_crc'] = (numpy.packbits(vect[11])>>7)[0]
         out['rem_bits'] = vect[20:].tolist()
 
+        out['packet_len'] = out['payload_len'] + 2*out['has_crc']
+
         #Compute length as number of LoRa symbols
-        n_bits = (out['packet_len'] + 2*out['has_crc']) * 8 #Before hamming coding
+        n_bits = out['packet_len'] * 8 #Before hamming coding
         n_bits *= (4+out['CR'])/4.0 #After hamming coding
         #There is SF bits per symbol
         out['packet_len_syms']= int(numpy.ceil(float(n_bits)/self.SF))
@@ -83,6 +85,8 @@ class lora_header_decode(gr.sync_block):
         out_msg = pmt.make_dict()
         out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len'),
                 pmt.from_long(long(parsed_header['packet_len'])))
+        out_msg = pmt.dict_add(out_msg, pmt.intern('payload_len'),
+                pmt.from_long(long(parsed_header['payload_len'])))
         out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len_syms'),
                 pmt.from_long(long(parsed_header['packet_len_syms'])))
         out_msg = pmt.dict_add(out_msg, pmt.intern('CR'),
