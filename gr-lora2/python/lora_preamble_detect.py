@@ -62,7 +62,7 @@ class lora_preamble_detect(gr.sync_block):
             self.preamble_value = self.buffer[0]
 
             if self.debug == True:
-                print('Preamble detected!')
+                print('Preamble detected: ' + str(self.preamble_value))
 
             return True
 
@@ -82,7 +82,7 @@ class lora_preamble_detect(gr.sync_block):
             self.sof_value = self.conj_buffer[0]
 
             if self.debug == True:
-                print('SOF detected!')
+                print('SOF detected: ' + str(self.sof_value))
 
             return True
 
@@ -94,7 +94,7 @@ class lora_preamble_detect(gr.sync_block):
         freq_shift = (self.preamble_value - self.sof_value)/2
 
         #Prepare tag
-        tag_offset = self.nitems_written(0) + self.M*(sym_idx+1) + self.M/4 - time_shift
+        tag_offset = self.nitems_written(0) + self.M*(sym_idx+1) + self.M/4 - time_shift - 1
         if time_shift > self.M/2:
             tag_offset += self.M
         tag1_key = pmt.intern('pkt_start')
@@ -108,7 +108,6 @@ class lora_preamble_detect(gr.sync_block):
         self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
         self.add_item_tag(0, tag_offset, tag2_key, tag2_value)
         self.add_item_tag(0, tag_offset, tag3_key, tag3_value)
-
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
@@ -136,16 +135,5 @@ class lora_preamble_detect(gr.sync_block):
 
             if self.detect_preamble() and self.detect_sync() and self.detect_sof():
                 self.tag_end_preamble(i)
-
-            #if self.state == 0: #DETECT_PRE
-            #    self.detect_preamble()
-
-            #    continue
-            #elif self.state == 1: #DETECT_SYNC
-            #    self.detect_sync()
-            #    continue
-            #else: #DETECT_SOF
-            #    self.detect_sof(i)
-            #    continue
 
         return len(output_items[0])
