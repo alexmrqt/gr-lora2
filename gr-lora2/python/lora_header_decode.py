@@ -72,11 +72,17 @@ class lora_header_decode(gr.sync_block):
         #Compute length as number of LoRa symbols
         n_bits = out['packet_len'] * 8 #Before hamming coding
         n_bits *= (4+out['CR'])/4.0 #After hamming coding
+
+        #To be interleaved, the number of bits in the packet must be a multiple
+        #of (CR+4)*SF. If not, the payload is padded with zeros
+        bits_multiple = (out['CR'] + 4) * self.SF
+        out['padded_packet_len'] = int(numpy.ceil(float(n_bits)/bits_multiple) * bits_multiple)
+
         #There is SF bits per symbol
-        out['packet_len_syms']= int(numpy.ceil(float(n_bits)/self.SF))
+        out['packet_len_syms'] = out['padded_packet_len']/self.SF
 
         #Number of bits used to pad the payload
-        out['pad_len'] = out['packet_len_syms']*self.SF - n_bits
+        out['pad_len'] = out['padded_packet_len'] - n_bits
 
         return out
 
@@ -85,12 +91,19 @@ class lora_header_decode(gr.sync_block):
         out_msg = pmt.make_dict()
         out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len'),
                 pmt.from_long(long(parsed_header['packet_len'])))
+
         out_msg = pmt.dict_add(out_msg, pmt.intern('payload_len'),
                 pmt.from_long(long(parsed_header['payload_len'])))
+
         out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len_syms'),
                 pmt.from_long(long(parsed_header['packet_len_syms'])))
+
+        out_msg = pmt.dict_add(out_msg, pmt.intern('padded_packet_len'),
+                pmt.from_long(long(parsed_header['padded_packet_len'])))
+
         out_msg = pmt.dict_add(out_msg, pmt.intern('CR'),
                 pmt.from_long(long(parsed_header['CR'])))
+
         out_msg = pmt.dict_add(out_msg, pmt.intern('pad_len'),
                 pmt.from_long(long(parsed_header['pad_len'])))
 
