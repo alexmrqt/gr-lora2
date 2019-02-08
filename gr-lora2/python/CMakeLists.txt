@@ -70,3 +70,4 @@ GR_ADD_TEST(qa_lora_header_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DI
 GR_ADD_TEST(qa_lora_whiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_whiten.py)
 GR_ADD_TEST(qa_lora_low_rate_opt_tx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_tx.py)
 GR_ADD_TEST(qa_lora_hamming_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_encode.py)
+GR_ADD_TEST(qa_lora_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_depad.py)
