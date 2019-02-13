@@ -59,13 +59,13 @@ namespace gr {
       int noutput_items = ninput_items[0];
       return noutput_items;
     }
-    
-    void
-    lora_depad_impl::update_length_tags(int n_produced, int n_ports)
-    {
-        //Do not update len_tag_key
-        return;
-    }
+
+    //void
+    //lora_depad_impl::update_length_tags(int n_produced, int n_ports)
+    //{
+    //    //Do not update len_tag_key
+    //    return;
+    //}
 
     int
     lora_depad_impl::work (int noutput_items,

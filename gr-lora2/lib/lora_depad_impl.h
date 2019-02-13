@@ -34,10 +34,9 @@ namespace gr {
 
      protected:
       int calculate_output_stream_length(const gr_vector_int &ninput_items);
-	  void update_length_tags(int n_produced, int n_ports);
+	  //void update_length_tags(int n_produced, int n_ports);
 
      public:
-      //Add length, SF, CR
       lora_depad_impl(const std::string &len_tag_key, const uint8_t n_pad);
 
       // Where all the action really happens
