@@ -19,6 +19,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
+import pmt
 import numpy
 from gnuradio import gr
 
@@ -26,7 +27,7 @@ class lora_hamming_decode(gr.basic_block):
     """
     docstring for block lora_hamming_decode
     """
-    def __init__(self, CR):
+    def __init__(self, CR, len_tag_key):
         gr.basic_block.__init__(self,
             name="lora_hamming_decode",
             in_sig=[numpy.int8],
@@ -36,6 +37,10 @@ class lora_hamming_decode(gr.basic_block):
         #Total length for a codeword is (4 + CR) bits long.
         self.CR = CR
         self.cw_len = CR + 4
+
+        self.len_tag_key = None
+        if len(len_tag_key) != 0:
+            self.len_tag_key = len_tag_key
 
         self.set_output_multiple(4)
         self.set_tag_propagation_policy(gr.TPP_CUSTOM)
@@ -54,6 +59,11 @@ class lora_hamming_decode(gr.basic_block):
         out_tag_offset = out_idx + self.nitems_written(0)
 
         for tag in tags:
+            #Handle len_tag_key, if any
+            if (self.len_tag_key is not None ) and (pmt.to_python(tag.key) == self.len_tag_key):
+                new_len = pmt.to_python(tag.value) * float(self.CR)/(self.CR+4)
+                tag.value = pmt.to_pmt(int(new_len))
+
             self.add_item_tag(0, out_tag_offset, tag.key, tag.value)
 
     def general_work(self, input_items, output_items):
