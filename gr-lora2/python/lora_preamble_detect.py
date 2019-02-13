@@ -94,7 +94,7 @@ class lora_preamble_detect(gr.sync_block):
         freq_shift = (self.preamble_value - self.sof_value)/2
 
         #Prepare tag
-        tag_offset = self.nitems_written(0) + self.M*(sym_idx+1) + self.M/4 - time_shift - 1
+        tag_offset = self.nitems_written(0) + self.M*(sym_idx+1) + self.M/4 - time_shift
         if time_shift > self.M/2:
             tag_offset += self.M
         tag1_key = pmt.intern('pkt_start')
