@@ -4,10 +4,16 @@
   <key>lora2_lora_implicit_get_payload</key>
   <category>[lora2]</category>
   <import>import lora2</import>
-  <make>lora2.lora_implicit_get_payload($payload_len, $CR, $has_crc)</make>
+  <make>lora2.lora_implicit_get_payload($payload_len, $SF, $CR, $has_crc)</make>
   <param>
 	<name>Payload length (bytes)</name>
     <key>payload_len</key>
+    <type>int</type>
+  </param>
+
+  <param>
+	<name>SF</name>
+    <key>SF</key>
     <type>int</type>
   </param>
 

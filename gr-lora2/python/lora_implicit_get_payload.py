@@ -27,12 +27,13 @@ class lora_implicit_get_payload(gr.basic_block):
     """
     docstring for block lora_implicit_get_payload
     """
-    def __init__(self, payload_len, CR, has_crc):
+    def __init__(self, SF, payload_len, CR, has_crc):
         gr.basic_block.__init__(self,
             name="lora_implicit_get_payload",
             in_sig=[numpy.int16],
             out_sig=[numpy.int16])
 
+        self.SF = SF
         self.payload_len = payload_len
 
         #Compute length as number of LoRa symbols
@@ -41,8 +42,8 @@ class lora_implicit_get_payload(gr.basic_block):
         n_bits *= (4+CR)/4 #Number of bits after hamming coding
         #There is SF bits per symbol
         self.n_syms = int(numpy.ceil(float(n_bits)/self.SF))
-        self.set_output_multiple(payload_len)
 
+        self.set_output_multiple(payload_len)
 
     def forecast(self, noutput_items, ninput_items_required):
         #setup size of input_items[i] for work call
@@ -73,7 +74,7 @@ class lora_implicit_get_payload(gr.basic_block):
                 #Add a packet_len tag to the begining of the packet
                 tag_offset = out0_ptr + self.nitems_written(0)
                 tag_key = pmt.intern('packet_len')
-                tag_value = pmt.from_long(self.payload_len)
+                tag_value = pmt.from_long(self.n_syms)
                 self.add_item_tag(0, tag_offset, tag_key, tag_value)
 
                 out0_ptr += self.n_syms
