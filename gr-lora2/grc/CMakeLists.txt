@@ -37,5 +37,6 @@ install(FILES
     lora2_lora_hamming_encode.xml
     lora2_lora_depad.xml
     lora2_lora_whiten.xml
-    lora2_flip_half_bytes.xml DESTINATION share/gnuradio/grc/blocks
+    lora2_flip_half_bytes.xml
+    lora2_lora_merge_rem.xml DESTINATION share/gnuradio/grc/blocks
 )

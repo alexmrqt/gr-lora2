@@ -29,7 +29,8 @@ list(APPEND lora2_sources
     lora_add_preamble_impl.cc
     freq_xlating_impl.cc
     lora_depad_impl.cc
-    lora_whiten_impl.cc )
+    lora_whiten_impl.cc
+    lora_merge_rem_impl.cc )
 
 set(lora2_sources "${lora2_sources}" PARENT_SCOPE)
 if(NOT lora2_sources)
