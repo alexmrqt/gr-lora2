@@ -76,30 +76,30 @@ class lora_header_decode(gr.sync_block):
         #To be interleaved, the number of bits in the packet must be a multiple
         #of (CR+4)*SF. If not, the payload is padded with zeros
         bits_multiple = (out['CR'] + 4) * self.SF
-        out['padded_packet_len'] = int(numpy.ceil(float(n_bits)/bits_multiple) * bits_multiple)
+        out['packet_len_bits'] = int(numpy.ceil(float(n_bits)/bits_multiple) * bits_multiple)
 
         #There is SF bits per symbol
-        out['packet_len_syms'] = out['padded_packet_len']/self.SF
+        out['packet_len_syms'] = out['packet_len_bits']/self.SF
 
         #Number of bits used to pad the payload
-        out['pad_len'] = out['padded_packet_len'] - n_bits
+        out['pad_len'] = out['packet_len_bits'] - n_bits
 
         return out
 
     def construct_msg(self, parsed_header):
         #Construct message
         out_msg = pmt.make_dict()
-        out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len'),
-                pmt.from_long(long(parsed_header['packet_len'])))
+        #out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len'),
+        #        pmt.from_long(long(parsed_header['packet_len'])))
 
-        out_msg = pmt.dict_add(out_msg, pmt.intern('payload_len'),
-                pmt.from_long(long(parsed_header['payload_len'])))
+        #out_msg = pmt.dict_add(out_msg, pmt.intern('payload_len'),
+        #        pmt.from_long(long(parsed_header['payload_len'])))
 
         out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len_syms'),
                 pmt.from_long(long(parsed_header['packet_len_syms'])))
 
-        out_msg = pmt.dict_add(out_msg, pmt.intern('padded_packet_len'),
-                pmt.from_long(long(parsed_header['padded_packet_len'])))
+        out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len_bits'),
+                pmt.from_long(long(parsed_header['packet_len_bits'])))
 
         out_msg = pmt.dict_add(out_msg, pmt.intern('CR'),
                 pmt.from_long(long(parsed_header['CR'])))
