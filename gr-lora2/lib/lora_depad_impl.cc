@@ -60,13 +60,6 @@ namespace gr {
       return noutput_items;
     }
 
-    //void
-    //lora_depad_impl::update_length_tags(int n_produced, int n_ports)
-    //{
-    //    //Do not update len_tag_key
-    //    return;
-    //}
-
     int
     lora_depad_impl::work (int noutput_items,
                        gr_vector_int &ninput_items,
