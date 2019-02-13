@@ -11,6 +11,7 @@
 #include "lora2/lora_add_preamble.h"
 #include "lora2/freq_xlating.h"
 #include "lora2/lora_depad.h"
+#include "lora2/lora_whiten.h"
 %}
 %include "lora2/lora_add_preamble.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_add_preamble);
@@ -19,3 +20,5 @@ GR_SWIG_BLOCK_MAGIC2(lora2, freq_xlating);
 
 %include "lora2/lora_depad.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_depad);
+%include "lora2/lora_whiten.h"
+GR_SWIG_BLOCK_MAGIC2(lora2, lora_whiten);

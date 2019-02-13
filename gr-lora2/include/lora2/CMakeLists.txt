@@ -25,5 +25,6 @@ install(FILES
     api.h
     lora_add_preamble.h
     freq_xlating.h
-    lora_depad.h DESTINATION include/lora2
+    lora_depad.h
+    lora_whiten.h DESTINATION include/lora2
 )

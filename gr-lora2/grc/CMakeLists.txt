@@ -33,8 +33,8 @@ install(FILES
     lora2_lora_hamming_decode.xml
     lora2_lora_low_rate_opt_rx.xml
     lora2_lora_header_decode.xml
-    lora2_lora_whiten.xml
     lora2_lora_low_rate_opt_tx.xml
     lora2_lora_hamming_encode.xml
-    lora2_lora_depad.xml DESTINATION share/gnuradio/grc/blocks
+    lora2_lora_depad.xml
+    lora2_lora_whiten.xml DESTINATION share/gnuradio/grc/blocks
 )
