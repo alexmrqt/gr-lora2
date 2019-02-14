@@ -14,6 +14,7 @@ import os
 import sys
 sys.path.append(os.environ.get('GRC_HIER_PATH', os.path.expanduser('~/.grc_gnuradio')))
 import numpy
+from matplotlib import pyplot as plt
 
 from gnuradio import analog
 from gnuradio import blocks
@@ -50,7 +51,7 @@ class lora_sync_test(gr.top_block):
         self.vector_source = blocks.vector_source_s(self.syms_vec.tolist(), False)
         self.vector_sink = blocks.vector_sink_s(1, self.n_syms)
         self.adder = blocks.add_vcc(1)
-        self.noise_source = analog.noise_source_c(analog.GR_GAUSSIAN, self.noise_var, 0)
+        self.noise_source = analog.noise_source_c(analog.GR_GAUSSIAN, numpy.sqrt(self.noise_var), 0)
         self.tag_gate = blocks.tag_gate(gr.sizeof_gr_complex)
         self.head = blocks.head(gr.sizeof_short, self.n_syms)
 
@@ -73,31 +74,48 @@ class lora_sync_test(gr.top_block):
 if __name__ == "__main__":
     #Parameters
     SF = 9
-    n_bytes = 100*SF
+    n_bytes = 300*SF
     n_syms = 8*n_bytes/SF
+    M = 2**SF
+
+    EbN0dB = numpy.linspace(0, 10, 11)
+    Eb = 1.0/M
+    N0=Eb * 10**(-EbN0dB/10.0)
+    noise_var=(M**2 * N0)/numpy.log2(M)
 
     print('N_syms: ' + str(n_syms))
 
-    syms_vec = numpy.random.randint(0, 2**SF, n_syms, dtype=numpy.uint16)
-    #syms_vec = numpy.arange(0, n_syms, dtype=numpy.uint16)
+    BER = numpy.zeros(len(EbN0dB))
+    for i in range(0, len(EbN0dB)):
+        syms_vec = numpy.random.randint(0, 2**SF, n_syms, dtype=numpy.uint16)
 
-    #Setup block
-    tb = lora_sync_test(SF, syms_vec, 0, 0, 0)
+        #Setup block
+        tb = lora_sync_test(SF, syms_vec, noise_var[i], 0, 0)
 
-    #Simulate
-    tb.start()
-    tb.wait()
+        #Simulate
+        tb.start()
+        tb.wait()
 
-    #Retrieve data
-    syms_vec_demod = numpy.array(tb.vector_sink.data(), dtype=numpy.uint16)
+        #Retrieve data
+        syms_vec_demod = numpy.array(tb.vector_sink.data(), dtype=numpy.uint16)
 
-    #Compute BER
-    n_bits = SF*n_syms
-    n_error = 0
+        #Compute BER
+        n_bits = SF*n_syms
+        n_error = 0
 
-    bits_vec = numpy.unpackbits(syms_vec.view(numpy.uint8))
-    bits_vec_demod = numpy.unpackbits(syms_vec_demod.view(numpy.uint8))
-    n_error = numpy.sum(numpy.abs(bits_vec - bits_vec_demod))
+        bits_vec = numpy.unpackbits(syms_vec.view(numpy.uint8))
+        bits_vec_demod = numpy.unpackbits(syms_vec_demod.view(numpy.uint8))
+        n_error = numpy.sum(bits_vec ^ bits_vec_demod)
 
-    BER = float(n_error)/n_bits
-    print('BER: ' + str(BER))
+        BER[i] = float(n_error)/n_bits
+        print('BER @ EbN0 (dB)=' +str(EbN0dB[i]) + ' -> '+ str(BER[i]))
+
+    plt.semilogy(EbN0dB, BER)
+    plt.grid(which='both')
+    plt.ylabel('BER')
+    plt.xlabel('Eb/N0 (dB)')
+
+    axes = plt.gca()
+    axes.set_ylim([1e-5, 0.5])
+    plt.legend()
+    plt.show()

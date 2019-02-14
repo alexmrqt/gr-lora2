@@ -13,6 +13,7 @@
 import os
 import sys
 sys.path.append(os.environ.get('GRC_HIER_PATH', os.path.expanduser('~/.grc_gnuradio')))
+import pmt
 import numpy
 from matplotlib import pyplot as plt
 
@@ -70,8 +71,8 @@ class lora_sync_test(gr.top_block):
         #Channel (3: delay)
         self.delayer = blocks.delay(gr.sizeof_gr_complex, self.delay)
 
-        self.preamble_detector = lora2.lora_preamble_detect(self.SF, 8)
-        self.store_tags = lora2.store_tags(numpy.complex64, "pkt_start")
+        self.preamble_detector = lora2.lora_preamble_detect(self.SF, 8, debug=False)
+        self.store_tags = lora2.store_tags(numpy.complex64, "freq_offset")
 
         ##################################################
         # Connections
@@ -95,69 +96,26 @@ class lora_sync_test(gr.top_block):
         self.connect((self.preamble_detector, 0), (self.store_tags, 0))
 
 
-def delay_impact(SF, n_pkts, n_delays):
+if __name__ == "__main__":
+    #Parameters
+    SF = 9
+    n_pkts = 10
     n_bytes = 10*SF
     n_syms = 8*n_bytes/SF
     M = 2**SF
 
-    EbN0dB = numpy.linspace(0, 10, 11)
+    #EbN0dB = numpy.linspace(0, 10, 11)
+    EbN0dB = numpy.array([50])
     Eb = 1.0/M
     N0=Eb * 10**(-EbN0dB/10.0)
     noise_var=(M**2 * N0)/numpy.log2(M)
 
-    delays = numpy.linspace(0, M, n_delays, dtype=numpy.int)
-
-    print('N_syms: ' + str(n_syms))
-
-    #Delay impact
-    detected = numpy.zeros((len(delays), len(EbN0dB)))
-    for j in range(0, len(delays)):
-        print('Delay = ' + str(delays[j]))
-        for i in range(0, len(EbN0dB)):
-            #Setup block
-            tb = lora_sync_test(SF, n_pkts, n_syms, noise_var[i], 0, delays[j])
-
-            #Simulate
-            tb.start()
-            tb.wait()
-
-            #Retrieve
-            est_n_pkts = tb.store_tags.get_num_tags()
-
-            #Detected / total ratio
-            detected[j,i] = float(est_n_pkts)/n_pkts
-
-            print('Detected ratio at Eb/N0 (dB)=' + str(EbN0dB[i]) + ' -> '
-                    + str(detected[j,i]))
-
-    plt.figure()
-    for j in range(0, len(delays)):
-        plt.plot(EbN0dB, detected[j,:], label=str(delays[j]))
-
-    plt.title('Impact of integer delay on detection')
-    plt.grid(which='both')
-    plt.ylabel('Dectected / Total')
-    plt.xlabel('Eb/N0 (dB)')
-
-    axes = plt.gca()
-    axes.set_ylim([0, 1])
-    plt.legend()
-    plt.show()
-
-def cfo_impact(SF, n_pkts, n_cfos):
-    n_bytes = 10*SF
-    n_syms = 8*n_bytes/SF
-    M = 2**SF
-
-    EbN0dB = numpy.linspace(0, 10, 11)
-    Eb = 1.0/M
-    N0=Eb * 10**(-EbN0dB/10.0)
-    noise_var=(M**2 * N0)/numpy.log2(M)
-
-    cfos = numpy.linspace(0, 1.0, n_cfos)
+    cfo_min = -0.25
+    cfo_max = 0.25
+    cfos = numpy.linspace(cfo_min, cfo_max, 100)
 
     #CFO impact
-    detected = numpy.zeros((len(cfos), len(EbN0dB)))
+    cfo_est = numpy.zeros((len(cfos), len(EbN0dB)))
     for j in range(0, len(cfos)):
         print('CFO = ' + str(cfos[j]))
         for i in range(0, len(EbN0dB)):
@@ -169,31 +127,34 @@ def cfo_impact(SF, n_pkts, n_cfos):
             tb.wait()
 
             #Retrieve
-            est_n_pkts = tb.store_tags.get_num_tags()
+            tags = tb.store_tags.get_tags()
+
+            #Compute error
+            mean_est_cfo = 0.0
+            if len(tags) > 0:
+                for tag in tags:
+                    mean_est_cfo -= pmt.to_float(tag.value)
+                mean_est_cfo /= len(tags)
+            else:
+                mean_est_cfo = 10.0
 
             #Detected / total ratio
-            detected[j,i] = float(est_n_pkts)/n_pkts
+            cfo_est[j,i] = mean_est_cfo
 
-            print('Detected ratio at Eb/N0 (dB)=' + str(EbN0dB[i]) + ' -> '
-                    + str(detected[j,i]))
+            print('Estimated CFO Eb/N0 (dB)=' + str(EbN0dB[i]) + ' -> '
+                    + str(mean_est_cfo))
 
     plt.figure()
-    for j in range(0, len(cfos)):
-        plt.plot(EbN0dB, detected[j,:], label=str(cfos[j]))
+    for j in range(0, len(EbN0dB)):
+        plt.plot(cfos, cfo_est[:,j], label=str(EbN0dB[j]))
 
     plt.title('Impact of CFO on detection')
     plt.grid(which='both')
     plt.ylabel('Dectected / Total')
-    plt.xlabel('Eb/N0 (dB)')
+    plt.xlabel('CFO')
 
     axes = plt.gca()
-    axes.set_ylim([0, 1])
+    axes.set_ylim([cfo_min, cfo_max])
     plt.legend()
     plt.show()
 
-if __name__ == "__main__":
-    #Parameters
-    SF = 9
-    n_pkts = 10
-
-    cfo_impact(SF, n_pkts, 10)
