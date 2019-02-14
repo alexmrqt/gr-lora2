@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<block>
+  <name>count_tags</name>
+  <key>lora2_count_tags</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.count_tags(key_filter=$key_filter)</make>
+
+  <param>
+    <name>Key Filter</name>
+    <key>key_filter</key>
+    <type>string</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+</block>
