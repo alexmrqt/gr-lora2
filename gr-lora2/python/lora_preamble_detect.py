@@ -30,13 +30,13 @@ class lora_preamble_detect(gr.sync_block):
     """
     docstring for block lora_preamble_detect
     """
-    def __init__(self, SF, preamble_len):
+    def __init__(self, SF, preamble_len, debug=False):
         gr.sync_block.__init__(self,
             name="lora_preamble_detect",
             in_sig=[numpy.complex64],
             out_sig=[numpy.complex64])
 
-        self.debug = True
+        self.debug = debug
 
         self.M=2**SF
         self.preamble_len = preamble_len
@@ -93,6 +93,14 @@ class lora_preamble_detect(gr.sync_block):
         time_shift = (self.preamble_value + self.sof_value)/2
         freq_shift = (self.preamble_value - self.sof_value)/2
 
+        #We cannot correct frequency shifts higher than M/4 and lower than -M/4
+        if(freq_shift >= self.M/4):
+            time_shift -= self.M/2
+            freq_shift -= self.M/2
+        elif(freq_shift <= -self.M/4):
+            time_shift += self.M/2
+            freq_shift += self.M/2
+        
         #Prepare tag
         tag_offset = self.nitems_written(0) + self.M*(sym_idx+1) + self.M/4 - time_shift
         if time_shift > self.M/2:
