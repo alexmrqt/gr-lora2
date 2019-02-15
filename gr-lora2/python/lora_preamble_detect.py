@@ -72,6 +72,10 @@ class lora_preamble_detect(gr.sync_block):
         self.sync_value[0] = numpy.mod(self.buffer[-4] - self.preamble_value, self.M)
         self.sync_value[1] = numpy.mod(self.buffer[-3] - self.preamble_value, self.M)
 
+        #First sync value must be different from preamble value
+        if self.sync_value[0] < 8:
+            return False
+
         if self.debug == True:
             print('Sync word detected: ' + str(self.sync_value))
 
@@ -100,11 +104,16 @@ class lora_preamble_detect(gr.sync_block):
         elif(freq_shift <= -self.M/4):
             time_shift += self.M/2
             freq_shift += self.M/2
-        
+
+        #Note: time_shift \in [0; M-1], freq_shift \in [-(M-1)/2 ; (M-1)/2]
+
         #Prepare tag
-        tag_offset = self.nitems_written(0) + self.M*(sym_idx+1) + self.M/4 - time_shift
-        if time_shift > self.M/2:
+        #tag_offset = self.nitems_written(0) + self.M*(sym_idx+1) + self.M/4 - time_shift
+        #tag_offset = self.nitems_written(0) + self.M*(sym_idx+1) - time_shift
+        tag_offset = self.nitems_written(0) - time_shift + (sym_idx+1)*self.M + self.M/4
+        if time_shift >= self.M/2:
             tag_offset += self.M
+
         tag1_key = pmt.intern('pkt_start')
         tag1_value = pmt.PMT_NIL
         tag2_key = pmt.intern('freq_offset')
