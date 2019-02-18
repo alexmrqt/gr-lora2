@@ -30,13 +30,31 @@ class lora_hamming_decode(gr.basic_block):
     def __init__(self, CR, len_tag_key):
         gr.basic_block.__init__(self,
             name="lora_hamming_decode",
-            in_sig=[numpy.int8],
-            out_sig=[numpy.int8])
+            in_sig=[numpy.uint8],
+            out_sig=[numpy.uint8])
 
         #A block of data is 4 bits long.
         #Total length for a codeword is (4 + CR) bits long.
         self.CR = CR
         self.cw_len = CR + 4
+
+        self.syndrome_table_CR4 = numpy.array([[0, 0, 0, 0, 0, 0, 0, 0],
+                                             [0, 0, 0, 1, 0, 0, 0, 0],
+                                             [0, 0, 1, 0, 0, 0, 0, 0],
+                                             [0, 0, 0, 0, 1, 0, 0, 1],
+                                             [0, 1, 0, 0, 0, 0, 0, 0],
+                                             [0, 0, 0, 0, 1, 1, 0, 0],
+                                             [0, 0, 0, 0, 0, 1, 0, 1],
+                                             [0, 0, 0, 0, 0, 0, 1, 0],
+                                             [1, 0, 0, 0, 0, 0, 0, 0],
+                                             [0, 0, 0, 0, 1, 0, 1, 0],
+                                             [0, 0, 0, 0, 0, 0, 1, 1],
+                                             [0, 0, 0, 0, 0, 1, 0, 0],
+                                             [0, 0, 0, 0, 0, 1, 1, 0],
+                                             [0, 0, 0, 0, 0, 0, 0, 1],
+                                             [0, 0, 0, 0, 1, 0, 0, 0],
+                                             [0, 0, 0, 1, 1, 0, 0, 0]],
+                                             dtype=numpy.uint8)
 
         self.len_tag_key = None
         if len(len_tag_key) != 0:
@@ -51,8 +69,18 @@ class lora_hamming_decode(gr.basic_block):
 
         ninput_items_required[0] = n_blocks * self.cw_len
 
-    #Trivial decoder that only outputs the systematic part of the codeword
+    #Syndrome decoder
     def decode_one_block(self, data_block):
+        if self.CR == 4:
+            syndrome = (data_block[0]^data_block[4]^data_block[5]^data_block[7])<<4
+            syndrome = (data_block[1]^data_block[4]^data_block[6]^data_block[7])<<3
+            syndrome = (data_block[2]^data_block[4]^data_block[5]^data_block[6])<<1
+            syndrome = (data_block[3]^data_block[5]^data_block[6]^data_block[7])
+
+            data_block = (data_block + self.syndrome_table_CR4[syndrome])%2
+            n_err_corr = numpy.sum(self.syndrome_table_CR4[syndrome])
+            print(str(n_err_corr) + " errors corrected.")
+
         return data_block[-4:]
 
     def propagate_tags(self, tags, out_idx):
