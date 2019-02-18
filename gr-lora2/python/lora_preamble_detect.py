@@ -47,8 +47,8 @@ class lora_preamble_detect(gr.sync_block):
         self.sof_value = 0
 
         #Buffers are initially set to -1
-        self.conj_buffer = numpy.zeros(2, dtype=numpy.int16) - 1
-        self.buffer = numpy.zeros(preamble_len + 4, dtype=numpy.int16) - 1
+        self.conj_buffer = numpy.zeros(2, dtype=numpy.int) - 1
+        self.buffer = numpy.zeros(preamble_len + 4, dtype=numpy.int) - 1
 
         self.set_output_multiple(self.M)
 
@@ -69,8 +69,8 @@ class lora_preamble_detect(gr.sync_block):
         return False
 
     def detect_sync(self):
-        self.sync_value[0] = numpy.mod(self.buffer[-4] - self.preamble_value, self.M)
-        self.sync_value[1] = numpy.mod(self.buffer[-3] - self.preamble_value, self.M)
+        self.sync_value[0] = numpy.mod(numpy.int16(self.buffer[-4]) - self.preamble_value, self.M)
+        self.sync_value[1] = numpy.mod(numpy.int16(self.buffer[-3]) - self.preamble_value, self.M)
 
         #First sync value must be different from preamble value
         if self.sync_value[0] < 8:

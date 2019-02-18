@@ -29,8 +29,8 @@ class gray_decode(gr.sync_block):
     def __init__(self):
         gr.sync_block.__init__(self,
             name="gray_decode",
-            in_sig=[numpy.int16],
-            out_sig=[numpy.int16])
+            in_sig=[numpy.uint16],
+            out_sig=[numpy.uint16])
 
 
     def work(self, input_items, output_items):

@@ -32,7 +32,7 @@ class css_mod(gr.interp_block):
     def __init__(self, M, interp, len_tag_key):
         gr.interp_block.__init__(self,
             name="css_mod",
-            in_sig=[numpy.int16],
+            in_sig=[numpy.uint16],
             out_sig=[numpy.complex64],
             interp=M*interp)
 

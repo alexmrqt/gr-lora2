@@ -30,8 +30,8 @@ class lora_implicit_get_payload(gr.basic_block):
     def __init__(self, SF, payload_len, CR, has_crc):
         gr.basic_block.__init__(self,
             name="lora_implicit_get_payload",
-            in_sig=[numpy.int16],
-            out_sig=[numpy.int16])
+            in_sig=[numpy.uint16],
+            out_sig=[numpy.uint16])
 
         self.SF = SF
         self.payload_len = payload_len

@@ -86,7 +86,7 @@ class lora_deinterleaver(gr.basic_block):
             vect_short = in0[in_idx_start:in_idx_stop+1]
             vect_bin = [numpy.binary_repr(ele, self.SF) for ele in vect_short]
             vect_bin = [numpy.frombuffer(ele.encode(), dtype='S1') for ele in vect_bin]
-            vect_bin = numpy.array(vect_bin).flatten()
+            vect_bin = numpy.array(vect_bin, dtype=numpy.uint8).flatten()
 
             mtx = numpy.flipud(vect_bin.reshape((self.CR+4, self.SF)).transpose())
 

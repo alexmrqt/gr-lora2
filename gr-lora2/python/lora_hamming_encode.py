@@ -29,8 +29,8 @@ class lora_hamming_encode(gr.basic_block):
     def __init__(self, CR):
         gr.basic_block.__init__(self,
             name="lora_hamming_encode",
-            in_sig=[numpy.int8],
-            out_sig=[numpy.int8])
+            in_sig=[numpy.uint8],
+            out_sig=[numpy.uint8])
 
         #A block of data is 4 bits long.
         #Total length for a codeword is (4 + CR) bits long.
