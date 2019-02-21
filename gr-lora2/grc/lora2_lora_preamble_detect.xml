@@ -4,11 +4,18 @@
   <key>lora2_lora_preamble_detect</key>
   <category>[lora2]</category>
   <import>import lora2</import>
-  <make>lora2.lora_preamble_detect($SF, $preamble_len)</make>
+  <make>lora2.lora_preamble_detect($SF, $preamble_len, thres=$thres)</make>
   <param>
     <name>SF</name>
     <key>SF</key>
     <type>int</type>
+  </param>
+
+  <param>
+    <name>Threshold</name>
+    <key>thres</key>
+    <value>1e-4</value>
+    <type>float</type>
   </param>
 
   <param>
