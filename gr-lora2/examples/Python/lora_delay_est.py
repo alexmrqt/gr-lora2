@@ -25,7 +25,7 @@ import lora2
 
 class lora_sync_test(gr.top_block):
 
-    def __init__(self, SF, n_pkts, n_syms_pkt, noise_var, cfo, delay):
+    def __init__(self, SF, n_pkts, n_syms_pkt, noise_var, cfo, delay, nonoise=False):
         gr.top_block.__init__(self, "Lora Sync Test")
 
         ##################################################
@@ -58,10 +58,11 @@ class lora_sync_test(gr.top_block):
                 self.interp, "packet_len", "payload", "rev_chirps")
 
         #Channel (1: noise)
-        self.tag_gate = blocks.tag_gate(gr.sizeof_gr_complex)
-        self.noise_source = analog.noise_source_c(analog.GR_GAUSSIAN,
-                numpy.sqrt(self.noise_var), 0)
-        self.adder = blocks.add_vcc(1)
+        self.tag_gate = blocks.tag_gate(gr.sizeof_gr_complex, propagate_tags = True)
+        if not nonoise:
+            self.noise_source = analog.noise_source_c(analog.GR_GAUSSIAN,
+                    numpy.sqrt(self.noise_var), numpy.random.randint(2**16))
+            self.adder = blocks.add_vcc(1)
 
         #Channel (2: cfo)
         self.cfo_source = analog.sig_source_c(1.0, analog.GR_COS_WAVE, self.cfo,
@@ -69,10 +70,14 @@ class lora_sync_test(gr.top_block):
         self.multiplicator = blocks.multiply_vcc(1)
 
         #Channel (3: delay)
-        self.delayer = blocks.delay(gr.sizeof_gr_complex, self.delay)
+        if delay >= 0:
+            self.delayer = blocks.delay(gr.sizeof_gr_complex, self.delay)
+        else:
+            self.delayer = blocks.delay(gr.sizeof_gr_complex, 2**SF + self.delay)
+            #self.delayer = blocks.skiphead(gr.sizeof_gr_complex, -self.delay)
 
-        self.preamble_detector = lora2.lora_preamble_detect(self.SF, 8, debug=False, thres=1e-4)
-        self.store_tags = lora2.store_tags(numpy.complex64, "freq_offset")
+        self.preamble_detector = lora2.lora_preamble_detect(self.SF, 8, debug=False)
+        self.store_tags = lora2.store_tags(numpy.complex64, "time_offset")
 
         ##################################################
         # Connections
@@ -85,9 +90,12 @@ class lora_sync_test(gr.top_block):
         self.connect((self.add_reversed_chirps, 0), (self.tag_gate, 0))
 
         #Channel
-        self.connect((self.tag_gate, 0), (self.adder, 1))
-        self.connect((self.noise_source, 0), (self.adder, 0))
-        self.connect((self.adder, 0), (self.multiplicator, 1))
+        if not nonoise:
+            self.connect((self.tag_gate, 0), (self.adder, 1))
+            self.connect((self.noise_source, 0), (self.adder, 0))
+            self.connect((self.adder, 0), (self.multiplicator, 1))
+        else:
+            self.connect((self.tag_gate, 0), (self.multiplicator, 1))
         self.connect((self.cfo_source, 0), (self.multiplicator, 0))
         self.connect((self.multiplicator, 0), (self.delayer, 0))
         self.connect((self.delayer, 0), (self.preamble_detector, 0))
@@ -99,66 +107,71 @@ class lora_sync_test(gr.top_block):
 if __name__ == "__main__":
     #Parameters
     SF = 9
-    n_pkts = 10
+    n_pkts = 1
     n_bytes = 1*SF
     n_syms = 8*n_bytes/SF
     M = 2**SF
 
-    #EbN0dB = numpy.linspace(0, 10, 11)
-    EbN0dB = numpy.array([100])
+    nonoise = True
+    if not nonoise:
+        EbN0dB = numpy.linspace(0, 10, 11)
+    else:
+        EbN0dB = numpy.array([0])
     Eb = 1.0/M
     N0=Eb * 10**(-EbN0dB/10.0)
     noise_var=(M**2 * N0)/numpy.log2(M)
+    cfo = (10.0)/float(M)
 
-    cfo_min = -1.0/4
-    cfo_max = 1.0/4
-    cfos = numpy.arange(-M/4, M/4+1) / float(M)
-    #cfos = numpy.array([0.00104166666667])
+    delay_min = -M/2
+    delay_max = M/2
+    delays = numpy.linspace(delay_min, delay_max, M, dtype=numpy.int)
 
     #CFO impact
-    cfo_est = numpy.zeros((len(cfos), len(EbN0dB)))
-    for j in range(0, len(cfos)):
-        print('CFO = ' + str(cfos[j]))
+    delay_est = numpy.zeros((len(delays), len(EbN0dB)))
+    for j in range(0, len(delays)):
+        print('Delay = ' + str(delays[j]))
         for i in range(0, len(EbN0dB)):
-            #Setup block
-            tb = lora_sync_test(SF, n_pkts, n_syms, noise_var[i], cfos[j], 0)
 
-            #Simulate
-            tb.start()
-            tb.wait()
+            delay_est[j,i] = 0.0
+            n_det = 0
+            for k in range(0, n_pkts):
+                #Setup block
+                tb = lora_sync_test(SF, 1, n_syms, noise_var[i], cfo, delays[j], nonoise)
 
-            #Retrieve
-            tags = tb.store_tags.get_tags()
+                #Simulate
+                tb.start()
+                tb.wait()
 
-            #Compute error
-            mean_est_cfo = 0.0
-            if len(tags) > 0:
-                for tag in tags:
-                    mean_est_cfo += pmt.to_float(tag.value)
-                mean_est_cfo /= len(tags)
+                #Retrieve
+                tags = tb.store_tags.get_tags()
+
+                if len(tags) > 0:
+                    n_det += 1
+                    delay_est[j,i] += pmt.to_float(tags[0].value)
+                if len(tags) > 1:
+                    print('Multiple tags detected.')
+                if len(tags) == 0:
+                    print('No tag detected.')
+
+            if n_det > 0:
+                delay_est[j,i] /= n_det
             else:
-                mean_est_cfo = 10.0
+                delay_est[j,i] = 2*M
 
-            #Detected / total ratio
-            cfo_est[j,i] = mean_est_cfo
-
-            print('Estimated CFO Eb/N0 (dB)=' + str(EbN0dB[i]) + ' -> '
-                    + str(mean_est_cfo))
-
-            del tb
+            print('Estimated delay Eb/N0 (dB)=' + str(EbN0dB[i]) + ' -> '
+                    + str(delay_est[j,i]))
 
     plt.figure()
     for j in range(0, len(EbN0dB)):
-        plt.plot(cfos, cfo_est[:,j], label=str(EbN0dB[j]))
+        plt.plot(delays, delay_est[:,j], label=str(EbN0dB[j]))
 
-    plt.title('CFO estimator')
+    plt.title('Delay estimator')
     plt.grid(which='both')
-    plt.ylabel('CFO estimation')
-    plt.xlabel('CFO')
+    plt.ylabel('Delay estimation')
+    plt.xlabel('Dela')
 
     axes = plt.gca()
-    axes.set_xlim([-1.0, 1.0])
-    axes.set_ylim([-1.0, 1.0])
+    axes.set_xlim([-M, M])
+    axes.set_ylim([-M, M])
     plt.legend()
     plt.show()
-

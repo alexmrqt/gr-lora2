@@ -154,7 +154,9 @@ def cfo_impact(SF, n_pkts, n_cfos):
     N0=Eb * 10**(-EbN0dB/10.0)
     noise_var=(M**2 * N0)/numpy.log2(M)
 
-    cfos = numpy.linspace(0, 1.0, n_cfos)
+    cfo_min = -0.25
+    cfo_max = 0.25
+    cfos = numpy.linspace(cfo_min, cfo_max, 10)
 
     #CFO impact
     detected = numpy.zeros((len(cfos), len(EbN0dB)))
@@ -179,7 +181,7 @@ def cfo_impact(SF, n_pkts, n_cfos):
 
     plt.figure()
     for j in range(0, len(cfos)):
-        plt.plot(EbN0dB, detected[j,:], label=str(cfos[j]))
+        plt.plot(EbN0dB, detected[j,:], label=str(cfos[j])[:5])
 
     plt.title('Impact of CFO on detection')
     plt.grid(which='both')
