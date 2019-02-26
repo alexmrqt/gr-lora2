@@ -72,8 +72,9 @@ class lora_preamble_detect(gr.sync_block):
             if self.debug == True:
                 print('Preamble detected: ' + str(self.preamble_value))
 
-            self.detect_sync()
-            self.detect_downchirp0 = True
+            return True
+        
+        return False
 
 
     def detect_sync(self):
@@ -100,9 +101,6 @@ class lora_preamble_detect(gr.sync_block):
 
         return False
 
-    def find_first_symbol(self):
-        pass
-
     def tag_end_preamble(self, sym_idx):
         #Compute time and frequency shift
         time_shift = (self.preamble_value - self.sof_value)/2
@@ -120,10 +118,14 @@ class lora_preamble_detect(gr.sync_block):
             time_shift += self.M/2
 
         #Prepare tag
-        tag_offset = self.nitems_written(0) + time_shift + (sym_idx+1)*self.M + self.M/4
+        #This delay estimator has an uncertainty of +/-M (by steps of M/2).
+        #So we put the tag M items before the estimated SOF item, to allow
+        #A successive block to remove this uncertainty.
+        tag_offset = self.nitems_written(0) + time_shift + sym_idx*self.M \
+                + self.M/4
 
-        tag1_key = pmt.intern('pkt_start')
-        tag1_value = pmt.PMT_NIL
+        #tag1_key = pmt.intern('pkt_start')
+        #tag1_value = pmt.PMT_NIL
         tag2_key = pmt.intern('freq_offset')
         tag2_value = pmt.to_pmt(freq_shift/float(self.M))
         tag3_key = pmt.intern('sync_word')
@@ -132,7 +134,7 @@ class lora_preamble_detect(gr.sync_block):
         tag4_value = pmt.to_pmt(time_shift)
 
         #Append tags
-        self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
+        #self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
         self.add_item_tag(0, tag_offset, tag2_key, tag2_value)
         self.add_item_tag(0, tag_offset, tag3_key, tag3_value)
         self.add_item_tag(0, tag_offset, tag4_key, tag4_value)
@@ -155,8 +157,10 @@ class lora_preamble_detect(gr.sync_block):
             if self.detect_downchirp1:
                 #SOF detection
                 if self.check_downchirps():
-                    self.find_first_symbol()
                     self.tag_end_preamble(i)
+
+                    #Prevent double "detection" of the preamble
+                    self.detect_downchirp0 = False
 
                 self.detect_downchirp1 = False
 
@@ -167,7 +171,10 @@ class lora_preamble_detect(gr.sync_block):
             #Demod
             self.buffer = numpy.roll(self.buffer, -1)
             self.buffer[-1] = self.demod.demodulate(in0[i*self.M:(i+1)*self.M])
+
             #Preamble detection
-            self.detect_preamble()
+            if self.detect_preamble():
+                self.detect_sync()
+                self.detect_downchirp0 = True
 
         return len(output_items[0])
