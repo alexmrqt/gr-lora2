@@ -39,5 +39,6 @@ install(FILES
     lora2_lora_whiten.xml
     lora2_flip_half_bytes.xml
     lora2_lora_merge_rem.xml
-    lora2_store_tags.xml DESTINATION share/gnuradio/grc/blocks
+    lora2_store_tags.xml
+    lora2_lora_detect_sof.xml DESTINATION share/gnuradio/grc/blocks
 )

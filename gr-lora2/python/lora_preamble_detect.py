@@ -66,11 +66,10 @@ class lora_preamble_detect(gr.sync_block):
         max_err_sq = self.M**2
 
         if(mean_err_sq/max_err_sq < self.thres):
-            #self.preamble_value = numpy.uint16(numpy.round(mean))
             self.buffer_meta[self.preamble_len-1]['preamble_value'] = numpy.uint16(numpy.round(mean))
 
             return True
-        
+
         return False
 
 
@@ -190,8 +189,8 @@ class lora_preamble_detect(gr.sync_block):
                 if sof_value >= 0:
                     preamble_value = self.buffer_meta[-5]['preamble_value']
                     (freq_shift, time_shift) = self.compute_tf_shifts(preamble_value, sof_value)
-                    
-                    #Temp
+
+                    #Tag
                     sync_value = self.buffer_meta[-3]['sync_value']
                     self.tag_end_preamble(freq_shift, time_shift, sync_value, i)
 
