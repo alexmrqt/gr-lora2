@@ -50,7 +50,8 @@ GR_PYTHON_INSTALL(
     lora_low_rate_opt_tx.py
     lora_hamming_encode.py
     flip_half_bytes.py
-    store_tags.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    store_tags.py
+    lora_detect_sof.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################
