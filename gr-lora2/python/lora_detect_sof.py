@@ -44,7 +44,7 @@ class lora_detect_sof(gr.sync_block):
         self.set_tag_propagation_policy(gr.TPP_CUSTOM)
 
     def propagate_tags(self, rel_start, rel_end):
-        tags = self.get_tags_in_window(0, rel_start, rel_end, pmt.intern('time_offset'))
+        tags = self.get_tags_in_window(0, rel_start, rel_end)
 
         #Propagate all tags except those produced by the preamble detector
         for tag in tags:
