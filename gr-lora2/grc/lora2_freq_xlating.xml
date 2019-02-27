@@ -4,7 +4,13 @@
   <key>lora2_freq_xlating</key>
   <category>[lora2]</category>
   <import>import lora2</import>
-  <make>lora2.freq_xlating($freq, $freq_tag_key)</make>
+  <make>lora2.freq_xlating($M, $freq, $freq_tag_key)</make>
+  <param>
+    <name>M</name>
+    <key>M</key>
+    <type>int</type>
+  </param>
+
   <param>
     <name>Frequency shift</name>
     <key>freq</key>
@@ -19,11 +25,11 @@
 
   <sink>
     <name>in</name>
-    <type>complex</type>
+    <type>short</type>
   </sink>
 
   <source>
     <name>out</name>
-    <type>complex</type>
+    <type>short</type>
   </source>
 </block>
