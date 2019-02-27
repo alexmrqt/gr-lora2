@@ -55,11 +55,14 @@ class css_sync_and_vectorize(gr.basic_block):
         in0 = input_items[0]
         tags = self.get_tags_in_window(0, 0, len(in0), pmt.intern('pkt_start'))
 
+        ##Remove duplicates tag on same item
+        offsets = numpy.unique(numpy.array([tag.offset for tag in tags]))
+
         ##Stream already synced with packet start
-        if len(tags) == 0 or (tags[0].offset - self.nitems_read(0)) == 0:
+        if len(offsets) == 0 or (offsets[0] - self.nitems_read(0)) == 0:
             #Make sure we only sync for one packet
-            if len(tags) > 1:
-                len_pkt = tags[1].offset - self.nitems_read(0)
+            if len(offsets) > 1:
+                len_pkt = offsets[1] - self.nitems_read(0)
             else:
                 len_pkt = len(in0)
 
@@ -76,7 +79,7 @@ class css_sync_and_vectorize(gr.basic_block):
 
         ##Stream needs sync
         #Vectorize items preceding the tag
-        n_items = tags[0].offset - self.nitems_read(0)
+        n_items = offsets[0] - self.nitems_read(0)
         n_syms = min(n_items // self.M, output_items[0].shape[0])
 
         if n_syms > 0:
