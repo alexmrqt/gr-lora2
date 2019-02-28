@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <block>
-  <name>lora_detect_sof</name>
+  <name>LoRa Detect SOF</name>
   <key>lora2_lora_detect_sof</key>
   <category>[lora2]</category>
   <import>import lora2</import>
