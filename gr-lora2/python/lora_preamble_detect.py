@@ -60,7 +60,8 @@ class lora_preamble_detect(gr.sync_block):
 
     def fine_freq_estimate(self):
         #Compute phases of complex samples corresponding to detected symbols
-        phases = numpy.angle(self.complex_buffer)
+        #Ignore first and last symbol as they are subject to time misalignment
+        phases = numpy.angle(self.complex_buffer[1:-1])
 
         #Defferentiate phase, modulo 2pi, to get frequency
         phase_diff = numpy.mod(numpy.diff(phases), 2*numpy.pi)
@@ -143,19 +144,22 @@ class lora_preamble_detect(gr.sync_block):
                 + self.M/4
 
         tag1_key = pmt.intern('fine_freq_offset')
-        tag1_value = pmt.to_pmt(float(fine_freq_shift))
-        tag2_key = pmt.intern('freq_offset')
+        tag1_value = pmt.to_pmt(fine_freq_shift)
+        tag2_key = pmt.intern('coarse_freq_offset')
         tag2_value = pmt.to_pmt(freq_shift/float(self.M))
-        tag3_key = pmt.intern('sync_word')
-        tag3_value = pmt.to_pmt(sync_value)
-        tag4_key = pmt.intern('time_offset')
-        tag4_value = pmt.to_pmt(time_shift)
+        tag3_key = pmt.intern('freq_offset')
+        tag3_value = pmt.to_pmt(freq_shift/float(self.M) + fine_freq_shift)
+        tag4_key = pmt.intern('sync_word')
+        tag4_value = pmt.to_pmt(sync_value)
+        tag5_key = pmt.intern('time_offset')
+        tag5_value = pmt.to_pmt(time_shift)
 
         #Append tags
         self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
         self.add_item_tag(0, tag_offset, tag2_key, tag2_value)
         self.add_item_tag(0, tag_offset, tag3_key, tag3_value)
         self.add_item_tag(0, tag_offset, tag4_key, tag4_value)
+        self.add_item_tag(0, tag_offset, tag5_key, tag5_value)
 
     def work(self, input_items, output_items):
         in0 = input_items[0]

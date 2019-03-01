@@ -29,24 +29,23 @@ namespace gr {
   namespace lora2 {
 
     freq_xlating::sptr
-    freq_xlating::make(uint16_t M, float freq, const std::string& freq_tag_key)
+    freq_xlating::make(float freq)
     {
       return gnuradio::get_initial_sptr
-        (new freq_xlating_impl(M, freq, freq_tag_key));
+        (new freq_xlating_impl(freq));
     }
 
     /*
      * The private constructor
      */
-    freq_xlating_impl::freq_xlating_impl(uint16_t M, float freq, const std::string& freq_tag_key)
+    freq_xlating_impl::freq_xlating_impl(float freq)
       : gr::sync_block("freq_xlating",
-              gr::io_signature::make(1, 1, sizeof(uint16_t)),
-              gr::io_signature::make(1, 1, sizeof(uint16_t)))
+              gr::io_signature::make(1, 1, sizeof(gr_complex)),
+              gr::io_signature::make(1, 1, sizeof(gr_complex)))
     {
-      d_freq_tag_key = pmt::intern(freq_tag_key);
+      d_freq_tag_key = pmt::intern("freq_offset");
 
-      d_M = M;
-      d_freq = freq*d_M;
+      d_r.set_phase_incr(exp(gr_complex(0, 2*M_PI*freq)));
     }
 
     int
@@ -54,35 +53,30 @@ namespace gr {
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
     {
-      const uint16_t *in = (const uint16_t *) input_items[0];
-      uint16_t *out = (uint16_t *) output_items[0];
+      const gr_complex *in = (const gr_complex *) input_items[0];
+      gr_complex *out = (gr_complex *) output_items[0];
 
       //Get tags
       std::vector<tag_t> tags;
       get_tags_in_window(tags, 0, 0, noutput_items, d_freq_tag_key);
 
       uint64_t start_idx = 0;
-      int n_items = 0;
-      for(std::vector<tag_t>::iterator tag = tags.begin() ;
-		  tag != tags.end() ; ++tag) {
-
+      int rotator_n_items = 0;
+      for(std::vector<tag_t>::iterator tag = tags.begin() ; tag != tags.end() ; ++tag) {
           //Rotate with old frequency up to this point
-          n_items = (*tag).offset - nitems_read(0) - start_idx;
-		  for (uint64_t i = start_idx ; i < (start_idx+n_items) ; ++i) {
-			  out[i] = (in[i] - d_freq)%d_M;
-		  }
+          rotator_n_items = (*tag).offset - nitems_read(0) - start_idx;
+          d_r.rotateN(&(out[start_idx]), &(in[start_idx]), rotator_n_items);
 
           //Update start_idx
-          start_idx += n_items;
+          start_idx += rotator_n_items;
 
-          //Update frequency
-		  d_freq = pmt::to_float((*tag).value)*d_M;
+          //Update rotator frequency
+          d_r.set_phase_incr(exp(gr_complex(0, -2*M_PI*pmt::to_float((*tag).value))));
       }
       //
       //Rotate remaining items
-	  for (uint64_t i = start_idx ; i < noutput_items ; ++i) {
-		  out[i] = (in[i] - d_freq)%d_M;
-	  }
+      rotator_n_items = noutput_items - start_idx;
+      d_r.rotateN(&(out[start_idx]), &(in[start_idx]), rotator_n_items);
 
       // Tell runtime system how many output items we produced.
       return noutput_items;
