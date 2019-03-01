@@ -49,12 +49,29 @@ class lora_preamble_detect(gr.sync_block):
 
         if preamble_len > 2:
             self.buffer = numpy.zeros(preamble_len + 2, dtype=numpy.int) - 1
+            self.complex_buffer = numpy.zeros(preamble_len + 2, dtype=numpy.complex64)
             self.buffer_meta = [dict() for i in range(0, preamble_len + 2)]
         else:
             self.buffer = numpy.zeros(5, dtype=numpy.int) - 1
+            self.complex_buffer = numpy.zeros(5, dtype=numpy.complex64)
             self.buffer_meta = [dict() for i in range(0, 5)]
 
         self.set_output_multiple(self.M)
+
+    def fine_freq_estimate(self):
+        #Compute phases of complex samples corresponding to detected symbols
+        phases = numpy.angle(self.complex_buffer)
+
+        #Defferentiate phase, modulo 2pi, to get frequency
+        phase_diff = numpy.mod(numpy.diff(phases), 2*numpy.pi)
+        phase_diff[phase_diff>numpy.pi] -= 2*numpy.pi
+
+        fine_freq_estimate = numpy.mean(phase_diff)
+
+        #Correct estimate with the slope of the estimator
+        fine_freq_estimate *= 0.5/((self.M-self.M/16)*numpy.pi)
+
+        self.buffer_meta[-1]['fine_freq_shift'] = fine_freq_estimate
 
     def detect_preamble(self):
         #Buffer not full yet
@@ -117,7 +134,7 @@ class lora_preamble_detect(gr.sync_block):
         return (freq_shift, time_shift)
 
 
-    def tag_end_preamble(self, freq_shift, time_shift, sync_value, sof_idx):
+    def tag_end_preamble(self, freq_shift, fine_freq_shift, time_shift, sync_value, sof_idx):
         #Prepare tag
         #This delay estimator has an uncertainty of +/-M (by steps of M/2).
         #So we put the tag M items before the estimated SOF item, to allow
@@ -125,8 +142,8 @@ class lora_preamble_detect(gr.sync_block):
         tag_offset = self.nitems_written(0) + time_shift + sof_idx*self.M \
                 + self.M/4
 
-        #tag1_key = pmt.intern('pkt_start')
-        #tag1_value = pmt.PMT_NIL
+        tag1_key = pmt.intern('fine_freq_offset')
+        tag1_value = pmt.to_pmt(float(fine_freq_shift))
         tag2_key = pmt.intern('freq_offset')
         tag2_value = pmt.to_pmt(freq_shift/float(self.M))
         tag3_key = pmt.intern('sync_word')
@@ -135,7 +152,7 @@ class lora_preamble_detect(gr.sync_block):
         tag4_value = pmt.to_pmt(time_shift)
 
         #Append tags
-        #self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
+        self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
         self.add_item_tag(0, tag_offset, tag2_key, tag2_value)
         self.add_item_tag(0, tag_offset, tag3_key, tag3_value)
         self.add_item_tag(0, tag_offset, tag4_key, tag4_value)
@@ -144,17 +161,18 @@ class lora_preamble_detect(gr.sync_block):
         in0 = input_items[0]
         out0 = output_items[0]
 
-        #Copy input to output
-        out0[:] = in0[:]
-
         n_syms = len(in0)//self.M
 
         for i in range(0, n_syms):
             #Demod and shift buffer
             self.buffer = numpy.roll(self.buffer, -1)
+            self.complex_buffer = numpy.roll(self.complex_buffer, -1)
             self.buffer_meta.pop(0)
-            self.buffer[-1] = self.demod.demodulate(in0[i*self.M:(i+1)*self.M])
             self.buffer_meta.append(dict())
+
+            (hard_sym, complex_sym) = \
+                    self.demod.complex_demodulate(in0[i*self.M:(i+1)*self.M])
+            (self.buffer[-1], self.complex_buffer[-1]) = (hard_sym[0], complex_sym[0])
 
             #Conjugate demod and shift conjugate buffer, if needed
             #AABBC or ABBCC
@@ -168,16 +186,17 @@ class lora_preamble_detect(gr.sync_block):
                 self.conj_buffer[-1] = hard[0]
                 self.conj_buffer_soft[-1] = soft[0]
 
-
             #Check for preamble
             self.detect_preamble()
 
-            #Retrieve sync word value
+            #Retrieve sync word value and compute fine frequency shift
             #AAABB
             #  ^
             if 'preamble_value' in self.buffer_meta[-3]:
                 preamble_value = self.buffer_meta[-3]['preamble_value']
                 self.detect_sync(preamble_value)
+
+                self.fine_freq_estimate()
 
             #Compute time-frequency shift if downchirps has same value
             #ABBCC
@@ -191,7 +210,11 @@ class lora_preamble_detect(gr.sync_block):
                     (freq_shift, time_shift) = self.compute_tf_shifts(preamble_value, sof_value)
 
                     #Tag
+                    fine_freq_shift = self.buffer_meta[-3]['fine_freq_shift']
                     sync_value = self.buffer_meta[-3]['sync_value']
-                    self.tag_end_preamble(freq_shift, time_shift, sync_value, i)
+                    self.tag_end_preamble(freq_shift, fine_freq_shift, time_shift, sync_value, i)
+
+        #Copy input to output
+        out0[:] = in0[:]
 
         return len(output_items[0])

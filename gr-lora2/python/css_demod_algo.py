@@ -69,3 +69,42 @@ class css_demod_algo():
             confidence[i] = numpy.max(numpy.abs(fft_sig))
 
         return (hard_output, confidence)
+
+    def complex_demodulate(self, input_items):
+        ninput_items = len(input_items)
+        noutput_items = ninput_items // self.M
+        hard_output = numpy.zeros(noutput_items, dtype=numpy.uint16)
+        complex_value = numpy.zeros(noutput_items, dtype=numpy.complex64)
+
+        #Process block by block
+        for i in range(0, noutput_items):
+            #Dechirp
+            dechirped_sig = input_items[self.M*i:self.M*(i+1)] * self.conj_chirp
+
+            #Do FFT and shift it
+            fft_sig = numpy.fft.fftshift(numpy.fft.fft(dechirped_sig))
+
+            #Symbol is the FFT bin with maximum power
+            hard_output[i] = numpy.argmax(numpy.abs(fft_sig))
+            complex_value[i] = fft_sig[hard_output[i]]
+
+        return (hard_output, complex_value)
+
+    def demodulate_with_spectrum(self, input_items):
+        ninput_items = len(input_items)
+        noutput_items = ninput_items // self.M
+        symbols = numpy.zeros(noutput_items, dtype=numpy.uint16)
+        spectrums = numpy.zeros((noutput_items, self.M), dtype=numpy.complex64)
+
+        #Process block by block
+        for i in range(0, noutput_items):
+            #Dechirp
+            dechirped_sig = input_items[self.M*i:self.M*(i+1)] * self.conj_chirp
+
+            #Do FFT and shift it
+            spectrums[i,:] = numpy.fft.fftshift(numpy.fft.fft(dechirped_sig))
+
+            #Symbol is the FFT bin with maximum power
+            symbols[i] = numpy.argmax(numpy.abs(spectrums[i,:]))
+
+        return (symbols, spectrums)
