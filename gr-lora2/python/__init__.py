@@ -53,6 +53,7 @@ from lora_hamming_encode import lora_hamming_encode
 from flip_half_bytes import flip_half_bytes
 from store_tags import store_tags
 from lora_detect_sof import lora_detect_sof
+from css_fine_freq_error_detector import css_fine_freq_error_detector
 
 
 

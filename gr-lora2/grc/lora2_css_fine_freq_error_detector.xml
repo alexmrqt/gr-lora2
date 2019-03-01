@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<block>
+  <name>css_fine_freq_error_detector</name>
+  <key>lora2_css_fine_freq_error_detector</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.css_fine_freq_error_detector($M)</make>
+
+  <param>
+    <name>M</name>
+    <key>M</key>
+    <type>int</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>float</type>
+	<vlen>$M</vlen>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>message</type>
+  </source>
+</block>

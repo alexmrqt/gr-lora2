@@ -51,7 +51,8 @@ GR_PYTHON_INSTALL(
     lora_hamming_encode.py
     flip_half_bytes.py
     store_tags.py
-    lora_detect_sof.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    lora_detect_sof.py
+    css_fine_freq_error_detector.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################
@@ -75,3 +76,4 @@ GR_ADD_TEST(qa_lora_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lo
 GR_ADD_TEST(qa_lora_whiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_whiten.py)
 GR_ADD_TEST(qa_flip_half_bytes ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_flip_half_bytes.py)
 GR_ADD_TEST(qa_lora_merge_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_merge_rem.py)
+GR_ADD_TEST(qa_css_fine_freq_error_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_freq_error_detector.py)
