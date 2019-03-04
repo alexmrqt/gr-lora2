@@ -46,7 +46,7 @@ namespace gr {
        * class. lora2::freq_xlating::make is the public interface for
        * creating new instances.
        */
-      static sptr make(float freq, const std::string& freq_tag_key);
+      static sptr make(float freq);
     };
 
   } // namespace lora2

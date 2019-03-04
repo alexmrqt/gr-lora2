@@ -43,7 +43,7 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(gr_complex)),
               gr::io_signature::make(1, 1, sizeof(gr_complex)))
     {
-      d_freq_tag_key = pmt::intern("freq_offset");
+      d_freq_tag_key = pmt::intern("coarse_freq_offset");
 
       d_r.set_phase_incr(exp(gr_complex(0, 2*M_PI*freq)));
     }

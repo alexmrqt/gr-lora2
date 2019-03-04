@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<block>
+  <name>CSS Demodulator</name>
+  <key>lora2_css_demod</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.css_demod($M, $freq_loop_gain)</make>
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+  <param>
+    <name>M</name>
+    <key>M</key>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Freq Loop Gain</name>
+    <key>freq_loop_gain</key>
+    <type>float</type>
+  </param>
+
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <vlen>$M</vlen>
+  </sink>
+
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <source>
+    <name>out</name>
+    <type>short</type>
+  </source>
+
+  <source>
+    <name>cmplx_val</name>
+    <type>complex</type>
+    <vlen>$M</vlen>
+	<optional>1</optional>
+  </source>
+
+  <source>
+    <name>cfo_est</name>
+    <type>float</type>
+  </source>
+</block>

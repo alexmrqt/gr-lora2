@@ -23,10 +23,6 @@
 
 #include <lora2/lora_whiten.h>
 
-#define POLY_CR4_0 0x0000000000000001
-#define POLY_CR4_1 0x0001000100000001
-#define SEED_CR4_0 0x00D217A63A4E748B
-#define SEED_CR4_1 0xFF00FF17FF3AFF74
 
 namespace gr {
   namespace lora2 {
@@ -34,12 +30,11 @@ namespace gr {
     class lora_whiten_impl : public lora_whiten
     {
      private:
-		 uint64_t d_state[2], d_poly[2], d_seed[2];
+	   const uint8_t* d_wh;
+	   size_t d_wh_len;
 
      protected:
       int calculate_output_stream_length(const gr_vector_int &ninput_items);
-	  uint8_t shift();
-	  void reset();
 
      public:
       lora_whiten_impl(uint8_t CR, const std::string &len_tag_key);

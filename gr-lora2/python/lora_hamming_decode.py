@@ -78,8 +78,8 @@ class lora_hamming_decode(gr.basic_block):
             syndrome = (data_block[3]^data_block[5]^data_block[6]^data_block[7])
 
             data_block = (data_block + self.syndrome_table_CR4[syndrome])%2
-            n_err_corr = numpy.sum(self.syndrome_table_CR4[syndrome])
-            print(str(n_err_corr) + " errors corrected.")
+            #n_err_corr = numpy.sum(self.syndrome_table_CR4[syndrome])
+            #print(str(n_err_corr) + " errors corrected.")
 
         return data_block[-4:]
 

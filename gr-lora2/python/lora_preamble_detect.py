@@ -70,7 +70,7 @@ class lora_preamble_detect(gr.sync_block):
         fine_freq_estimate = numpy.mean(phase_diff)
 
         #Correct estimate with the slope of the estimator
-        fine_freq_estimate *= 0.5/((self.M-self.M/16)*numpy.pi)
+        fine_freq_estimate *= 0.5/(self.M*numpy.pi)
 
         self.buffer_meta[-1]['fine_freq_shift'] = fine_freq_estimate
 
@@ -147,8 +147,8 @@ class lora_preamble_detect(gr.sync_block):
         tag1_value = pmt.to_pmt(fine_freq_shift)
         tag2_key = pmt.intern('coarse_freq_offset')
         tag2_value = pmt.to_pmt(freq_shift/float(self.M))
-        tag3_key = pmt.intern('freq_offset')
-        tag3_value = pmt.to_pmt(freq_shift/float(self.M) + fine_freq_shift)
+        #tag3_key = pmt.intern('freq_offset')
+        #tag3_value = pmt.to_pmt(freq_shift/float(self.M))+ fine_freq_shift)
         tag4_key = pmt.intern('sync_word')
         tag4_value = pmt.to_pmt(sync_value)
         tag5_key = pmt.intern('time_offset')
@@ -157,7 +157,7 @@ class lora_preamble_detect(gr.sync_block):
         #Append tags
         self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
         self.add_item_tag(0, tag_offset, tag2_key, tag2_value)
-        self.add_item_tag(0, tag_offset, tag3_key, tag3_value)
+        #self.add_item_tag(0, tag_offset, tag3_key, tag3_value)
         self.add_item_tag(0, tag_offset, tag4_key, tag4_value)
         self.add_item_tag(0, tag_offset, tag5_key, tag5_value)
 

@@ -48,7 +48,7 @@ class lora_detect_sof(gr.sync_block):
 
         #Propagate all tags except those produced by the preamble detector
         for tag in tags:
-            if (pmt.to_python(tag.key) != 'freq_offset') \
+            if (pmt.to_python(tag.key) != 'coarse_freq_offset') \
             and (pmt.to_python(tag.key) != 'fine_freq_offset') \
             and (pmt.to_python(tag.key) != 'sync_word') \
             and (pmt.to_python(tag.key) != 'time_offset'):
@@ -104,15 +104,18 @@ class lora_detect_sof(gr.sync_block):
 
         #Relocate tags produced by preamble detector to tag_offset
         tag_time = self.get_tags_in_window(0, 0, 1, pmt.intern('time_offset'))
-        tag_freq = self.get_tags_in_window(0, 0, 1, pmt.intern('freq_offset'))
+        tag_coarse_freq = \
+            self.get_tags_in_window(0, 0, 1, pmt.intern('coarse_freq_offset'))
         tag_fine_freq = \
             self.get_tags_in_window(0, 0, 1, pmt.intern('fine_freq_offset'))
         tag_sync = self.get_tags_in_window(0, 0, 1, pmt.intern('sync_word'))
 
         self.add_item_tag(0, tag_offset, tag_sync[0].key, tag_sync[0].value)
         self.add_item_tag(0, tag_offset, tag_time[0].key, tag_time[0].value)
-        self.add_item_tag(0, tag_offset, tag_freq[0].key, tag_freq[0].value)
-        self.add_item_tag(0, tag_offset, tag_fine_freq[0].key, tag_fine_freq[0].value)
+        self.add_item_tag(0, tag_offset, tag_coarse_freq[0].key,
+                tag_coarse_freq[0].value)
+        self.add_item_tag(0, tag_offset, tag_fine_freq[0].key,
+                tag_fine_freq[0].value)
 
         #Copy items up to the next tag
         if len(tags) > 1:
