@@ -29,19 +29,21 @@ class css_demod(gr.sync_block):
     """
     docstring for block css_demod
     """
-    def __init__(self, M, freq_loop_gain):
+    def __init__(self, M, freq_loop_gain, phase_loop_gain):
         gr.sync_block.__init__(self,
             name="css_demod",
             in_sig=[(numpy.complex64,M)],
-            out_sig=[numpy.uint16, (numpy.complex64, M), numpy.float32])
+            out_sig=[numpy.uint16, (numpy.complex64, M), numpy.float32, numpy.float32])
 
         self.M = M
         self.freq_loop_gain = freq_loop_gain
+        self.phase_loop_gain = phase_loop_gain
         self.k = numpy.arange(0, self.M)
 
         self.demodulator = css_demod_algo(self.M)
 
         self.cfo_est = 0.0
+        self.phase_est = 0.0
         self.init_phase = 0.0
         #Keep track of the last two phases
         self.phase_buff = numpy.zeros(2, dtype=numpy.float32)
@@ -51,49 +53,47 @@ class css_demod(gr.sync_block):
         out0 = output_items[0]
         out1 = output_items[1]
         out2 = output_items[2]
+        out3 = output_items[3]
 
-        if self.freq_loop_gain > 0.0:
-            for i in range(0, len(in0)):
-                #Set initial offset, if tag detected
-                tags = self.get_tags_in_window(0, i, i+1,
-                        pmt.intern('fine_freq_offset'))
+        for i in range(0, len(in0)):
+            #Set initial offset, if tag detected
+            tags = self.get_tags_in_window(0, i, i+1,
+                    pmt.intern('fine_freq_offset'))
 
-                if len(tags) > 0:
-                    #If there are multiple tag, only interpret the first one
-                    self.cfo_est = pmt.to_float(tags[0].value)
+            if len(tags) > 0:
+                #If there are multiple tag, only interpret the first one
+                self.cfo_est = pmt.to_float(tags[0].value)
 
-                #Update frequency
-                phase_gain = -2 * numpy.pi * self.cfo_est
-                phasor = numpy.exp(1j * phase_gain * self.k + self.init_phase)
-                self.init_phase = (1j * phase_gain * self.M + self.init_phase)%(2*numpy.pi)
+            #Update frequency
+            phase_gain = -2 * numpy.pi * self.cfo_est
+            phasor = numpy.exp(1j * (phase_gain * self.k + self.init_phase + self.phase_est))
+            self.init_phase = (phase_gain * self.M + self.init_phase + self.phase_est)%(2*numpy.pi)
 
-                #Correct frequency and demodulate
-                (hard_sym, spectrum) = \
-                        self.demodulator.demodulate_with_spectrum(in0[i]*phasor)
+            #Correct frequency and demodulate
+            (hard_sym, spectrum) = \
+                    self.demodulator.demodulate_with_spectrum(in0[i]*phasor)
 
-                #Set outputs
-                out0[i] = hard_sym[0]
-                out1[i] = spectrum[0]
-                out2[i] = self.cfo_est
+            #Set outputs
+            out0[i] = hard_sym[0]
+            out1[i] = spectrum[0]
+            out2[i] = self.cfo_est
+            out3[i] = self.phase_est
 
-                #Frequency discriminator
-                self.phase_buff = numpy.roll(self.phase_buff, -1)
-                self.phase_buff[-1] = numpy.angle(out1[i][hard_sym][0])
+            #Frequency discriminator
+            self.phase_buff = numpy.roll(self.phase_buff, -1)
+            self.phase_buff[-1] = numpy.angle(out1[i][hard_sym][0])
 
-                phase_diff = numpy.mod(numpy.diff(self.phase_buff), 2*numpy.pi)
-                phase_diff[phase_diff>numpy.pi] -= 2*numpy.pi
+            phase_diff = numpy.mod(numpy.diff(self.phase_buff), 2*numpy.pi)
+            phase_diff[phase_diff>numpy.pi] -= 2*numpy.pi
 
-                #Compute error
-                error = numpy.mean(phase_diff)
-                error *= 0.5/(self.M*numpy.pi)
+            #Compute error
+            freq_error = numpy.mean(phase_diff)
+            freq_error *= 0.5/(self.M*numpy.pi)
 
-                #Update frequency
-                self.cfo_est += self.freq_loop_gain*error
-        else:
-            for i in range(0, len(in0)):
-                (hard_sym, spectrum) = \
-                        self.demodulator.demodulate_with_spectrum(in0[i])
-                out0[i] = hard_sym[0]
-                out1[i] = spectrum[0]
+            #Update frequency
+            self.cfo_est += self.freq_loop_gain*freq_error
+
+            #Update phase
+            self.phase_est = (self.phase_est - self.phase_loop_gain*self.phase_buff[-1])%(2*numpy.pi)
 
         return len(output_items[0])

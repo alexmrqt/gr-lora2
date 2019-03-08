@@ -50,6 +50,7 @@ class lora_detect_sof(gr.sync_block):
         for tag in tags:
             if (pmt.to_python(tag.key) != 'coarse_freq_offset') \
             and (pmt.to_python(tag.key) != 'fine_freq_offset') \
+            and (pmt.to_python(tag.key) != 'fine_time_offset') \
             and (pmt.to_python(tag.key) != 'sync_word') \
             and (pmt.to_python(tag.key) != 'time_offset'):
                 self.add_item_tag(0, tag.offset, tag.key, tag.value)

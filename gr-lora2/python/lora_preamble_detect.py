@@ -45,7 +45,7 @@ class lora_preamble_detect(gr.sync_block):
 
         #Buffers are initially set to -1
         self.conj_buffer = numpy.zeros(2, dtype=numpy.int) - 1
-        self.conj_buffer_soft = numpy.zeros(2)
+        self.conj_complex_buffer = numpy.zeros(2, dtype=numpy.complex64)
 
         if preamble_len > 2:
             self.buffer = numpy.zeros(preamble_len + 2, dtype=numpy.int) - 1
@@ -57,22 +57,6 @@ class lora_preamble_detect(gr.sync_block):
             self.buffer_meta = [dict() for i in range(0, 5)]
 
         self.set_output_multiple(self.M)
-
-    def fine_freq_estimate(self):
-        #Compute phases of complex samples corresponding to detected symbols
-        #Ignore first and last symbol as they are subject to time misalignment
-        phases = numpy.angle(self.complex_buffer[1:-1])
-
-        #Defferentiate phase, modulo 2pi, to get frequency
-        phase_diff = numpy.mod(numpy.diff(phases), 2*numpy.pi)
-        phase_diff[phase_diff>numpy.pi] -= 2*numpy.pi
-
-        fine_freq_estimate = numpy.mean(phase_diff)
-
-        #Correct estimate with the slope of the estimator
-        fine_freq_estimate *= 0.5/(self.M*numpy.pi)
-
-        self.buffer_meta[-1]['fine_freq_shift'] = fine_freq_estimate
 
     def detect_preamble(self):
         #Buffer not full yet
@@ -99,7 +83,22 @@ class lora_preamble_detect(gr.sync_block):
         if sync_val[0] < 8:
             return False
 
+        #Save sync value
         self.buffer_meta[-1]['sync_value'] = sync_val
+
+        tmp1 = self.complex_buffer[2:-1] * numpy.conj(self.complex_buffer[1:-2])
+        tmp2 = numpy.angle(tmp1[1:] * numpy.conj(tmp1[:-1]))
+        tmp2 *= 1.0/(2*self.M*numpy.pi)
+
+        #Compute and save fine frequency offset, corresponding to
+        #fine_cfo + fine_delay
+        #Compute phases of complex samples corresponding to detected symbols
+        #Ignore first and last symbol as they are subject to time misalignment
+        phase_diff = numpy.angle(self.complex_buffer[2:-1] \
+                    * numpy.conj(self.complex_buffer[1:-2]))
+        fine_offset = numpy.mean(phase_diff)
+
+        self.buffer_meta[-1]['fine_offset'] = fine_offset
 
         return True
 
@@ -107,11 +106,16 @@ class lora_preamble_detect(gr.sync_block):
         #Allow an error of +/- 1 on the two symbols
         if numpy.abs(self.conj_buffer[0] - self.conj_buffer[1]) <= 1:
             #Return symbol with the most confidence
-            idx = numpy.argmax(self.conj_buffer_soft)
+            idx = numpy.argmax(numpy.abs(self.conj_complex_buffer))
 
-            return self.conj_buffer[idx]
+            #Compute and save fine frequency offset, corresponding to
+            #fine_cfo - fine_delay
+            conj_fine_offset = numpy.angle(self.conj_complex_buffer[1] \
+                        * numpy.conj(self.conj_complex_buffer[0]))
 
-        return -1
+            return (self.conj_buffer[idx], conj_fine_offset)
+
+        return None
 
     def compute_tf_shifts(self, preamble_value, sof_value):
         #Compute time and frequency shift
@@ -124,6 +128,7 @@ class lora_preamble_detect(gr.sync_block):
             if freq_shift >= self.M/4:
                 freq_shift -= self.M/2
         else:
+            #This strangeness is likely due to the modulo M nature of the computation
             freq_shift -= self.M/2 + 5
 
         time_shift = -time_shift
@@ -134,8 +139,14 @@ class lora_preamble_detect(gr.sync_block):
 
         return (freq_shift, time_shift)
 
+    def compute_fine_tf_shifts(self, fine_offset, conj_fine_offset):
+        #Compute time and frequency shift
+        fine_time_shift = (fine_offset - conj_fine_offset)/(2*2*numpy.pi)
+        fine_freq_shift = (fine_offset + conj_fine_offset)/(2*self.M*2*numpy.pi)
 
-    def tag_end_preamble(self, freq_shift, fine_freq_shift, time_shift, sync_value, sof_idx):
+        return (fine_freq_shift, fine_time_shift)
+
+    def tag_end_preamble(self, freq_shift, fine_freq_shift, time_shift, fine_time_shift, sync_value, sof_idx):
         #Prepare tag
         #This delay estimator has an uncertainty of +/-M (by steps of M/2).
         #So we put the tag M items before the estimated SOF item, to allow
@@ -147,19 +158,19 @@ class lora_preamble_detect(gr.sync_block):
         tag1_value = pmt.to_pmt(fine_freq_shift)
         tag2_key = pmt.intern('coarse_freq_offset')
         tag2_value = pmt.to_pmt(freq_shift/float(self.M))
-        #tag3_key = pmt.intern('freq_offset')
-        #tag3_value = pmt.to_pmt(freq_shift/float(self.M))+ fine_freq_shift)
-        tag4_key = pmt.intern('sync_word')
-        tag4_value = pmt.to_pmt(sync_value)
-        tag5_key = pmt.intern('time_offset')
-        tag5_value = pmt.to_pmt(time_shift)
+        tag3_key = pmt.intern('sync_word')
+        tag3_value = pmt.to_pmt(sync_value)
+        tag4_key = pmt.intern('time_offset')
+        tag4_value = pmt.to_pmt(time_shift)
+        #tag5_key = pmt.intern('fine_time_offset')
+        #tag5_value = pmt.to_pmt(fine_time_shift)
 
         #Append tags
         self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
         self.add_item_tag(0, tag_offset, tag2_key, tag2_value)
-        #self.add_item_tag(0, tag_offset, tag3_key, tag3_value)
+        self.add_item_tag(0, tag_offset, tag3_key, tag3_value)
         self.add_item_tag(0, tag_offset, tag4_key, tag4_value)
-        self.add_item_tag(0, tag_offset, tag5_key, tag5_value)
+        #self.add_item_tag(0, tag_offset, tag5_key, tag5_value)
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
@@ -176,19 +187,20 @@ class lora_preamble_detect(gr.sync_block):
 
             (hard_sym, complex_sym) = \
                     self.demod.complex_demodulate(in0[i*self.M:(i+1)*self.M])
-            (self.buffer[-1], self.complex_buffer[-1]) = (hard_sym[0], complex_sym[0])
+            self.buffer[-1] = hard_sym[0]
+            self.complex_buffer[-1] = complex_sym[0]
 
             #Conjugate demod and shift conjugate buffer, if needed
             #AABBC or ABBCC
             #   ^       ^
             if ('sync_value' in self.buffer_meta[-2]) or ('sync_value' in self.buffer_meta[-3]):
                 self.conj_buffer = numpy.roll(self.conj_buffer, -1)
-                self.conj_buffer_soft = numpy.roll(self.conj_buffer_soft, -1)
+                self.conj_complex_buffer = numpy.roll(self.conj_complex_buffer, -1)
 
-                (hard, soft) = self.demod_conj.soft_demodulate(
+                (hard_sym, complex_sym) = self.demod_conj.complex_demodulate(
                                                 in0[i*self.M:(i+1)*self.M])
-                self.conj_buffer[-1] = hard[0]
-                self.conj_buffer_soft[-1] = soft[0]
+                self.conj_buffer[-1] = hard_sym[0]
+                self.conj_complex_buffer[-1] = complex_sym[0]
 
             #Check for preamble
             self.detect_preamble()
@@ -200,23 +212,25 @@ class lora_preamble_detect(gr.sync_block):
                 preamble_value = self.buffer_meta[-3]['preamble_value']
                 self.detect_sync(preamble_value)
 
-                self.fine_freq_estimate()
-
             #Compute time-frequency shift if downchirps has same value
             #ABBCC
             #  ^
             if 'sync_value' in self.buffer_meta[-3]:
-                sof_value = self.check_downchirps()
+                chk_down = self.check_downchirps()
+                if not chk_down is None:
+                    (sof_value, conj_fine_offset) = chk_down
 
-                ##Compute shifts
-                if sof_value >= 0:
-                    preamble_value = self.buffer_meta[-5]['preamble_value']
-                    (freq_shift, time_shift) = self.compute_tf_shifts(preamble_value, sof_value)
+                    ##Compute shifts
+                    if sof_value >= 0:
+                        preamble_value = self.buffer_meta[-5]['preamble_value']
+                        (freq_shift, time_shift) = self.compute_tf_shifts(preamble_value, sof_value)
 
-                    #Tag
-                    fine_freq_shift = self.buffer_meta[-3]['fine_freq_shift']
-                    sync_value = self.buffer_meta[-3]['sync_value']
-                    self.tag_end_preamble(freq_shift, fine_freq_shift, time_shift, sync_value, i)
+                        fine_offset = self.buffer_meta[-3]['fine_offset']
+                        (fine_freq_shift, fine_time_shift) = self.compute_fine_tf_shifts(fine_offset, conj_fine_offset)
+
+                        #Tag
+                        sync_value = self.buffer_meta[-3]['sync_value']
+                        self.tag_end_preamble(freq_shift, fine_freq_shift, time_shift, fine_time_shift, sync_value, i)
 
         #Copy input to output
         out0[:] = in0[:]

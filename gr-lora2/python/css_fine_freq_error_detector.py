@@ -27,7 +27,7 @@ class css_fine_freq_error_detector(gr.sync_block):
     """
     docstring for block css_fine_freq_error_detector
     """
-    def __init__(self, M, len_reg):
+    def __init__(self, M):
         gr.sync_block.__init__(self,
             name="css_fine_freq_error_detector",
             in_sig=[(numpy.complex64, M)],
@@ -35,30 +35,28 @@ class css_fine_freq_error_detector(gr.sync_block):
 
         self.M = M
 
-        self.message_port_register_out(pmt.intern("freq"))
+        self.reg_syms = numpy.zeros(2, dtype=numpy.int)
+        self.reg_complex = numpy.zeros(2, dtype=numpy.complex64)
 
-        self.set_output_multiple(len_reg)
+        self.message_port_register_out(pmt.intern("time"))
 
     def work(self, input_items, output_items):
-        phase = numpy.float64(0.0)
-        est_cfo = numpy.float64(0.0)
+        in0 = input_items[0]
+        est_delay = 0.0
 
-        for item in input_items[0]:
-            sym_idx = numpy.argmax(numpy.abs(item))
-            new_phase = numpy.angle(item[sym_idx])
+        for i in range(0, len(in0)):
+            self.reg_syms = numpy.roll(self.reg_syms, -1)
+            self.reg_complex = numpy.roll(self.reg_complex, -1)
 
-            phase_diff = (phase - new_phase)%(2*numpy.pi)
-            if phase_diff > numpy.pi:
-                phase_diff -= 2*numpy.pi
-            est_cfo += phase_diff
+            in0[i] /= numpy.sum(numpy.abs(in0[i])**2)
+            self.reg_syms[-1] = numpy.argmax(numpy.abs(in0[i]))
+            self.reg_complex[-1] = in0[i][self.reg_syms[-1]]
 
-            phase = new_phase
+            est_delay = numpy.abs(in0[i][(self.reg_syms[-1]-1)%self.M]) \
+                    - numpy.abs(in0[i][(self.reg_syms[-1]+1)%self.M])
+            est_delay *= (1.0 - numpy.abs(self.reg_complex[-1])) * self.M
 
-        est_cfo /= len(input_items[0])
-        est_cfo *= 0.5/((self.M-self.M/16)*numpy.pi)
-
-
-        self.message_port_pub(pmt.intern("freq"), pmt.from_float(numpy.float64(est_cfo)))
+            self.message_port_pub(pmt.intern("time"), pmt.from_float(numpy.float64(est_delay)))
 
         return len(input_items[0])
 
