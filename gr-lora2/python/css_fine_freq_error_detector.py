@@ -35,9 +35,6 @@ class css_fine_freq_error_detector(gr.sync_block):
 
         self.M = M
 
-        self.reg_syms = numpy.zeros(2, dtype=numpy.int)
-        self.reg_complex = numpy.zeros(2, dtype=numpy.complex64)
-
         self.message_port_register_out(pmt.intern("time"))
 
     def work(self, input_items, output_items):
@@ -45,16 +42,16 @@ class css_fine_freq_error_detector(gr.sync_block):
         est_delay = 0.0
 
         for i in range(0, len(in0)):
-            self.reg_syms = numpy.roll(self.reg_syms, -1)
-            self.reg_complex = numpy.roll(self.reg_complex, -1)
-
             in0[i] /= numpy.sum(numpy.abs(in0[i])**2)
-            self.reg_syms[-1] = numpy.argmax(numpy.abs(in0[i]))
-            self.reg_complex[-1] = in0[i][self.reg_syms[-1]]
+            sym = numpy.argmax(numpy.abs(in0[i]))
 
-            est_delay = numpy.abs(in0[i][(self.reg_syms[-1]-1)%self.M]) \
-                    - numpy.abs(in0[i][(self.reg_syms[-1]+1)%self.M])
-            est_delay *= (1.0 - numpy.abs(self.reg_complex[-1])) * self.M
+            prev_sym_complex_val = in0[i][(sym-1)%self.M]
+            sym_complex_val = in0[i][sym]
+            next_sym_complex_val = in0[i][(sym+1)%self.M]
+
+            est_delay = numpy.abs(prev_sym_complex_val) \
+                    - numpy.abs(next_sym_complex_val)
+            est_delay *= (1.0 - numpy.abs(sym_complex_val)) * self.M
 
             self.message_port_pub(pmt.intern("time"), pmt.from_float(numpy.float64(est_delay)))
 

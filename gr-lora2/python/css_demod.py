@@ -24,12 +24,13 @@ import numpy
 from gnuradio import gr
 
 from lora2 import css_demod_algo
+from lora2 import mmse_fir_fractional_delayer
 
 class css_demod(gr.sync_block):
     """
     docstring for block css_demod
     """
-    def __init__(self, M, freq_loop_gain, phase_loop_gain):
+    def __init__(self, M, freq_loop_gain, time_loop_gain):
         gr.sync_block.__init__(self,
             name="css_demod",
             in_sig=[(numpy.complex64,M)],
@@ -37,13 +38,14 @@ class css_demod(gr.sync_block):
 
         self.M = M
         self.freq_loop_gain = freq_loop_gain
-        self.phase_loop_gain = phase_loop_gain
+        self.time_loop_gain = time_loop_gain
         self.k = numpy.arange(0, self.M)
 
         self.demodulator = css_demod_algo(self.M)
+        self.delayer = mmse_fir_fractional_delayer.mmse_fir_fractional_delayer()
 
+        self.delay_est = 0.0
         self.cfo_est = 0.0
-        self.phase_est = 0.0
         self.init_phase = 0.0
         #Keep track of the last two phases
         self.phase_buff = numpy.zeros(2, dtype=numpy.float32)
@@ -55,6 +57,8 @@ class css_demod(gr.sync_block):
         out2 = output_items[2]
         out3 = output_items[3]
 
+        sym_count = 0
+
         for i in range(0, len(in0)):
             #Set initial offset, if tag detected
             tags = self.get_tags_in_window(0, i, i+1,
@@ -63,37 +67,58 @@ class css_demod(gr.sync_block):
             if len(tags) > 0:
                 #If there are multiple tag, only interpret the first one
                 self.cfo_est = pmt.to_float(tags[0].value)
+                #Also reset delay estimator and initial phase
+                self.init_phase = 0.0
+                self.delay_est = 0.0
+                sym_count = 0
 
             #Update frequency
             phase_gain = -2 * numpy.pi * self.cfo_est
-            phasor = numpy.exp(1j * (phase_gain * self.k + self.init_phase + self.phase_est))
-            self.init_phase = (phase_gain * self.M + self.init_phase + self.phase_est)%(2*numpy.pi)
+            phasor = numpy.exp(1j * (phase_gain * self.k + self.init_phase))
+            self.init_phase = (phase_gain * self.M + self.init_phase)%(2*numpy.pi)
 
-            #Correct frequency and demodulate
+            #Correct time, frequency and demodulate
+            correct_sig = self.delayer.delay(in0[i]*phasor, self.delay_est)
             (hard_sym, spectrum) = \
-                    self.demodulator.demodulate_with_spectrum(in0[i]*phasor)
+                    self.demodulator.demodulate_with_spectrum(correct_sig)
+
+            #Add 1 to demodulated symbols counter
+            sym_count += 1
 
             #Set outputs
             out0[i] = hard_sym[0]
             out1[i] = spectrum[0]
             out2[i] = self.cfo_est
-            out3[i] = self.phase_est
+            out3[i] = self.delay_est
 
-            #Frequency discriminator
-            self.phase_buff = numpy.roll(self.phase_buff, -1)
-            self.phase_buff[-1] = numpy.angle(out1[i][hard_sym][0])
+            ##CFO estimation if at least 2 symbols were demodulated
+            if sym_count > 1:
+                #Frequency discriminator
+                self.phase_buff = numpy.roll(self.phase_buff, -1)
+                self.phase_buff[-1] = numpy.angle(out1[i][hard_sym][0])
 
-            phase_diff = numpy.mod(numpy.diff(self.phase_buff), 2*numpy.pi)
-            phase_diff[phase_diff>numpy.pi] -= 2*numpy.pi
+                phase_diff = numpy.mod(numpy.diff(self.phase_buff), 2*numpy.pi)
+                phase_diff[phase_diff>numpy.pi] -= 2*numpy.pi
 
-            #Compute error
-            freq_error = numpy.mean(phase_diff)
-            freq_error *= 0.5/(self.M*numpy.pi)
+                #Compute error
+                freq_error = numpy.mean(phase_diff)
+                freq_error *= 0.5/(self.M*numpy.pi)
 
-            #Update frequency
-            self.cfo_est += self.freq_loop_gain*freq_error
+                #Update frequency
+                self.cfo_est += self.freq_loop_gain*freq_error
 
-            #Update phase
-            self.phase_est = (self.phase_est - self.phase_loop_gain*self.phase_buff[-1])%(2*numpy.pi)
+            ##Delay estimation
+            spectrum[0] /= numpy.sum(numpy.abs(spectrum[0])**2)
+            prev_sym_complex_val = spectrum[0][(hard_sym[0]-1)%self.M]
+            sym_complex_val = spectrum[0][hard_sym[0]]
+            next_sym_complex_val = spectrum[0][(hard_sym[0]+1)%self.M]
+
+            delay_error = numpy.abs(prev_sym_complex_val) \
+                    - numpy.abs(next_sym_complex_val)
+            delay_error *= (1.0 - numpy.abs(sym_complex_val)) * self.M
+
+            #Update delay
+            self.delay_est += self.time_loop_gain*delay_error
+            self.delay_est = self.delay_est%1.0
 
         return len(output_items[0])

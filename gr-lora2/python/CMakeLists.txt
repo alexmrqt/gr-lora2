@@ -53,7 +53,8 @@ GR_PYTHON_INSTALL(
     store_tags.py
     lora_detect_sof.py
     css_fine_freq_error_detector.py
-    css_demod.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    css_demod.py
+    mmse_fir_fractional_delayer.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################

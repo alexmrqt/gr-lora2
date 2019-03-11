@@ -4,7 +4,7 @@
   <key>lora2_css_demod</key>
   <category>[lora2]</category>
   <import>import lora2</import>
-  <make>lora2.css_demod($M, $freq_loop_gain, $phase_loop_gain)</make>
+  <make>lora2.css_demod($M, $freq_loop_gain, $time_loop_gain)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
@@ -23,8 +23,8 @@
   </param>
 
   <param>
-    <name>Phase Loop Gain</name>
-    <key>phase_loop_gain</key>
+    <name>Time Loop Gain</name>
+    <key>time_loop_gain</key>
     <type>float</type>
   </param>
 
@@ -62,7 +62,7 @@
   </source>
 
   <source>
-    <name>phase_est</name>
+    <name>time_est</name>
     <type>float</type>
   </source>
 </block>
