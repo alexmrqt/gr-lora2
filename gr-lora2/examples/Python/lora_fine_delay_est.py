@@ -27,7 +27,6 @@ class lora_sync_test(gr.top_block):
         self.delay = delay
         self.fine_delay = fine_delay
 
-        len_preamble = 8
         self.interp = 1
         self.M = 2**self.SF
 
@@ -38,13 +37,7 @@ class lora_sync_test(gr.top_block):
         syms_vec = numpy.random.randint(0, 2**SF, n_syms_pkt*n_pkts,
                 dtype=numpy.uint16)
         self.vector_source = blocks.vector_source_s(syms_vec.tolist(), False)
-        self.to_tagged = blocks.stream_to_tagged_stream(gr.sizeof_short, 1,
-                self.n_syms_pkt, 'packet_len')
-        self.add_preamble = lora2.lora_add_preamble(len_preamble, 0x12,
-                "packet_len", "sync_word", "payload")
         self.css_mod = lora2.css_mod(self.M, self.interp, 'packet_len')
-        self.add_reversed_chirps = lora2.lora_add_reversed_chirps(self.SF,
-                self.interp, "packet_len", "payload", "rev_chirps")
 
         #Channel (1: noise)
         self.tag_gate = blocks.tag_gate(gr.sizeof_gr_complex)
@@ -61,19 +54,21 @@ class lora_sync_test(gr.top_block):
         self.delayer = blocks.delay(gr.sizeof_gr_complex, self.delay)
         self.fine_delayer = filter.fractional_interpolator_cc(self.fine_delay, 1.0)
 
-        self.preamble_detector = lora2.lora_preamble_detect(self.SF,
-                len_preamble, debug=False, thres=1e-4)
-        self.store_tags = lora2.store_tags(numpy.complex64, "fine_freq_offset")
+        #Demod
+        self.to_vect = lora2.css_sync_and_vectorize(self.M)
+        self.demod = lora2.css_demod(self.M, 0.0,0.0)
+        self.null_sink_f1 = blocks.null_sink(gr.sizeof_float)
+        self.null_sink_f2 = blocks.null_sink(gr.sizeof_float)
+        self.null_sink_s = blocks.null_sink(gr.sizeof_short)
+        self.fine_time_err_est = lora2.css_fine_freq_error_detector(self.M)
+        self.msg_sink = blocks.message_debug()
 
         ##################################################
         # Connections
         ##################################################
         #Modulator
-        self.connect((self.vector_source, 0), (self.to_tagged, 0))
-        self.connect((self.to_tagged, 0), (self.add_preamble, 0))
-        self.connect((self.add_preamble, 0), (self.css_mod, 0))
-        self.connect((self.css_mod, 0), (self.add_reversed_chirps, 0))
-        self.connect((self.add_reversed_chirps, 0), (self.tag_gate, 0))
+        self.connect((self.vector_source, 0), (self.css_mod, 0))
+        self.connect((self.css_mod, 0), (self.tag_gate, 0))
 
         #Channel
         self.connect((self.tag_gate, 0), (self.adder, 1))
@@ -82,86 +77,88 @@ class lora_sync_test(gr.top_block):
         self.connect((self.cfo_source, 0), (self.multiplicator, 0))
         self.connect((self.multiplicator, 0), (self.delayer, 0))
         self.connect((self.delayer, 0), (self.fine_delayer, 0))
-        self.connect((self.fine_delayer, 0), (self.preamble_detector, 0))
 
         #Demodulator
-        self.connect((self.preamble_detector, 0), (self.store_tags, 0))
+        self.connect((self.fine_delayer, 0), (self.to_vect, 0))
+        self.connect((self.to_vect, 0), (self.demod, 0))
+        self.connect((self.demod, 1), (self.fine_time_err_est, 0))
+        self.msg_connect((self.fine_time_err_est, 'time'),
+                (self.msg_sink, 'store'))
+
+        self.connect((self.demod, 0), (self.null_sink_s, 0))
+        self.connect((self.demod, 2), (self.null_sink_f1, 0))
+        self.connect((self.demod, 3), (self.null_sink_f2, 0))
  
 if __name__ == "__main__":
     #Parameters
     SF = 9
     n_pkts = 1
-    n_bytes = 1*SF
-    n_syms = 8*n_bytes/SF
+    n_syms = 2
     M = 2**SF
 
-    #EbN0dB = numpy.linspace(0, 10, 11)
-    EbN0dB = numpy.array([10])
+    EbN0dB = numpy.linspace(0, 50, 11)
+    #EbN0dB = numpy.array([100])
     Eb = 1.0/M
     N0=Eb * 10**(-EbN0dB/10.0)
     noise_var=(M**2 * N0)/numpy.log2(M)
     time_offset = 0
-    fine_delay=0.0
+    cfo = 0.0
 
-    cfo_min = -0.5/M
-    cfo_max = 0.5/M
-    cfos = numpy.linspace(cfo_min, cfo_max, 50)
+    fine_delay_min = 0.0
+    fine_delay_max = 0.99
+    fine_delays = numpy.linspace(fine_delay_min, fine_delay_max, 20)
 
-    #CFO impact
-    cfo_est = numpy.zeros((len(cfos), len(EbN0dB)))
-    for j in range(0, len(cfos)):
-        print('CFO = ' + str(cfos[j]))
+    #Fine delay impact
+    fine_delay_est = numpy.zeros((len(fine_delays), len(EbN0dB)))
+    for j in range(0, len(fine_delays)):
+        print('Fine delay = ' + str(fine_delays[j]))
         for i in range(0, len(EbN0dB)):
-            #Setup block
-            tb = lora_sync_test(SF, n_pkts, n_syms, noise_var[i], cfos[j],
-                    time_offset, fine_delay)
+            if fine_delays[j] < 1.0:
+                #Setup block
+                tb = lora_sync_test(SF, n_pkts, n_syms, noise_var[i], cfo,
+                        time_offset, fine_delays[j])
+            else:
+                tb = lora_sync_test(SF, n_pkts, n_syms, noise_var[i], cfo,
+                        time_offset+1, fine_delays[j]-1)
 
             #Simulate
             tb.start()
             tb.wait()
 
-            #Retrieve
-            tags = tb.store_tags.get_tags()
+            n_msg = tb.msg_sink.num_messages()
 
-            #Compute error
-            mean_est_cfo = 0.0
-            if len(tags) > 0:
-                for tag in tags:
-                    mean_est_cfo += pmt.to_float(tag.value)
-                mean_est_cfo /= len(tags)
+            if n_msg > 0:
+                est_delay = 0.0
+                for k in range(0, n_msg):
+                    est_delay -= pmt.to_float(tb.msg_sink.get_message(k))
+
+                #Detected / total ratio
+                fine_delay_est[j,i] = est_delay/n_msg
+
+                print('Estimated fine delay Eb/N0 (dB)=' + str(EbN0dB[i]) + ' -> '
+                        + str(fine_delay_est[j,i]))
             else:
-                mean_est_cfo = 10.0
-                print('No tag detected.')
-
-            if len(tags) > n_pkts:
-                print('Multiple tags detected.')
-
-            #Detected / total ratio
-            cfo_est[j,i] = mean_est_cfo
-
-            print('Estimated CFO Eb/N0 (dB)=' + str(EbN0dB[i]) + ' -> '
-                    + str(mean_est_cfo))
+                print('No message detected.')
 
             del tb
 
     plt.figure()
-    plt.plot(cfos, cfos, label='Ref')
+    plt.plot(fine_delays, fine_delays, label='Ref')
     for j in range(0, len(EbN0dB)):
-        plt.plot(cfos, cfo_est[:,j], label=str(EbN0dB[j]), marker='+')
+        plt.plot(fine_delays, fine_delay_est[:,j], label=str(EbN0dB[j]), marker='+')
 
 
-    plt.title('Fine CFO estimator')
+    plt.title('Fine delay estimator')
     plt.grid(which='both')
-    plt.ylabel('Estimated CFO')
-    plt.xlabel('CFO')
+    plt.ylabel('Estimated delay')
+    plt.xlabel('delay')
 
     axes = plt.gca()
-    #axes.set_xlim([-1.0, 1.0])
-    #axes.set_ylim([-1.0, 1.0])
-    axes.set_xlim([cfo_min, cfo_max])
-    axes.set_ylim([cfo_min, cfo_max])
-    #extremum = numpy.max((numpy.max(error.flatten()), -numpy.min(error.flatten())))
-    #axes.set_ylim([-extremum, extremum])
+    axes.set_xlim([fine_delay_min, fine_delay_max])
+    #axes.set_ylim([fine_delay_min, fine_delay_max])
+    extremum = numpy.max((numpy.max(fine_delay_est.flatten()), -numpy.min(fine_delay_est.flatten())))
+    axes.set_ylim([-extremum, extremum])
     plt.legend()
     plt.show()
+
 

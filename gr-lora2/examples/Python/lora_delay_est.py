@@ -114,13 +114,15 @@ if __name__ == "__main__":
 
     nonoise = True
     if not nonoise:
-        EbN0dB = numpy.linspace(0, 10, 11)
+        #EbN0dB = numpy.linspace(0, 10, 11)
+        EbN0dB = numpy.array([10])
     else:
         EbN0dB = numpy.array([0])
     Eb = 1.0/M
     N0=Eb * 10**(-EbN0dB/10.0)
     noise_var=(M**2 * N0)/numpy.log2(M)
-    cfo = (10.0)/float(M)
+    #cfo = (10.0)/float(M)
+    cfo = 0
 
     delay_min = -M/2
     delay_max = M/2
@@ -148,7 +150,7 @@ if __name__ == "__main__":
                 if len(tags) > 0:
                     n_det += 1
                     delay_est[j,i] += pmt.to_float(tags[0].value)
-                if len(tags) > 1:
+                if len(tags) > n_pkts:
                     print('Multiple tags detected.')
                 if len(tags) == 0:
                     print('No tag detected.')
@@ -156,7 +158,7 @@ if __name__ == "__main__":
             if n_det > 0:
                 delay_est[j,i] /= n_det
             else:
-                delay_est[j,i] = 2*M
+                delay_est[j,i] = 10*M
 
             print('Estimated delay Eb/N0 (dB)=' + str(EbN0dB[i]) + ' -> '
                     + str(delay_est[j,i]))

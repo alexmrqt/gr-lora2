@@ -23,8 +23,9 @@ def lfsr(poly, seed, n_bits):
         next_input = sum_GF2(numpy.bitwise_and(sr, poly))
         
         #Shift register
-        sr = numpy.roll(sr,1)
-        sr[0] = next_input
+#        sr = numpy.roll(sr,1)
+#        sr[0] = next_input
+        sr = numpy.concatenate(([next_input], sr[:-1]))
     
     return out
 

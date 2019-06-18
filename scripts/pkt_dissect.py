@@ -8,6 +8,7 @@ Created on Fri Jan 25 14:57:53 2019
 
 import numpy
 import scipy
+from gf2_utils import mtx_mul_GF2
 
 def deinterleave_mtx(CR, SF, mtx, reduced_rate=False):
         
@@ -16,6 +17,7 @@ def deinterleave_mtx(CR, SF, mtx, reduced_rate=False):
         mtx[:,i] = numpy.roll(mtx[:,i], i)
 
     mtx = numpy.fliplr(mtx)
+
 
     return mtx
 
@@ -47,7 +49,9 @@ def compute_hdr_crc(vect):
     return res
 
 def find_possible_crc_poly(data, crc_ref):
-    possible_poly = [[], [], [], [], []]
+    #possible_poly = [[], [], [], []] #Header CRC
+    possible_poly = [[], [], [], []] #Hamming (8,4)
+    #possible_poly = [[], [], []] #Hamming (8,3)
     
     for i in range(0, 2**len(data)):
         i_str = numpy.binary_repr(i, len(data))
@@ -75,6 +79,36 @@ def find_common_crc_poly(data_list, crc_ref_list):
                 print('No matching poly for digit ' + str(j) + '. Caused by data ' + str(i) + ' ' +  str(data_list[i]) + ' and CRC ' + str(crc_ref_list[i]))
 
     return possible_poly
+
+def compute_parity_check_matrix(G, CR):
+    G = numpy.matrix(G)
+    
+    tmp = G[:,:CR]
+    
+    return numpy.concatenate((numpy.eye(CR), tmp.transpose()), axis=1)
+
+def compute_syndrome_table(H, CR):
+    syn_table = numpy.ones((2**4, CR+4), dtype=numpy.uint8)
+    
+    #For all error patterns
+    for err in range(0, 2**(CR+4)):
+        err_str = numpy.binary_repr(err, CR+4)
+        err_bin = numpy.frombuffer(err_str.encode(), dtype='S1')
+        err_bin = numpy.array(err_bin, dtype=numpy.uint8)
+        
+        syndrome = numpy.packbits(numpy.array(mtx_mul_GF2(H, numpy.matrix(err_bin).transpose()), dtype=numpy.uint8))>>4
+        w_err_can = numpy.sum(err_bin)
+        w_err_curr = numpy.sum(syn_table[syndrome])
+        
+        if syndrome == 0:
+            print(w_err_can)
+            print(w_err_curr)
+        
+        if w_err_can < w_err_curr:
+            syn_table[syndrome] = err_bin
+    
+    return syn_table
+        
 
 def extract_hdr(vect):
     hdr = vect[0:20]
@@ -166,14 +200,14 @@ CR=4
 ##f = scipy.fromfile(open("capture_rndm9_4_8.raw"), dtype=scipy.uint16)
 ##f = scipy.fromfile(open("capture_rndm13_4_8.raw"), dtype=scipy.uint16)
 ##f = f[0:SF*10]
-#
+
 #rest = decode_hdr(f, SF)
 #print('Remaining bits in header')
 #print(rest)
-
+#
 #File containing the payload
-f = scipy.fromfile(open("capture_zeros_4_8.raw"), dtype=scipy.uint8)
-print(numpy.packbits(f))
-
-f1=numpy.concatenate(([1,1,1,1,1,1,1,1],f))
-print(numpy.packbits(f1))
+#f = scipy.fromfile(open("capture_zeros_4_8.raw"), dtype=scipy.uint8)
+#print(f)
+#
+#f1=numpy.concatenate(([0xFF],f))
+#print(f1)

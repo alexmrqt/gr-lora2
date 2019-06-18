@@ -8,8 +8,8 @@
 import numpy
 
 # matrix size
-CR= 5
-SF= 8
+CR= 4
+SF= 9
 
 # input random vector
 input_vect= numpy.random.randint( 0, 2, size= ( 1, (CR+4)*SF ) )

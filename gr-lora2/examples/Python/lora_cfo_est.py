@@ -38,8 +38,6 @@ class lora_sync_test(gr.top_block):
         self.delay = delay
 
         self.interp = 1
-        self.chan_margin = 75000
-        self.chan_bw = 125000
         self.M = 2**self.SF
 
         ##################################################
@@ -99,21 +97,21 @@ class lora_sync_test(gr.top_block):
 if __name__ == "__main__":
     #Parameters
     SF = 9
-    n_pkts = 10
+    n_pkts = 1
     n_bytes = 1*SF
     n_syms = 8*n_bytes/SF
     M = 2**SF
 
     #EbN0dB = numpy.linspace(0, 10, 11)
-    EbN0dB = numpy.array([100])
+    EbN0dB = numpy.array([10])
     Eb = 1.0/M
     N0=Eb * 10**(-EbN0dB/10.0)
     noise_var=(M**2 * N0)/numpy.log2(M)
+    time_offset = 0
 
     cfo_min = -1.0/4
     cfo_max = 1.0/4
     cfos = numpy.arange(-M/4, M/4+1) / float(M)
-    #cfos = numpy.array([0.00104166666667])
 
     #CFO impact
     cfo_est = numpy.zeros((len(cfos), len(EbN0dB)))
@@ -121,7 +119,7 @@ if __name__ == "__main__":
         print('CFO = ' + str(cfos[j]))
         for i in range(0, len(EbN0dB)):
             #Setup block
-            tb = lora_sync_test(SF, n_pkts, n_syms, noise_var[i], cfos[j], 0)
+            tb = lora_sync_test(SF, n_pkts, n_syms, noise_var[i], cfos[j], time_offset)
 
             #Simulate
             tb.start()
@@ -138,6 +136,10 @@ if __name__ == "__main__":
                 mean_est_cfo /= len(tags)
             else:
                 mean_est_cfo = 10.0
+                print('No tag detected.')
+
+            if len(tags) > n_pkts:
+                print('Multiple tags detected.')
 
             #Detected / total ratio
             cfo_est[j,i] = mean_est_cfo
@@ -149,7 +151,7 @@ if __name__ == "__main__":
 
     plt.figure()
     for j in range(0, len(EbN0dB)):
-        plt.plot(cfos, cfo_est[:,j], label=str(EbN0dB[j]))
+        plt.plot(cfos*M, cfo_est[:,j]*M, label=str(EbN0dB[j]))
 
     plt.title('CFO estimator')
     plt.grid(which='both')
@@ -157,8 +159,10 @@ if __name__ == "__main__":
     plt.xlabel('CFO')
 
     axes = plt.gca()
-    axes.set_xlim([-1.0, 1.0])
-    axes.set_ylim([-1.0, 1.0])
+    #axes.set_xlim([-1.0, 1.0])
+    #axes.set_ylim([-1.0, 1.0])
+    axes.set_xlim([-M, M])
+    axes.set_ylim([-M, M])
     plt.legend()
     plt.show()
 

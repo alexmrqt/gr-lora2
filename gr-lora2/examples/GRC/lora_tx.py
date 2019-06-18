@@ -6,7 +6,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: LoRa TX
-# Generated: Tue Dec 11 17:55:04 2018
+# Generated: Wed Feb 27 14:56:18 2019
 # GNU Radio version: 3.7.12.0
 ##################################################
 
@@ -140,54 +140,6 @@ class lora_tx(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_1_win = sip.wrapinstance(self.qtgui_time_sink_x_1.pyqwidget(), Qt.QWidget)
         self.top_grid_layout.addWidget(self._qtgui_time_sink_x_1_win)
-        self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
-        	128, #size
-        	1.0, #samp_rate
-        	"Symbols", #name
-        	1 #number of inputs
-        )
-        self.qtgui_time_sink_x_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0.set_y_axis(0, M)
-
-        self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
-
-        self.qtgui_time_sink_x_0.enable_tags(-1, True)
-        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0.enable_autoscale(False)
-        self.qtgui_time_sink_x_0.enable_grid(False)
-        self.qtgui_time_sink_x_0.enable_axis_labels(True)
-        self.qtgui_time_sink_x_0.enable_control_panel(True)
-        self.qtgui_time_sink_x_0.enable_stem_plot(False)
-
-        if not True:
-          self.qtgui_time_sink_x_0.disable_legend()
-
-        labels = ["Non-coherent", "Coherent", '', '', '',
-                  '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-                  "magenta", "yellow", "dark red", "dark green", "blue"]
-        styles = [1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-                   -1, -1, -1, -1, -1]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-                  1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in xrange(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_0.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_0.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_0.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_0.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_0.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win)
         self.qtgui_sink_x_0 = qtgui.sink_c(
         	1024, #fftsize
         	firdes.WIN_BLACKMAN_hARRIS, #wintype
@@ -210,7 +162,6 @@ class lora_tx(gr.top_block, Qt.QWidget):
         self.pluto_sink_0 = iio.pluto_sink('ip:192.168.3.1', int(chan_freq), RF_samp_rate, int(chan_bw + chan_margin), 0xFFFF, False, attenuation, '', True)
         self.lora2_css_mod_0 = lora2.css_mod(M, interp, "packet_len")
         self.blocks_vector_source_x_0_0_0_0 = blocks.vector_source_s([0, M/2], True, 1, [])
-        self.blocks_short_to_float_0 = blocks.short_to_float(1, 1)
         self.analog_quadrature_demod_cf_0 = analog.quadrature_demod_cf(1.0/numpy.pi)
 
 
@@ -219,8 +170,6 @@ class lora_tx(gr.top_block, Qt.QWidget):
         # Connections
         ##################################################
         self.connect((self.analog_quadrature_demod_cf_0, 0), (self.qtgui_time_sink_x_1, 0))
-        self.connect((self.blocks_short_to_float_0, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.blocks_vector_source_x_0_0_0_0, 0), (self.blocks_short_to_float_0, 0))
         self.connect((self.blocks_vector_source_x_0_0_0_0, 0), (self.lora2_css_mod_0, 0))
         self.connect((self.lora2_css_mod_0, 0), (self.analog_quadrature_demod_cf_0, 0))
         self.connect((self.lora2_css_mod_0, 0), (self.rational_resampler_xxx_0, 0))
@@ -253,7 +202,6 @@ class lora_tx(gr.top_block, Qt.QWidget):
 
     def set_M(self, M):
         self.M = M
-        self.qtgui_time_sink_x_0.set_y_axis(0, self.M)
         self.blocks_vector_source_x_0_0_0_0.set_data([0, self.M/2], [])
         self.set_T(float(self.M)/self.chan_bw)
 
