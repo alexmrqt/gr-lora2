@@ -26,14 +26,14 @@ from gnuradio import gr
 from lora2 import css_demod_algo
 from lora2 import mmse_fir_fractional_delayer
 
-class css_demod(gr.sync_block):
+class css_demod(gr.basic_block):
     """
     docstring for block css_demod
     """
     def __init__(self, M, freq_loop_gain, time_loop_gain):
-        gr.sync_block.__init__(self,
+        gr.basic_block.__init__(self,
             name="css_demod",
-            in_sig=[(numpy.complex64,M)],
+            in_sig=[numpy.complex64],
             out_sig=[numpy.uint16, (numpy.complex64, M), numpy.float32, numpy.float32])
 
         self.M = M
@@ -50,7 +50,14 @@ class css_demod(gr.sync_block):
         #Keep track of the last two phases
         self.phase_buff = numpy.zeros(2, dtype=numpy.float32)
 
-    def work(self, input_items, output_items):
+        #Block tag propagation
+        self.set_tag_propagation_policy(gr.TPP_CUSTOM)
+
+    def forecast(self, noutput_items, ninput_items_required):
+        #Most of the time, this block simply decimates by M
+        ninput_items_required[0] = self.M * noutput_items
+
+    def general_work(self, input_items, output_items):
         in0 = input_items[0]
         out0 = output_items[0]
         out1 = output_items[1]
@@ -59,9 +66,10 @@ class css_demod(gr.sync_block):
 
         sym_count = 0
 
-        for i in range(0, len(in0)):
+        n_syms = min(len(in0) // self.M, len(out0))
+        for i in range(0, n_syms):
             #Set initial offset, if tag detected
-            tags = self.get_tags_in_window(0, i, i+1,
+            tags = self.get_tags_in_window(0, i*self.M, (i+1)*self.M,
                     pmt.intern('fine_freq_offset'))
 
             if len(tags) > 0:
@@ -78,7 +86,8 @@ class css_demod(gr.sync_block):
             self.init_phase = (phase_gain * self.M + self.init_phase)%(2*numpy.pi)
 
             #Correct time, frequency and demodulate
-            correct_sig = self.delayer.delay(in0[i]*phasor, self.delay_est)
+            sig = in0[i*self.M:(i+1)*self.M]
+            correct_sig = self.delayer.delay(sig*phasor, self.delay_est)
             (hard_sym, spectrum) = \
                     self.demodulator.demodulate_with_spectrum(correct_sig)
 
@@ -121,4 +130,5 @@ class css_demod(gr.sync_block):
             self.delay_est += self.time_loop_gain*delay_error
             self.delay_est = self.delay_est%1.0
 
-        return len(output_items[0])
+        self.consume(0, n_syms*self.M)
+        return n_syms

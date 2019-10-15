@@ -4,7 +4,7 @@
   <key>lora2_css_mod</key>
   <category>[lora2]</category>
   <import>import lora2</import>
-  <make>lora2.css_mod($M, $interp, $len_tag_key)</make>
+  <make>lora2.css_mod($M, $interp)</make>
   <param>
     <name>M</name>
     <key>M</key>
@@ -14,11 +14,6 @@
     <name>Interpolation</name>
     <key>interp</key>
 	<type>int</type>
-  </param>
-  <param>
-    <name>Length Tag Key</name>
-    <key>len_tag_key</key>
-	<type>string</type>
   </param>
 
   <sink>

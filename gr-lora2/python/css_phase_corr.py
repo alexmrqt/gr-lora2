@@ -33,29 +33,35 @@ class css_phase_corr(gr.sync_block):
             out_sig=[(numpy.complex64, M), numpy.float32])
 
         self.M = M
-        self.reg = len_reg*[0.0 + 1j*0.0]
+        if len_reg > 0:
+            self.reg = len_reg*[0.0 + 1j*0.0]
+        else:
+            self.reg = None
 
     def work(self, input_items, output_items):
         inp = input_items[0]
         outp_sig = output_items[0]
         outp_phase = output_items[1]
 
-        for i in range(0, len(outp_sig)):
-            #Correct phase of incoming signal
-            phase = numpy.angle(numpy.sum(self.reg))
-            outp_sig[i] = inp[i] * numpy.exp(-1j*phase)
-            outp_phase[i] = phase
+        if self.reg is None:
+            outp_sig[:] = inp[:]
+        else:
+            for i in range(0, len(outp_sig)):
+                #Correct phase of incoming signal
+                phase = numpy.angle(numpy.sum(self.reg))
+                outp_sig[i] = inp[i] * numpy.exp(-1j*phase)
+                outp_phase[i] = phase
 
-            #Find extremum of the real part of the signal
-            rsig = numpy.real(outp_sig[i])
-            dec = 0
-            if(numpy.max(rsig) > numpy.max(-1.0 * rsig)):
-                dec = numpy.argmax(rsig)
-            else:
-                dec = numpy.argmin(rsig)
+                #Find extremum of the real part of the signal
+                rsig = numpy.real(outp_sig[i])
+                dec = 0
+                if(numpy.max(rsig) > numpy.max(-1.0 * rsig)):
+                    dec = numpy.argmax(rsig)
+                else:
+                    dec = numpy.argmin(rsig)
 
-            #Shift reg and add input symbol corresponding to decision
-            self.reg.pop(0)
-            self.reg.append(inp[i][dec])
+                #Shift reg and add input symbol corresponding to decision
+                self.reg.pop(0)
+                self.reg.append(inp[i][dec])
 
         return len(output_items[0])

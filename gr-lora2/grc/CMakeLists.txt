@@ -19,7 +19,6 @@
 # Boston, MA 02110-1301, USA.
 install(FILES
     lora2_css_phase_corr.xml
-    lora2_css_mod.xml
     lora2_lora_preamble_detect.xml
     lora2_css_sync_and_vectorize.xml
     lora2_lora_implicit_get_payload.xml
@@ -42,5 +41,14 @@ install(FILES
     lora2_store_tags.xml
     lora2_lora_detect_sof.xml
     lora2_css_fine_freq_error_detector.xml
-    lora2_css_demod.xml DESTINATION share/gnuradio/grc/blocks
+    lora2_css_demod.xml
+    lora2_gray_deindexer.xml
+    lora2_lora_soft_deinterleaver.xml
+    lora2_lora_soft_dewhiten.xml
+    lora2_lora_soft_hamming_decode.xml
+    lora2_css_mod.xml
+    lora2_css_llr_converter.xml
+    lora2_tag_delay.xml
+    lora2_css_genie_phase_est.xml
+    lora2_mfsk_genie_phase_est.xml DESTINATION share/gnuradio/grc/blocks
 )

@@ -50,6 +50,7 @@ class lora_interleaver(gr.basic_block):
         self.len_block_out = self.CR+4
 
         self.set_output_multiple(self.len_block_out)
+        self.set_tag_propagation_policy(gr.TPP_CUSTOM)
 
     def forecast(self, noutput_items, ninput_items_required):
         #setup size of input_items[i] for work call
@@ -57,6 +58,12 @@ class lora_interleaver(gr.basic_block):
             n_blocks = noutput_items // self.len_block_out
 
             ninput_items_required[i] = n_blocks * self.len_block_in
+
+    def propagate_tags(self, tags, out_idx):
+        out_tag_offset = out_idx + self.nitems_written(0)
+
+        for tag in tags:
+            self.add_item_tag(0, out_tag_offset, tag.key, tag.value)
 
     def general_work(self, input_items, output_items):
         in0 = input_items[0]
@@ -68,8 +75,19 @@ class lora_interleaver(gr.basic_block):
         n_blocks = min(len(in0) // self.len_block_in, len(out) // self.len_block_out)
 
         for j in range(0, n_blocks):
-            vect_bin = in0[j*self.len_block_in:(j+1)*self.len_block_in]
+            in_idx_start = j*self.len_block_in
+            in_idx_stop = in_idx_start + self.len_block_in - 1
 
+            out_idx_start = j*self.len_block_out
+            out_idx_stop = out_idx_start + self.len_block_out - 1
+
+            vect_bin = in0[in_idx_start:in_idx_stop+1]
+
+            #Handle tag propagation
+            tags = self.get_tags_in_window(0, in_idx_start, in_idx_stop)
+            self.propagate_tags(tags, out_idx_start)
+
+            #Process items
             # In reduced rate mode, the last two line of the interleaving matrix
             # will be padded with zeros.
             if self.reduced_rate:
@@ -91,7 +109,7 @@ class lora_interleaver(gr.basic_block):
             mtx = numpy.flipud(mtx)
 
             #Convert to binary scalar
-            out[j*self.len_block_out:(j+1)*self.len_block_out] = \
+            out[out_idx_start:out_idx_stop+1] = \
                     numpy.dot(self.base2, mtx)
 
         #Tell GNURadio how many items were produced

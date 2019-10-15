@@ -27,7 +27,7 @@
 
 namespace gr {
   namespace lora2 {
-	
+
 	static const uint8_t d_sf9_cr4_wh[] = {
          0xff, 0x2e, 0xff, 0x5b, 0xff, 0xf0, 0xdf, 0x00, 0x7f, 0x91, 0x2f, 0x70,
 		 0x58, 0x6d, 0xf8, 0x6b, 0x40, 0x97, 0xd1, 0x7f, 0x73, 0x2c, 0x61, 0x5c,
@@ -109,19 +109,27 @@ namespace gr {
     {
       const uint8_t *in = (const uint8_t *) input_items[0];
       uint8_t *out = (uint8_t *) output_items[0];
-	  uint8_t curr_wh_byte = 0;
+	  //uint8_t curr_wh_byte = 0;
 
 	  if (ninput_items[0] > d_wh_len * 8) {
 		  throw std::runtime_error("Packet too big to be dewhitened");
 	  }
 
 	  for (int i=0 ; i < ninput_items[0]/8 ; ++i) {
-		  curr_wh_byte = d_wh[i];
-		  for (int j=0 ; j < 8 ; ++j) {
-			  out[i*8 + j] = in[i*8 + j] ^ (curr_wh_byte>>7)&0x01;
+		  out[i*8]     = in[i*8]     ^ (d_wh[i]>>7)&0x01;
+		  out[i*8 + 1] = in[i*8 + 1] ^ (d_wh[i]>>6)&0x01;
+		  out[i*8 + 2] = in[i*8 + 2] ^ (d_wh[i]>>5)&0x01;
+		  out[i*8 + 3] = in[i*8 + 3] ^ (d_wh[i]>>4)&0x01;
+		  out[i*8 + 4] = in[i*8 + 4] ^ (d_wh[i]>>3)&0x01;
+		  out[i*8 + 5] = in[i*8 + 5] ^ (d_wh[i]>>2)&0x01;
+		  out[i*8 + 6] = in[i*8 + 6] ^ (d_wh[i]>>1)&0x01;
+		  out[i*8 + 7] = in[i*8 + 7] ^  d_wh[i]&0x01;
+		  //curr_wh_byte = d_wh[i];
+		  //for (int j=0 ; j < 8 ; ++j) {
+		  //    out[i*8 + j] = in[i*8 + j] ^ (curr_wh_byte>>7)&0x01;
 
-			  curr_wh_byte = curr_wh_byte<<1;
-		  }
+		  //    curr_wh_byte = curr_wh_byte<<1;
+		  //}
 	  }
 
       // Tell runtime system how many output items we produced.

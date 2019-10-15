@@ -39,8 +39,8 @@ class lora_deinterleaver(gr.basic_block):
 
         #Length of one block of data
         self.len_block_in = self.CR+4
-
         self.len_block_out = self.SF * (self.CR+4)
+
         #In reduced rate mode, two codewords are discarded from the output
         #block.
         if self.reduced_rate:
@@ -84,8 +84,8 @@ class lora_deinterleaver(gr.basic_block):
 
             #Process items
             vect_short = in0[in_idx_start:in_idx_stop+1]
-            vect_bin = [numpy.binary_repr(ele, self.SF) for ele in vect_short]
-            vect_bin = [numpy.frombuffer(ele.encode(), dtype='S1') for ele in vect_bin]
+            vect_bin = [[(ele>>k)&0x01 for k in reversed(range(0,self.SF))] \
+                    for ele in vect_short]
             vect_bin = numpy.array(vect_bin, dtype=numpy.uint8).flatten()
 
             mtx = numpy.flipud(vect_bin.reshape((self.CR+4, self.SF)).transpose())

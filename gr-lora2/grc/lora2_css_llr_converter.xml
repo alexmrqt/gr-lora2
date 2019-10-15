@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<block>
+  <name>CSS LLR Converter</name>
+  <key>lora2_css_llr_converter</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.css_llr_converter($M, $true_llr, $sigma_b)</make>
+
+  <param>
+    <name>M</name>
+    <key>M</key>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>SF</name>
+    <key>SF</key>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>True LLR</name>
+    <key>true_llr</key>
+    <type>bool</type>
+  </param>
+
+  <param>
+    <name>Noise variance</name>
+    <key>sigma_b</key>
+    <type>float</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>float</type>
+    <vlen>$M</vlen>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>float</type>
+    <vlen>$SF</vlen>
+  </source>
+</block>

@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 import os
 import sys
 sys.path.append(os.environ.get('GRC_HIER_PATH', os.path.expanduser('~/.grc_gnuradio')))
-from css_demod_coh import css_demod_coh  # grc-generated hier_block
-from css_demod import css_demod  # grc-generated hier_block
-from css_mod import css_mod  # grc-generated hier_block
+from grc_css_demod_coh import grc_css_demod_coh as css_demod_coh  # grc-generated hier_block
+from grc_css_demod import grc_css_demod as css_demod  # grc-generated hier_block
+from grc_css_mod import grc_css_mod as css_mod # grc-generated hier_block
 
 
 class ber_vs_ebn0_awgn(gr.top_block):
@@ -25,7 +25,7 @@ class ber_vs_ebn0_awgn(gr.top_block):
 
         Eb=1.0/M
         N0=Eb * 10**(-EbN0dB/10.0)
-        noisevar=(M**2 * N0)/numpy.log2(M)
+        noisevar=numpy.sqrt((M**2 * N0)/numpy.log2(M))
 
         self.syms_vec = numpy.random.randint(0, M, n_syms)
 
@@ -36,7 +36,7 @@ class ber_vs_ebn0_awgn(gr.top_block):
 
         self.css_mod = css_mod(M)
 
-        self.noise_src = analog.noise_source_c(analog.GR_GAUSSIAN, numpy.sqrt(noisevar), 0)
+        self.noise_src = analog.noise_source_c(analog.GR_GAUSSIAN, noisevar, 0)
         self.noise_adder = blocks.add_vcc(1)
 
         self.css_demod = css_demod(M)

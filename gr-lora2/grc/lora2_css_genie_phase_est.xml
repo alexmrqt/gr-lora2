@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<block>
+  <name>CSS Genie Phase Est</name>
+  <key>lora2_css_genie_phase_est</key>
+  <category>[lora2]</category>
+  <import>import lora2</import>
+  <make>lora2.css_genie_phase_est($M)</make>
+
+  <param>
+    <name>M</name>
+    <key>M</key>
+    <type>int</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+</block>

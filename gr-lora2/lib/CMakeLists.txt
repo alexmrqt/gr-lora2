@@ -30,7 +30,10 @@ list(APPEND lora2_sources
     freq_xlating_impl.cc
     lora_depad_impl.cc
     lora_whiten_impl.cc
-    lora_merge_rem_impl.cc )
+    lora_merge_rem_impl.cc
+    lora_soft_dewhiten_impl.cc
+    css_mod_impl.cc
+    css_llr_converter_impl.cc )
 
 set(lora2_sources "${lora2_sources}" PARENT_SCOPE)
 if(NOT lora2_sources)

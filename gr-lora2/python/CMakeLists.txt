@@ -33,8 +33,6 @@ GR_PYTHON_INSTALL(
     FILES
     __init__.py
     css_phase_corr.py
-    css_mod.py
-	css_mod_algo.py
     lora_preamble_detect.py
     css_sync_and_vectorize.py
     lora_implicit_get_payload.py
@@ -54,7 +52,13 @@ GR_PYTHON_INSTALL(
     lora_detect_sof.py
     css_fine_freq_error_detector.py
     css_demod.py
-    mmse_fir_fractional_delayer.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    mmse_fir_fractional_delayer.py
+    gray_deindexer.py
+    lora_soft_deinterleaver.py
+    lora_soft_hamming_decode.py
+    tag_delay.py
+    css_genie_phase_est.py
+    mfsk_genie_phase_est.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################
@@ -80,3 +84,13 @@ GR_ADD_TEST(qa_flip_half_bytes ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/
 GR_ADD_TEST(qa_lora_merge_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_merge_rem.py)
 GR_ADD_TEST(qa_css_fine_freq_error_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_freq_error_detector.py)
 GR_ADD_TEST(qa_css_demod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_demod.py)
+GR_ADD_TEST(qa_gray_deindexer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_deindexer.py)
+GR_ADD_TEST(qa_css_lrr_converter ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_lrr_converter.py)
+GR_ADD_TEST(qa_lora_soft_deinterleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_deinterleaver.py)
+GR_ADD_TEST(qa_lora_soft_dewhiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_dewhiten.py)
+GR_ADD_TEST(qa_lora_soft_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_hamming_decode.py)
+GR_ADD_TEST(qa_css_mod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_mod.py)
+GR_ADD_TEST(qa_css_llr_converter ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_llr_converter.py)
+GR_ADD_TEST(qa_tag_delay ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tag_delay.py)
+GR_ADD_TEST(qa_css_genie_phase_est ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_genie_phase_est.py)
+GR_ADD_TEST(qa_mfsk_genie_phase_est ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_mfsk_genie_phase_est.py)

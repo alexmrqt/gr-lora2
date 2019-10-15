@@ -39,22 +39,22 @@ class lora_hamming_decode(gr.basic_block):
         self.cw_len = CR + 4
 
         self.syndrome_table_CR4 = numpy.array([[0, 0, 0, 0, 0, 0, 0, 0],
-                                             [0, 0, 0, 1, 0, 0, 0, 0],
-                                             [0, 0, 1, 0, 0, 0, 0, 0],
-                                             [0, 0, 0, 0, 1, 0, 0, 1],
-                                             [0, 1, 0, 0, 0, 0, 0, 0],
-                                             [0, 0, 0, 0, 1, 1, 0, 0],
-                                             [0, 0, 0, 0, 0, 1, 0, 1],
-                                             [0, 0, 0, 0, 0, 0, 1, 0],
-                                             [1, 0, 0, 0, 0, 0, 0, 0],
-                                             [0, 0, 0, 0, 1, 0, 1, 0],
-                                             [0, 0, 0, 0, 0, 0, 1, 1],
-                                             [0, 0, 0, 0, 0, 1, 0, 0],
-                                             [0, 0, 0, 0, 0, 1, 1, 0],
-                                             [0, 0, 0, 0, 0, 0, 0, 1],
-                                             [0, 0, 0, 0, 1, 0, 0, 0],
-                                             [0, 0, 0, 1, 1, 0, 0, 0]],
-                                             dtype=numpy.uint8)
+                                            [0, 0, 0, 0, 0, 0, 0, 1],
+                                            [0, 0, 0, 0, 0, 0, 1, 0],
+                                            [0, 0, 0, 0, 0, 0, 1, 1],
+                                            [0, 0, 0, 0, 0, 1, 0, 0],
+                                            [0, 0, 0, 0, 0, 1, 0, 1],
+                                            [0, 0, 0, 0, 0, 1, 1, 0],
+                                            [0, 0, 0, 1, 0, 0, 0, 0],
+                                            [0, 0, 0, 0, 1, 0, 0, 0],
+                                            [0, 0, 0, 0, 1, 0, 0, 1],
+                                            [0, 0, 0, 0, 1, 0, 1, 0],
+                                            [0, 1, 0, 0, 0, 0, 0, 0],
+                                            [0, 0, 0, 0, 1, 1, 0, 0],
+                                            [1, 0, 0, 0, 0, 0, 0, 0],
+                                            [0, 0, 1, 0, 0, 0, 0, 0],
+                                            [0, 0, 0, 1, 1, 0, 0, 0]],
+                                            dtype=numpy.uint8)
 
         self.len_tag_key = None
         if len(len_tag_key) != 0:
@@ -72,10 +72,10 @@ class lora_hamming_decode(gr.basic_block):
     #Syndrome decoder
     def decode_one_block(self, data_block):
         if self.CR == 4:
-            syndrome = (data_block[0]^data_block[4]^data_block[5]^data_block[7])<<4
-            syndrome = (data_block[1]^data_block[4]^data_block[6]^data_block[7])<<3
-            syndrome = (data_block[2]^data_block[4]^data_block[5]^data_block[6])<<1
-            syndrome = (data_block[3]^data_block[5]^data_block[6]^data_block[7])
+            syndrome = (data_block[0]^data_block[1]^data_block[2]^data_block[4])<<3
+            syndrome |= (data_block[0]^data_block[2]^data_block[3]^data_block[5])<<2
+            syndrome |= (data_block[1]^data_block[2]^data_block[3]^data_block[6])<<1
+            syndrome |= (data_block[0]^data_block[1]^data_block[3]^data_block[7])
 
             data_block = (data_block + self.syndrome_table_CR4[syndrome])%2
             #n_err_corr = numpy.sum(self.syndrome_table_CR4[syndrome])

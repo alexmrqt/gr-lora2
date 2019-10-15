@@ -19,6 +19,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
+import pmt
 import numpy
 from gnuradio import gr
 
@@ -26,7 +27,7 @@ class lora_hamming_encode(gr.basic_block):
     """
     docstring for block lora_hamming_encode
     """
-    def __init__(self, CR):
+    def __init__(self, CR, len_tag_key):
         gr.basic_block.__init__(self,
             name="lora_hamming_encode",
             in_sig=[numpy.uint8],
@@ -36,6 +37,10 @@ class lora_hamming_encode(gr.basic_block):
         #Total length for a codeword is (4 + CR) bits long.
         self.CR = CR
         self.cw_len = CR + 4
+
+        self.len_tag_key = None
+        if len(len_tag_key) != 0:
+            self.len_tag_key = len_tag_key
 
         self.set_output_multiple(self.cw_len)
         self.set_tag_propagation_policy(gr.TPP_CUSTOM)
@@ -51,29 +56,34 @@ class lora_hamming_encode(gr.basic_block):
         out = numpy.zeros(self.cw_len)
 
         #Systematic part
-        out[:4] = data_block
+        out[4:] = data_block
 
         if self.CR == 4:
-            out[4] = data_block[0] ^ data_block[1] ^ data_block[3]
-            out[5] = data_block[0] ^ data_block[2] ^ data_block[3]
-            out[6] = data_block[0] ^ data_block[1] ^ data_block[2]
-            out[7] = data_block[1] ^ data_block[2] ^ data_block[3]
+            out[0] = data_block[0] ^ data_block[1] ^ data_block[3]
+            out[1] = data_block[0] ^ data_block[2] ^ data_block[3]
+            out[2] = data_block[0] ^ data_block[1] ^ data_block[2]
+            out[3] = data_block[1] ^ data_block[2] ^ data_block[3]
         else:
             out[4:] = numpy.zeros(self.CR)
 
-        return data_block[-4:]
+        return out
 
     def propagate_tags(self, tags, out_idx):
         out_tag_offset = out_idx + self.nitems_written(0)
 
         for tag in tags:
+            #Handle len_tag_key, if any
+            if (self.len_tag_key is not None ) and (pmt.to_python(tag.key) == self.len_tag_key):
+                new_len = pmt.to_python(tag.value) * (self.CR+4)/float(self.CR)
+                tag.value = pmt.to_pmt(int(new_len))
+
             self.add_item_tag(0, out_tag_offset, tag.key, tag.value)
 
     def general_work(self, input_items, output_items):
         in0 = input_items[0]
 
         #How many blocks have we got in the input buffer / can we fit in the output buffer?
-        n_blocks = min(len(in0)//self.cw_len, len(output_items[0])//4)
+        n_blocks = min(len(in0)//4, len(output_items[0])//self.cw_len)
 
         #With this information, we can directly compute how many items will be
         #consumed and produced.
