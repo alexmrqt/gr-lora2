@@ -50,7 +50,7 @@ GR_PYTHON_INSTALL(
     flip_half_bytes.py
     store_tags.py
     lora_detect_sof.py
-    css_fine_freq_error_detector.py
+    css_timing_err_detector.py
     css_demod.py
     mmse_fir_fractional_delayer.py
     gray_deindexer.py
@@ -58,7 +58,12 @@ GR_PYTHON_INSTALL(
     lora_soft_hamming_decode.py
     tag_delay.py
     css_genie_phase_est.py
-    mfsk_genie_phase_est.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    mfsk_genie_phase_est.py
+    css_fine_cfo_detector.py
+    css_fine_sfo_detector.py
+    css_fine_cfo_track.py
+    css_timing_err_track.py
+    css_joint_cfo_timing_detector.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################
@@ -82,7 +87,7 @@ GR_ADD_TEST(qa_lora_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lo
 GR_ADD_TEST(qa_lora_whiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_whiten.py)
 GR_ADD_TEST(qa_flip_half_bytes ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_flip_half_bytes.py)
 GR_ADD_TEST(qa_lora_merge_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_merge_rem.py)
-GR_ADD_TEST(qa_css_fine_freq_error_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_freq_error_detector.py)
+GR_ADD_TEST(qa_css_timing_err_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_timing_err_detector.py)
 GR_ADD_TEST(qa_css_demod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_demod.py)
 GR_ADD_TEST(qa_gray_deindexer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_deindexer.py)
 GR_ADD_TEST(qa_css_lrr_converter ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_lrr_converter.py)
@@ -94,3 +99,8 @@ GR_ADD_TEST(qa_css_llr_converter ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR
 GR_ADD_TEST(qa_tag_delay ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tag_delay.py)
 GR_ADD_TEST(qa_css_genie_phase_est ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_genie_phase_est.py)
 GR_ADD_TEST(qa_mfsk_genie_phase_est ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_mfsk_genie_phase_est.py)
+GR_ADD_TEST(qa_css_fine_cfo_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_cfo_detector.py)
+GR_ADD_TEST(qa_css_fine_sfo_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_sfo_detector.py)
+GR_ADD_TEST(qa_css_fine_cfo_track ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_cfo_track.py)
+GR_ADD_TEST(qa_css_timing_err_track ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_timing_err_track.py)
+GR_ADD_TEST(qa_css_joint_cfo_timing_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_joint_cfo_timing_detector.py)

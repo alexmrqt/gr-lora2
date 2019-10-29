@@ -40,7 +40,7 @@ install(FILES
     lora2_lora_merge_rem.xml
     lora2_store_tags.xml
     lora2_lora_detect_sof.xml
-    lora2_css_fine_freq_error_detector.xml
+    lora2_css_timing_err_detector.xml
     lora2_css_demod.xml
     lora2_gray_deindexer.xml
     lora2_lora_soft_deinterleaver.xml
@@ -50,5 +50,10 @@ install(FILES
     lora2_css_llr_converter.xml
     lora2_tag_delay.xml
     lora2_css_genie_phase_est.xml
-    lora2_mfsk_genie_phase_est.xml DESTINATION share/gnuradio/grc/blocks
+    lora2_mfsk_genie_phase_est.xml
+    lora2_css_fine_cfo_detector.xml
+    lora2_css_fine_sfo_detector.xml
+    lora2_css_fine_cfo_track.xml
+    lora2_css_timing_err_track.xml
+    lora2_css_joint_cfo_timing_detector.xml DESTINATION share/gnuradio/grc/blocks
 )

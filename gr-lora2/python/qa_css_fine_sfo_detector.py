@@ -21,21 +21,21 @@
 
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks
-from css_fine_freq_error_detector import css_fine_freq_error_detector
+from css_fine_sfo_detector import css_fine_sfo_detector
 
+class qa_css_fine_sfo_detector (gr_unittest.TestCase):
 
-class qa_css_fine_freq_error_detector(gr_unittest.TestCase):
-    def setUp(self):
-        self.tb = gr.top_block()
+    def setUp (self):
+        self.tb = gr.top_block ()
 
-    def tearDown(self):
+    def tearDown (self):
         self.tb = None
 
-    def test_001_t(self):
+    def test_001_t (self):
         # set up fg
-        self.tb.run()
+        self.tb.run ()
         # check data
 
 
 if __name__ == '__main__':
-    gr_unittest.run(qa_css_fine_freq_error_detector, "qa_css_fine_freq_error_detector.xml")
+    gr_unittest.run(qa_css_fine_sfo_detector, "qa_css_fine_sfo_detector.xml")

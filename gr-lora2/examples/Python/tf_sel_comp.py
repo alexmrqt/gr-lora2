@@ -6,10 +6,12 @@ import matplotlib.pyplot as plt
 
 import os
 import sys
+import json
 sys.path.append(os.environ.get('GRC_HIER_PATH', os.path.expanduser('~/.grc_gnuradio')))
 from grc_css_demod import grc_css_demod # grc-generated hier_block
 from grc_css_demod_coh import grc_css_demod_coh  # grc-generated hier_block
 from lora2 import css_mod
+from lora2 import css_genie_phase_est
 
 import channels
 
@@ -44,6 +46,14 @@ class ber_vs_ebn0_awgn(gr.top_block):
             self.selective_chan = channels.proakis_b()
         elif channel == 'basic-t-sel':
             self.selective_chan = channels.basic_t_sel(M)
+        elif channel == 'itu-in-out-ped-A':
+            delta_v = 0.83 #m/s = 3km/h
+            f0 = 868.1e6
+            c = 3e8
+            max_doppler = delta_v/c*f0
+            bw = 125e3
+            self.selective_chan = channels.itu_outdoor_indoor_ped(max_doppler, bw, True)
+            self.genie_phase_est = css_genie_phase_est(M)
 
         self.css_demod = grc_css_demod(M)
         self.css_demod_coh = grc_css_demod_coh(M, len_int)
@@ -61,7 +71,11 @@ class ber_vs_ebn0_awgn(gr.top_block):
             self.connect((self.css_mod, 0), (self.awgn_chan, 0))
         else:
             self.connect((self.css_mod, 0), (self.selective_chan, 0))
-            self.connect((self.selective_chan, 0), (self.awgn_chan, 0))
+            if channel == 'itu-in-out-ped-A':
+                self.connect((self.selective_chan, 0), (self.genie_phase_est, 0))
+                self.connect((self.genie_phase_est, 0), (self.awgn_chan, 0))
+            else:
+                self.connect((self.selective_chan, 0), (self.awgn_chan, 0))
 
         self.connect((self.awgn_chan, 0), (self.css_demod_coh, 0))
         self.connect((self.awgn_chan, 0), (self.css_demod, 0))
@@ -75,84 +89,95 @@ def do_simu(EbN0dB, n_simus, SF, n_syms, n_min_err, channel):
     BER = numpy.zeros(len(EbN0dB))
     BER_coh = numpy.zeros(len(EbN0dB))
 
-    for i in range(0, len(EbN0dB)):
-        print("Eb/N0=" + str(EbN0dB[i]))
+    try:
+        for i in range(0, len(EbN0dB)):
+            print("Eb/N0=" + str(EbN0dB[i]))
 
-        n_err = 0
-        n_err_coh = 0
-        n_bits = 0
-        for j in range(0, n_simus):
-            tb = ber_vs_ebn0_awgn(M, n_syms, -1, EbN0dB[i], channel)
-            tb.run()
+            n_err = 0
+            n_err_coh = 0
+            n_bits = 0
+            for j in range(0, n_simus):
+                tb = ber_vs_ebn0_awgn(M, n_syms, -1, EbN0dB[i], channel)
+                tb.run()
 
-            est_syms = tb.est_syms_sink.data()
-            est_syms_coh = tb.est_syms_coh_sink.data()
+                est_syms = tb.est_syms_sink.data()
+                est_syms_coh = tb.est_syms_coh_sink.data()
 
-            syms = tb.syms_vec[:len(est_syms)]
+                syms = tb.syms_vec[:len(est_syms)]
 
-            for k in range(0, len(syms)):
-                bits = [int(ele) for ele in list(numpy.binary_repr(syms[k], SF))]
+                for k in range(0, len(syms)):
+                    bits = [int(ele) for ele in list(numpy.binary_repr(syms[k], SF))]
 
-                est_bits = [int(ele) for ele in list(numpy.binary_repr(est_syms[k], SF))]
-                est_bits_coh = [int(ele) for ele in list(numpy.binary_repr(est_syms_coh[k], SF))]
+                    est_bits = [int(ele) for ele in list(numpy.binary_repr(est_syms[k], SF))]
+                    est_bits_coh = [int(ele) for ele in list(numpy.binary_repr(est_syms_coh[k], SF))]
 
-                n_err += numpy.sum(numpy.abs(numpy.array(bits)-numpy.array(est_bits)))
-                n_err_coh += numpy.sum(numpy.abs(numpy.array(bits)-numpy.array(est_bits_coh)))
-                n_bits += len(bits)
+                    n_err += numpy.sum(numpy.abs(numpy.array(bits)-numpy.array(est_bits)))
+                    n_err_coh += numpy.sum(numpy.abs(numpy.array(bits)-numpy.array(est_bits_coh)))
+                    n_bits += len(bits)
 
-            tb.est_syms_sink.reset()
-            tb.est_syms_coh_sink.reset()
+                tb.est_syms_sink.reset()
+                tb.est_syms_coh_sink.reset()
 
-            if n_err_coh > n_min_err:
-                break
+                if n_err_coh > n_min_err:
+                    break
+            BER[i] = float(n_err)/n_bits
+            BER_coh[i] = float(n_err_coh)/n_bits
 
-        BER[i] = float(n_err)/n_bits
-        BER_coh[i] = float(n_err_coh)/n_bits
+    except Exception as e:
+        print('An error occured.')
+        print(e)
 
     return {'uncoh': BER, 'coh': BER_coh}
 
 def main():
-    SF = 9                  #Spreading factor
-    n_syms = 16384          #Number of symbols to be transmitted in a simulation
-    n_simus = 10            #Max. number of simulations to perform
-    n_min_err = 1000        #Minimum number of errors to be observed to stop the simulation
+    params = {
+        'comp_type': 'proakis-b',    #Type of simulation: awgn, basic-t-sel,
+                                # proakis-b or itu-in-out-ped-A
+        'SF': 9,                #Spreading factor
+        'n_syms': 16384,        #Number of symbols to be transmitted in a simulation
+        'n_simus': 100,         #Max. number of simulations to perform
+        'n_min_err': 1000,      #Minimum number of errors to be observed to stop the simulation
+    }
     EbN0dB = numpy.linspace(0, 10, 11) #Eb/N0 points to simulate
-    #n_syms = 16
-    #n_simus = 1
-    #EbN0dB = numpy.array([100])
 
-    print('Simulations over AWGN.')
-    BER_awgn = do_simu(EbN0dB, n_simus, SF, n_syms, n_min_err, 'awgn')
-    print('Simulations over Proakis B.')
-    BER_proakis_b = do_simu(EbN0dB, n_simus, SF, n_syms, n_min_err, 'proakis-b')
-    print('Simulations over basic time-selective channel.')
-    BER_basic_t_sel = do_simu(EbN0dB, n_simus, SF, n_syms, n_min_err, 'basic-t-sel')
+    save = True
+ 
+    #Simu
+    BER = do_simu(EbN0dB, params['n_simus'], params['SF'],
+            params['n_syms'], params['n_min_err'], params['comp_type'])
+
+    if params['comp_type'] == 'awgn':
+        file_title = 'CSS_BER.json'
+        label = 'AWGN'
+    if params['comp_type'] == 'proakis-b':
+        file_title = 'CSS_BER_proakis_b.json'
+        label = 'Proakis B'
+    if params['comp_type'] == 'basic-t-sel':
+        file_title = 'CSS_BER_basic_t_sel.json'
+        label = 'Basic time-selective'
+    if params['comp_type'] == 'itu-in-out-ped-A':
+        file_title = 'CSS_BER_itu-in-out-ped-A.json'
+        label = 'Rayleigh fading'
 
     #save data
-    fid = open("EbN0dB.raw", "wb")
-    EbN0dB.tofile(fid)
-    fid.close()
-    fid = open("BER.raw", "wb")
-    BER_awgn['uncoh'].tofile(fid)
-    fid = open("BER_coh.raw", "wb")
-    BER_awgn['coh'].tofile(fid)
-    fid = open("BER_f_chan.raw", "wb")
-    BER_proakis_b['uncoh'].tofile(fid)
-    fid = open("BER_coh_f_chan.raw", "wb")
-    BER_proakis_b['coh'].tofile(fid)
-    fid = open("BER_t_chan.raw", "wb")
-    BER_basic_t_sel['uncoh'].tofile(fid)
-    fid = open("BER_coh_t_chan.raw", "wb")
-    BER_basic_t_sel['coh'].tofile(fid)
-    fid.close()
+    if save:
+        results = {}
+        results['params'] = params
+        results['EbN0dB'] = EbN0dB.tolist()
+
+        fid = open('UNCOH_' + file_title, 'w')
+        results['BER'] = BER['uncoh'].tolist()
+        json.dump(results, fid)
+        fid.close()
+
+        fid = open(file_title, 'w')
+        results['BER'] = BER['coh'].tolist()
+        json.dump(results, fid)
+        fid.close()
 
     #Plot results
-    plt.semilogy(EbN0dB, BER_awgn['uncoh'], '-+', label='Non coherent AWGN')
-    plt.semilogy(EbN0dB, BER_awgn['coh'], '-x', label='Coherent AWGN')
-    plt.semilogy(EbN0dB, BER_proakis_b['uncoh'], '--+', label='Non coherent Proakis B')
-    plt.semilogy(EbN0dB, BER_proakis_b['coh'], '--x', label='Coherent Proakis B')
-    plt.semilogy(EbN0dB, BER_basic_t_sel['uncoh'], '-.+', label='Non coherent t selective')
-    plt.semilogy(EbN0dB, BER_basic_t_sel['coh'], '-.x', label='Coherent t selective')
+    plt.semilogy(EbN0dB, BER['uncoh'], '-+', label=label)
+    plt.semilogy(EbN0dB, BER['coh'], '-x', label='Coherent ' + label)
 
     plt.grid(which='both')
     plt.ylabel('BER')

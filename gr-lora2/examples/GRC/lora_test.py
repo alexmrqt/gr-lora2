@@ -1,13 +1,9 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-#
-# SPDX-License-Identifier: GPL-3.0
-#
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: LoRa Test
-# Generated: Fri Mar 15 16:25:09 2019
-# GNU Radio version: 3.7.12.0
+# GNU Radio version: 3.7.13.5
 ##################################################
 
 if __name__ == '__main__':
