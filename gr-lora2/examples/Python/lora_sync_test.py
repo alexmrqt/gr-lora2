@@ -31,6 +31,7 @@ class lora_sync_test(gr.top_block):
         # Variables
         ##################################################
         self.SF = SF
+        self.M = int(2**SF)
         self.n_syms_pkt = n_syms_pkt
         self.noise_var = noise_var
         self.cfo = cfo
@@ -45,14 +46,14 @@ class lora_sync_test(gr.top_block):
         # Blocks
         ##################################################
         #Modulator
-        syms_vec = numpy.random.randint(0, 2**SF, n_syms_pkt*n_pkts,
+        syms_vec = numpy.random.randint(0, self.M, n_syms_pkt*n_pkts,
                 dtype=numpy.uint16)
         self.vector_source = blocks.vector_source_s(syms_vec.tolist(), False)
         self.to_tagged = blocks.stream_to_tagged_stream(gr.sizeof_short, 1,
                 self.n_syms_pkt, 'packet_len')
         self.add_preamble = lora2.lora_add_preamble(8, 0x12, "packet_len",
                 "sync_word", "payload")
-        self.css_mod = lora2.css_mod(self.M, self.interp, 'packet_len')
+        self.css_mod = lora2.css_mod(self.M, self.interp)
         self.add_reversed_chirps = lora2.lora_add_reversed_chirps(self.SF,
                 self.interp, "packet_len", "payload", "rev_chirps")
 
@@ -99,8 +100,8 @@ class lora_sync_test(gr.top_block):
 
 def delay_impact(SF, n_pkts, n_delays):
     n_bytes = 10*SF
-    n_syms = 8*n_bytes/SF
-    M = 2**SF
+    n_syms = 8*n_bytes//SF
+    M = int(2**SF)
 
     EbN0dB = numpy.linspace(0, 10, 11)
     Eb = 1.0/M
@@ -148,8 +149,8 @@ def delay_impact(SF, n_pkts, n_delays):
 
 def cfo_impact(SF, n_pkts, n_cfos):
     n_bytes = 10*SF
-    n_syms = 8*n_bytes/SF
-    M = 2**SF
+    n_syms = 8*n_bytes//SF
+    M = int(2**SF)
 
     EbN0dB = numpy.linspace(0, 10, 11)
     Eb = 1.0/M

@@ -36,12 +36,12 @@ class lora_preamble_detect(gr.sync_block):
             in_sig=[numpy.complex64],
             out_sig=[numpy.complex64])
 
-        self.M=2**SF
+        self.M=int(2**SF)
         self.preamble_len = preamble_len
         self.thres = thres
 
-        self.demod = css_demod_algo.css_demod_algo(self.M)
-        self.demod_conj = css_demod_algo.css_demod_algo(self.M, True)
+        self.demod = css_demod_algo(self.M)
+        self.demod_conj = css_demod_algo(self.M, True)
 
         #Buffers are initially set to -1
         self.conj_buffer = numpy.zeros(2, dtype=numpy.int) - 1
@@ -84,7 +84,7 @@ class lora_preamble_detect(gr.sync_block):
             return False
 
         #Save sync value
-        self.buffer_meta[-1]['sync_value'] = sync_val
+        self.buffer_meta[-1]['sync_value'] = numpy.int16(sync_val)
 
         tmp1 = self.complex_buffer[2:-1] * numpy.conj(self.complex_buffer[1:-2])
         tmp2 = numpy.angle(tmp1[1:] * numpy.conj(tmp1[:-1]))
@@ -119,23 +119,23 @@ class lora_preamble_detect(gr.sync_block):
 
     def compute_tf_shifts(self, preamble_value, sof_value):
         #Compute time and frequency shift
-        time_shift = (preamble_value - sof_value)/2
-        freq_shift = (preamble_value + sof_value)/2
+        time_shift = (preamble_value - sof_value)//2
+        freq_shift = (preamble_value + sof_value)//2
 
         if self.M >= 512:
-            freq_shift = freq_shift%(self.M/2)
+            freq_shift = freq_shift%(self.M//2)
             #We cannot correct frequency shifts higher than M/4 and lower than -M/4
-            if freq_shift >= self.M/4:
-                freq_shift -= self.M/2
+            if freq_shift >= self.M//4:
+                freq_shift -= self.M//2
         else:
             #This strangeness is likely due to the modulo M nature of the computation
-            freq_shift -= self.M/2 + 5
+            freq_shift -= self.M//2 + 5
 
         time_shift = -time_shift
         if time_shift > numpy.abs(freq_shift):
-            time_shift -= self.M/2
+            time_shift -= self.M//2
         elif time_shift < -numpy.abs(freq_shift):
-            time_shift += self.M/2
+            time_shift += self.M//2
 
         return (freq_shift, time_shift)
 
@@ -152,16 +152,16 @@ class lora_preamble_detect(gr.sync_block):
         #So we put the tag M items before the estimated SOF item, to allow
         #A successive block to remove this uncertainty.
         tag_offset = self.nitems_written(0) + time_shift + sof_idx*self.M \
-                + self.M/4
+                + self.M//4
 
         tag1_key = pmt.intern('fine_freq_offset')
         tag1_value = pmt.to_pmt(fine_freq_shift)
         tag2_key = pmt.intern('coarse_freq_offset')
-        tag2_value = pmt.to_pmt(freq_shift/float(self.M))
+        tag2_value = pmt.to_pmt(freq_shift/self.M)
         tag3_key = pmt.intern('sync_word')
         tag3_value = pmt.to_pmt(sync_value)
         tag4_key = pmt.intern('time_offset')
-        tag4_value = pmt.to_pmt(time_shift)
+        tag4_value = pmt.to_pmt(int(time_shift))
         #tag5_key = pmt.intern('fine_time_offset')
         #tag5_value = pmt.to_pmt(fine_time_shift)
 

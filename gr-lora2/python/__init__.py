@@ -22,64 +22,40 @@
 This is the GNU Radio LORA2 module. Place your Python package
 description here (python/__init__.py).
 '''
+from __future__ import unicode_literals
 
 # import swig generated symbols into the lora2 namespace
 try:
-	# this might fail if the module is python-only
-	from lora2_swig import *
+    # this might fail if the module is python-only
+    from .lora2_swig import *
 except ImportError:
-	pass
+    pass
 
 # import any pure python here
-from css_phase_corr import css_phase_corr
-
-from lora_preamble_detect import lora_preamble_detect
-from css_sync_and_vectorize import css_sync_and_vectorize
-from lora_implicit_get_payload import lora_implicit_get_payload
-from lora_add_reversed_chirps import lora_add_reversed_chirps
-
-
-from css_demod_algo import css_demod_algo
-from lora_interleaver import lora_interleaver
-from lora_deinterleaver import lora_deinterleaver
-from gray_encode import gray_encode
-from gray_decode import gray_decode
-from lora_hamming_decode import lora_hamming_decode
-from lora_low_rate_opt_rx import lora_low_rate_opt_rx
-from lora_header_decode import lora_header_decode
-
-from lora_low_rate_opt_tx import lora_low_rate_opt_tx
-from lora_hamming_encode import lora_hamming_encode
-from flip_half_bytes import flip_half_bytes
-from store_tags import store_tags
-from lora_detect_sof import lora_detect_sof
-from css_timing_err_detector import css_timing_err_detector
-from css_demod import css_demod
-from mmse_fir_fractional_delayer import mmse_fir_fractional_delayer
-from gray_deindexer import gray_deindexer
-
-from lora_soft_deinterleaver import lora_soft_deinterleaver
-from lora_soft_hamming_decode import lora_soft_hamming_decode
-from tag_delay import tag_delay
-from css_genie_phase_est import css_genie_phase_est
-from mfsk_genie_phase_est import mfsk_genie_phase_est
-from css_fine_cfo_detector import css_fine_cfo_detector
-from css_fine_sfo_detector import css_fine_sfo_detector
-from css_fine_cfo_track import css_fine_cfo_track
-from css_timing_err_track import css_timing_err_track
-from css_joint_cfo_timing_detector import css_joint_cfo_timing_detector
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+from .css_demod import css_demod
+from .css_demod_algo import css_demod_algo
+from .css_fine_cfo_detector import css_fine_cfo_detector
+from .css_fine_cfo_track import css_fine_cfo_track
+from .flip_half_bytes import flip_half_bytes
+from .gray_decode import gray_decode
+from .gray_deindexer import gray_deindexer
+from .gray_encode import gray_encode
+from .lora_add_reversed_chirps import lora_add_reversed_chirps
+from .lora_deinterleaver import lora_deinterleaver
+from .lora_detect_sof import lora_detect_sof
+from .lora_hamming_decode import lora_hamming_decode
+from .lora_hamming_encode import lora_hamming_encode
+from .lora_header_decode import lora_header_decode
+from .lora_implicit_get_payload import lora_implicit_get_payload
+from .lora_interleaver import lora_interleaver
+from .lora_low_rate_opt_rx import lora_low_rate_opt_rx
+from .lora_low_rate_opt_tx import lora_low_rate_opt_tx
+from .lora_preamble_detect import lora_preamble_detect
+from .lora_soft_deinterleaver import lora_soft_deinterleaver
+from .lora_soft_hamming_decode import lora_soft_hamming_decode
+from .css_genie_phase_est import css_genie_phase_est
+from .mfsk_genie_phase_est import mfsk_genie_phase_est
+from .store_tags import store_tags
+from .tag_delay import tag_delay
+from .css_mod_algo import css_mod_algo
 #

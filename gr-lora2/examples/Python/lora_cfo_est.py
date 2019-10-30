@@ -51,7 +51,7 @@ class lora_sync_test(gr.top_block):
                 self.n_syms_pkt, 'packet_len')
         self.add_preamble = lora2.lora_add_preamble(8, 0x12, "packet_len",
                 "sync_word", "payload")
-        self.css_mod = lora2.css_mod(self.M, self.interp, 'packet_len')
+        self.css_mod = lora2.css_mod(self.M, self.interp)
         self.add_reversed_chirps = lora2.lora_add_reversed_chirps(self.SF,
                 self.interp, "packet_len", "payload", "rev_chirps")
 
@@ -70,7 +70,7 @@ class lora_sync_test(gr.top_block):
         self.delayer = blocks.delay(gr.sizeof_gr_complex, self.delay)
 
         self.preamble_detector = lora2.lora_preamble_detect(self.SF, 8, debug=False, thres=1e-4)
-        self.store_tags = lora2.store_tags(numpy.complex64, "freq_offset")
+        self.store_tags = lora2.store_tags(numpy.complex64, "coarse_freq_offset")
 
         ##################################################
         # Connections
@@ -99,8 +99,8 @@ if __name__ == "__main__":
     SF = 9
     n_pkts = 1
     n_bytes = 1*SF
-    n_syms = 8*n_bytes/SF
-    M = 2**SF
+    n_syms = int(8*n_bytes/SF)
+    M = int(2**SF)
 
     #EbN0dB = numpy.linspace(0, 10, 11)
     EbN0dB = numpy.array([10])

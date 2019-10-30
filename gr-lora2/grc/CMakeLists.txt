@@ -17,43 +17,37 @@
 # along with GNU Radio; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
+
 install(FILES
-    lora2_css_phase_corr.xml
-    lora2_lora_preamble_detect.xml
-    lora2_css_sync_and_vectorize.xml
-    lora2_lora_implicit_get_payload.xml
-    lora2_lora_add_reversed_chirps.xml
-    lora2_lora_add_preamble.xml
-    lora2_freq_xlating.xml
-    lora2_lora_interleaver.xml
-    lora2_lora_deinterleaver.xml
-    lora2_gray_encode.xml
-    lora2_gray_decode.xml
-    lora2_lora_hamming_decode.xml
-    lora2_lora_low_rate_opt_rx.xml
-    lora2_lora_header_decode.xml
-    lora2_lora_low_rate_opt_tx.xml
-    lora2_lora_hamming_encode.xml
-    lora2_lora_depad.xml
-    lora2_lora_whiten.xml
-    lora2_flip_half_bytes.xml
-    lora2_lora_merge_rem.xml
-    lora2_store_tags.xml
-    lora2_lora_detect_sof.xml
-    lora2_css_timing_err_detector.xml
-    lora2_css_demod.xml
-    lora2_gray_deindexer.xml
-    lora2_lora_soft_deinterleaver.xml
-    lora2_lora_soft_dewhiten.xml
-    lora2_lora_soft_hamming_decode.xml
-    lora2_css_mod.xml
-    lora2_css_llr_converter.xml
-    lora2_tag_delay.xml
-    lora2_css_genie_phase_est.xml
-    lora2_mfsk_genie_phase_est.xml
-    lora2_css_fine_cfo_detector.xml
-    lora2_css_fine_sfo_detector.xml
-    lora2_css_fine_cfo_track.xml
-    lora2_css_timing_err_track.xml
-    lora2_css_joint_cfo_timing_detector.xml DESTINATION share/gnuradio/grc/blocks
+    lora2_css_demod.block.yml
+    lora2_css_fine_cfo_detector.block.yml
+    lora2_css_fine_cfo_track.block.yml
+    lora2_flip_half_bytes.block.yml
+    lora2_gray_decode.block.yml
+    lora2_gray_deindexer.block.yml
+    lora2_gray_encode.block.yml
+    lora2_lora_add_reversed_chirps.block.yml
+    lora2_lora_deinterleaver.block.yml
+    lora2_lora_detect_sof.block.yml
+    lora2_lora_hamming_decode.block.yml
+    lora2_lora_hamming_encode.block.yml
+    lora2_lora_header_decode.block.yml
+    lora2_lora_implicit_get_payload.block.yml
+    lora2_lora_interleaver.block.yml
+    lora2_lora_low_rate_opt_rx.block.yml
+    lora2_lora_low_rate_opt_tx.block.yml
+    lora2_lora_preamble_detect.block.yml
+    lora2_lora_soft_deinterleaver.block.yml
+    lora2_lora_soft_hamming_decode.block.yml
+    lora2_css_genie_phase_est.block.yml
+    lora2_mfsk_genie_phase_est.block.yml
+    lora2_store_tags.block.yml
+    lora2_tag_delay.block.yml
+    lora2_css_llr_converter.block.yml
+    lora2_css_mod.block.yml
+    lora2_lora_add_preamble.block.yml
+    lora2_lora_depad.block.yml
+    lora2_lora_merge_rem.block.yml
+    lora2_lora_soft_dewhiten.block.yml
+    lora2_lora_whiten.block.yml DESTINATION share/gnuradio/grc/blocks
 )

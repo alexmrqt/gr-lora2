@@ -37,7 +37,7 @@ class lora_add_reversed_chirps(gr.basic_block):
 
         self.set_tag_propagation_policy(gr.TPP_DONT)
 
-        self.M = 2**SF
+        self.M = int(2**SF)
         self.interp = interp
         modulator = css_mod_algo.css_mod_algo(self.M, self.interp)
 
@@ -47,7 +47,7 @@ class lora_add_reversed_chirps(gr.basic_block):
 
         #Generate rev chirps
         self.rev_chirps = numpy.conjugate(modulator.modulate([0,0,0]))
-        self.rev_chirps = self.rev_chirps[0:(2*self.M + self.M/4)*interp]
+        self.rev_chirps = self.rev_chirps[0:(2*self.M + self.M//4)*interp]
 
     def forecast(self, noutput_items, ninput_items_required):
         #When no chirps is to be appened, this block is a sync block

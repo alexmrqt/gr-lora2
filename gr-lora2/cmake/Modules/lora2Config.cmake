@@ -22,9 +22,10 @@ FIND_LIBRARY(
           /usr/local/lib64
           /usr/lib
           /usr/lib64
-)
+          )
+
+include("${CMAKE_CURRENT_LIST_DIR}/lora2Target.cmake")
 
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(LORA2 DEFAULT_MSG LORA2_LIBRARIES LORA2_INCLUDE_DIRS)
 MARK_AS_ADVANCED(LORA2_LIBRARIES LORA2_INCLUDE_DIRS)
-

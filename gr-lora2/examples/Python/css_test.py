@@ -46,7 +46,7 @@ class lora_sync_test(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.css_mod = lora2.css_mod(self.M, self.interp, 'packet_len')
+        self.css_mod = lora2.css_mod(self.M, self.interp)
         self.css_demod = grc_css_demod(self.M)
         self.vector_source = blocks.vector_source_s(self.syms_vec.tolist(), False)
         self.vector_sink = blocks.vector_sink_s(1, self.n_syms)
@@ -75,8 +75,8 @@ if __name__ == "__main__":
     #Parameters
     SF = 9
     n_bytes = 300*SF
-    n_syms = 8*n_bytes/SF
-    M = 2**SF
+    n_syms = int(8*n_bytes/SF)
+    M = int(2**SF)
 
     EbN0dB = numpy.linspace(0, 10, 11)
     Eb = 1.0/M
@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     BER = numpy.zeros(len(EbN0dB))
     for i in range(0, len(EbN0dB)):
-        syms_vec = numpy.random.randint(0, 2**SF, n_syms, dtype=numpy.uint16)
+        syms_vec = numpy.random.randint(0, M, n_syms, dtype=numpy.uint16)
 
         #Setup block
         tb = lora_sync_test(SF, syms_vec, noise_var[i], 0, 0)

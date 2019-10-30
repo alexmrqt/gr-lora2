@@ -22,7 +22,7 @@
 import numpy
 import pmt
 from gnuradio import gr
-import css_demod_algo
+from lora2 import css_demod_algo
 
 class css_genie_phase_est(gr.sync_block):
     """

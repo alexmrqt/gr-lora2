@@ -21,6 +21,7 @@ class lora_sync_test(gr.top_block):
         # Variables
         ##################################################
         self.SF = SF
+        self.M = int(2**SF)
         self.n_syms_pkt = n_syms_pkt
         self.noise_var = noise_var
         self.cfo = cfo
@@ -35,14 +36,14 @@ class lora_sync_test(gr.top_block):
         # Blocks
         ##################################################
         #Modulator
-        syms_vec = numpy.random.randint(0, 2**SF, n_syms_pkt*n_pkts,
+        syms_vec = numpy.random.randint(0, self.M, n_syms_pkt*n_pkts,
                 dtype=numpy.uint16)
         self.vector_source = blocks.vector_source_s(syms_vec.tolist(), False)
         self.to_tagged = blocks.stream_to_tagged_stream(gr.sizeof_short, 1,
                 self.n_syms_pkt, 'packet_len')
         self.add_preamble = lora2.lora_add_preamble(len_preamble, 0x12,
                 "packet_len", "sync_word", "payload")
-        self.css_mod = lora2.css_mod(self.M, self.interp, 'packet_len')
+        self.css_mod = lora2.css_mod(self.M, self.interp)
         self.add_reversed_chirps = lora2.lora_add_reversed_chirps(self.SF,
                 self.interp, "packet_len", "payload", "rev_chirps")
 
@@ -59,7 +60,7 @@ class lora_sync_test(gr.top_block):
 
         #Channel (3: delay)
         self.delayer = blocks.delay(gr.sizeof_gr_complex, self.delay)
-        self.fine_delayer = filter.fractional_interpolator_cc(self.fine_delay, 1.0)
+        self.fine_delayer = filter.mmse_resampler_cc(self.fine_delay, 1.0)
 
         self.preamble_detector = lora2.lora_preamble_detect(self.SF,
                 len_preamble, debug=False, thres=1e-4)
@@ -92,7 +93,7 @@ if __name__ == "__main__":
     SF = 9
     n_pkts = 1
     n_bytes = 1*SF
-    n_syms = 8*n_bytes/SF
+    n_syms = 8*n_bytes//SF
     M = 2**SF
 
     #EbN0dB = numpy.linspace(0, 10, 11)

@@ -23,12 +23,11 @@
 ########################################################################
 install(FILES
     api.h
+    css_llr_converter.h
+    css_mod.h
     lora_add_preamble.h
-    freq_xlating.h
     lora_depad.h
-    lora_whiten.h
     lora_merge_rem.h
     lora_soft_dewhiten.h
-    css_mod.h
-    css_llr_converter.h DESTINATION include/lora2
+    lora_whiten.h DESTINATION include/lora2
 )

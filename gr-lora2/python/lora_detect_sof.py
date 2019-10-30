@@ -84,7 +84,7 @@ class lora_detect_sof(gr.sync_block):
         #Demodulate available symbols w/o shifting, and retrieve confidence
         syms_noshift = self.demod.soft_demodulate(in0)[1]
         #Demodulate available symbols w/ M/2 shifting, and retrieve confidence
-        syms_shift = self.demod.soft_demodulate(in0[self.M/2:-self.M/2])[1]
+        syms_shift = self.demod.soft_demodulate(in0[self.M//2:-self.M//2])[1]
 
         diff_noshift = numpy.abs(numpy.diff(syms_noshift))
         diff_shift = numpy.abs(numpy.diff(syms_shift))

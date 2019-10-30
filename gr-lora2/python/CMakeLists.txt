@@ -32,38 +32,32 @@ endif()
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
-    css_phase_corr.py
-    lora_preamble_detect.py
-    css_sync_and_vectorize.py
-    lora_implicit_get_payload.py
-    lora_add_reversed_chirps.py
-    css_demod_algo.py
-    lora_interleaver.py
-    lora_deinterleaver.py
-    gray_encode.py
-    gray_decode.py
-    lora_hamming_decode.py
-    lora_low_rate_opt_rx.py
-    lora_header_decode.py
-    lora_low_rate_opt_tx.py
-    lora_hamming_encode.py
-    flip_half_bytes.py
-    store_tags.py
-    lora_detect_sof.py
-    css_timing_err_detector.py
     css_demod.py
-    mmse_fir_fractional_delayer.py
+    css_demod_algo.py
+    css_fine_cfo_detector.py
+    css_fine_cfo_track.py
+    flip_half_bytes.py
+    gray_decode.py
     gray_deindexer.py
+    gray_encode.py
+    lora_add_reversed_chirps.py
+    lora_deinterleaver.py
+    lora_detect_sof.py
+    lora_hamming_decode.py
+    lora_hamming_encode.py
+    lora_header_decode.py
+    lora_implicit_get_payload.py
+    lora_interleaver.py
+    lora_low_rate_opt_rx.py
+    lora_low_rate_opt_tx.py
+    lora_preamble_detect.py
     lora_soft_deinterleaver.py
     lora_soft_hamming_decode.py
-    tag_delay.py
     css_genie_phase_est.py
     mfsk_genie_phase_est.py
-    css_fine_cfo_detector.py
-    css_fine_sfo_detector.py
-    css_fine_cfo_track.py
-    css_timing_err_track.py
-    css_joint_cfo_timing_detector.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    store_tags.py
+    tag_delay.py
+    css_mod_algo.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################
@@ -73,34 +67,34 @@ include(GrTest)
 
 set(GR_TEST_TARGET_DEPS gnuradio-lora2)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
-GR_ADD_TEST(qa_lora_add_preamble ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_add_preamble.py)
-GR_ADD_TEST(qa_lora_interleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_interleaver.py)
-GR_ADD_TEST(qa_lora_deinterleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_deinterleaver.py)
-GR_ADD_TEST(qa_gray_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_encode.py)
-GR_ADD_TEST(qa_gray_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_decode.py)
-GR_ADD_TEST(qa_lora_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_decode.py)
-GR_ADD_TEST(qa_lora_low_rate_opt_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_rx.py)
-GR_ADD_TEST(qa_lora_header_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_header_decode.py)
-GR_ADD_TEST(qa_lora_low_rate_opt_tx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_tx.py)
-GR_ADD_TEST(qa_lora_hamming_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_encode.py)
-GR_ADD_TEST(qa_lora_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_depad.py)
-GR_ADD_TEST(qa_lora_whiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_whiten.py)
-GR_ADD_TEST(qa_flip_half_bytes ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_flip_half_bytes.py)
-GR_ADD_TEST(qa_lora_merge_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_merge_rem.py)
-GR_ADD_TEST(qa_css_timing_err_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_timing_err_detector.py)
 GR_ADD_TEST(qa_css_demod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_demod.py)
+GR_ADD_TEST(qa_css_fine_cfo_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_cfo_detector.py)
+GR_ADD_TEST(qa_css_fine_cfo_track ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_cfo_track.py)
+GR_ADD_TEST(qa_flip_half_bytes ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_flip_half_bytes.py)
+GR_ADD_TEST(qa_gray_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_decode.py)
 GR_ADD_TEST(qa_gray_deindexer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_deindexer.py)
-GR_ADD_TEST(qa_css_lrr_converter ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_lrr_converter.py)
+GR_ADD_TEST(qa_gray_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_encode.py)
+GR_ADD_TEST(qa_lora_add_reversed_chirps ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_add_reversed_chirps.py)
+GR_ADD_TEST(qa_lora_deinterleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_deinterleaver.py)
+GR_ADD_TEST(qa_lora_detect_sof ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_detect_sof.py)
+GR_ADD_TEST(qa_lora_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_decode.py)
+GR_ADD_TEST(qa_lora_hamming_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_encode.py)
+GR_ADD_TEST(qa_lora_header_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_header_decode.py)
+GR_ADD_TEST(qa_lora_implicit_get_payload ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_implicit_get_payload.py)
+GR_ADD_TEST(qa_lora_interleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_interleaver.py)
+GR_ADD_TEST(qa_lora_low_rate_opt_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_rx.py)
+GR_ADD_TEST(qa_lora_low_rate_opt_tx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_tx.py)
+GR_ADD_TEST(qa_lora_preamble_detect ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_preamble_detect.py)
 GR_ADD_TEST(qa_lora_soft_deinterleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_deinterleaver.py)
-GR_ADD_TEST(qa_lora_soft_dewhiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_dewhiten.py)
 GR_ADD_TEST(qa_lora_soft_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_hamming_decode.py)
-GR_ADD_TEST(qa_css_mod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_mod.py)
-GR_ADD_TEST(qa_css_llr_converter ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_llr_converter.py)
-GR_ADD_TEST(qa_tag_delay ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tag_delay.py)
 GR_ADD_TEST(qa_css_genie_phase_est ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_genie_phase_est.py)
 GR_ADD_TEST(qa_mfsk_genie_phase_est ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_mfsk_genie_phase_est.py)
-GR_ADD_TEST(qa_css_fine_cfo_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_cfo_detector.py)
-GR_ADD_TEST(qa_css_fine_sfo_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_sfo_detector.py)
-GR_ADD_TEST(qa_css_fine_cfo_track ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_cfo_track.py)
-GR_ADD_TEST(qa_css_timing_err_track ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_timing_err_track.py)
-GR_ADD_TEST(qa_css_joint_cfo_timing_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_joint_cfo_timing_detector.py)
+GR_ADD_TEST(qa_store_tags ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_store_tags.py)
+GR_ADD_TEST(qa_tag_delay ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tag_delay.py)
+GR_ADD_TEST(qa_css_llr_converter ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_llr_converter.py)
+GR_ADD_TEST(qa_css_mod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_mod.py)
+GR_ADD_TEST(qa_lora_add_preamble ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_add_preamble.py)
+GR_ADD_TEST(qa_lora_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_depad.py)
+GR_ADD_TEST(qa_lora_merge_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_merge_rem.py)
+GR_ADD_TEST(qa_lora_soft_dewhiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_dewhiten.py)
+GR_ADD_TEST(qa_lora_whiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_whiten.py)
