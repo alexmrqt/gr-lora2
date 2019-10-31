@@ -90,22 +90,22 @@ class lora_header_decode(gr.sync_block):
         #Construct message
         out_msg = pmt.make_dict()
         #out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len'),
-        #        pmt.from_long(long(parsed_header['packet_len'])))
+        #        pmt.from_long(int(parsed_header['packet_len'])))
 
         #out_msg = pmt.dict_add(out_msg, pmt.intern('payload_len'),
-        #        pmt.from_long(long(parsed_header['payload_len'])))
+        #        pmt.from_long(int(parsed_header['payload_len'])))
 
         out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len_syms'),
-                pmt.from_long(long(parsed_header['packet_len_syms'])))
+                pmt.from_long(int(parsed_header['packet_len_syms'])))
 
         out_msg = pmt.dict_add(out_msg, pmt.intern('packet_len_bits'),
-                pmt.from_long(long(parsed_header['packet_len_bits'])))
+                pmt.from_long(int(parsed_header['packet_len_bits'])))
 
         out_msg = pmt.dict_add(out_msg, pmt.intern('CR'),
-                pmt.from_long(long(parsed_header['CR'])))
+                pmt.from_long(int(parsed_header['CR'])))
 
         out_msg = pmt.dict_add(out_msg, pmt.intern('pad_len'),
-                pmt.from_long(long(parsed_header['pad_len'])))
+                pmt.from_long(int(parsed_header['pad_len'])))
 
         if parsed_header['has_crc']:
             out_msg = pmt.dict_add(out_msg, pmt.intern('has_crc'), pmt.PMT_T)

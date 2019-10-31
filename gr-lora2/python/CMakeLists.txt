@@ -57,7 +57,8 @@ GR_PYTHON_INSTALL(
     mfsk_genie_phase_est.py
     store_tags.py
     tag_delay.py
-    css_mod_algo.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    css_mod_algo.py
+    lora_align_sof.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################
@@ -98,3 +99,4 @@ GR_ADD_TEST(qa_lora_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lo
 GR_ADD_TEST(qa_lora_merge_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_merge_rem.py)
 GR_ADD_TEST(qa_lora_soft_dewhiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_dewhiten.py)
 GR_ADD_TEST(qa_lora_whiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_whiten.py)
+GR_ADD_TEST(qa_lora_align_sof ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_align_sof.py)

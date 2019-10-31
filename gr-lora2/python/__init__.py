@@ -58,4 +58,5 @@ from .mfsk_genie_phase_est import mfsk_genie_phase_est
 from .store_tags import store_tags
 from .tag_delay import tag_delay
 from .css_mod_algo import css_mod_algo
+from .lora_align_sof import lora_align_sof
 #

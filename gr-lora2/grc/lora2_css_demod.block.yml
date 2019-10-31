@@ -8,12 +8,8 @@ parameters:
 -   id: M
     label: M
     dtype: int
-    hide: ${ 'part' if vlen == 1 else 'none' }
 -   id: freq_loop_gain
     label: Freq Loop Gain
-    dtype: float
--   id: time_loop_gain
-    label: Time Loop Gain
     dtype: float
 
 inputs:
@@ -27,16 +23,12 @@ outputs:
     domain: stream
     dtype: complex
     vlen: ${ M }
-    optional: true
 -   label: cfo_est
-    domain: stream
-    dtype: float
--   label: time_est
     domain: stream
     dtype: float
 
 templates:
     imports: import lora2
-    make: lora2.css_demod(${M}, ${freq_loop_gain}, ${time_loop_gain})
+    make: lora2.css_demod(${M}, ${freq_loop_gain})
 
 file_format: 1

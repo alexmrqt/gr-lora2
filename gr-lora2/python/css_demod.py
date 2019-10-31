@@ -19,6 +19,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
+import pmt
 import numpy
 from gnuradio import gr
 
@@ -35,7 +36,7 @@ class css_demod(gr.basic_block):
             out_sig=[numpy.uint16, (numpy.complex64, M), numpy.float32])
 
         self.M = M
-        self.demodulator = css_demod_algo(self.M)
+        self.demodulator = css_demod_algo.css_demod_algo(self.M)
         self.global_sym_count = 0
 
         ##CFO-related attributes
@@ -55,8 +56,7 @@ class css_demod(gr.basic_block):
 
     def cfo_detect(self):
         #Frequency discriminator
-        phase_diff = numpy.mod(numpy.diff(self.phase_buff), 2*numpy.pi)
-        phase_diff[phase_diff>numpy.pi] -= 2*numpy.pi
+        phase_diff = numpy.mod(numpy.diff(self.phase_buff)+numpy.pi, 2*numpy.pi)-numpy.pi
 
         #Compute error
         return phase_diff*0.5/(self.M*numpy.pi)
@@ -81,6 +81,37 @@ class css_demod(gr.basic_block):
     def cfo_correct(self, in_sig):
         return in_sig*self.vco_advance_vec(-self.est_cfo, self.M)
 
+    def init_est_cfo_with_tag(self, start, stop):
+        tags_fine_cfo = self.get_tags_in_window(0, start, stop, \
+                pmt.intern('fine_freq_offset'))
+        tags_coarse_cfo = self.get_tags_in_window(0, start, stop, \
+                pmt.intern('coarse_freq_offset'))
+
+        if (len(tags_fine_cfo) == 0) and (len(tags_coarse_cfo) == 0):
+            return
+
+        if (len(tags_fine_cfo) > 0) and (len(tags_coarse_cfo) > 0):
+            self.est_cfo = pmt.to_python(tags_fine_cfo[0].value) \
+                    + pmt.to_python(tags_coarse_cfo[0].value)
+        elif (len(tags_coarse_cfo) > 0):
+            self.est_cfo = pmt.to_python(tags_coarse_cfo[0])
+        else:
+            self.est_cfo = pmt.to_python(tags_fine_cfo[0])
+
+    def handle_tag_prop(self, in_start_idx, in_stop_idx, out_idx):
+        tags = self.get_tags_in_window(0, in_start_idx, in_stop_idx+1)
+
+        for tag in tags:
+            tag.offset = out_idx + self.nitems_written(0)
+            self.add_item_tag(0, tag)
+
+            tag.offset = out_idx + self.nitems_written(1)
+            self.add_item_tag(1, tag)
+
+            tag.offset = out_idx + self.nitems_written(2)
+            self.add_item_tag(2, tag)
+
+
     def general_work(self, input_items, output_items):
         in0 = input_items[0]
         out0 = output_items[0]
@@ -92,6 +123,30 @@ class css_demod(gr.basic_block):
         start_idx = 0
         stop_idx = self.M - 1
         while (stop_idx < len(in0)) and (sym_count < len(out0)):
+            ##Check for pkt_start
+            tags_pkt_start = self.get_tags_in_window(0, start_idx, stop_idx+1, \
+                    pmt.intern('pkt_start'))
+            if len(tags_pkt_start) > 0:
+                self.init_est_cfo_with_tag(start_idx, stop_idx+1)
+
+                can_start_idx = tags_pkt_start[0].offset - self.nitems_read(0)
+
+                if can_start_idx != start_idx:
+                    #Shift tags of items that will be deleted
+                    self.handle_tag_prop(start_idx, can_start_idx-1, sym_count)
+
+                    #Skip items to align to can_start_idx
+                    start_idx = can_start_idx
+                    stop_idx = start_idx + self.M - 1
+
+                    self.global_sym_count = 0
+
+                    continue
+
+            ##Handle tag propagation
+            self.handle_tag_prop(start_idx, stop_idx, sym_count)
+
+            ##Demodulate
             (sym, spectrum) = self.demodulator.demodulate_with_spectrum(\
                     self.cfo_correct(in0[start_idx:(stop_idx+1)]))
 
@@ -114,10 +169,11 @@ class css_demod(gr.basic_block):
             start_idx += self.M
             stop_idx = start_idx + self.M - 1
 
-            #Outputs
+            ##Outputs
             out0[sym_count] = sym
             out1[sym_count] = spectrum[0]
             out2[sym_count] = self.est_cfo
+            #out2[sym_count] = cfo_err 
 
             #Increment number of processed symbols in this call of work
             sym_count += 1
