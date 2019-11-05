@@ -6,29 +6,31 @@ category: '[lora2]'
 
 parameters:
 -   id: M
-    label: M
+    label: 'M'
     dtype: int
-    hide: ${ 'part' if vlen == 1 else 'none' }
+    default: 512
 -   id: SF
-    label: SF
+    label: 'SF'
     dtype: int
-    hide: ${ 'part' if vlen == 1 else 'none' }
+    default: 9
 -   id: true_llr
-    label: True LLR
+    label: 'True LLR'
     dtype: bool
+    default: False
 -   id: sigma_b
-    label: Noise variance
+    label: 'Noise variance'
     dtype: float
+    default: 1.0
 
 inputs:
 -   domain: stream
     dtype: float
-    vlen: ${ M }
+    vlen: ${M}
 
 outputs:
 -   domain: stream
     dtype: float
-    vlen: ${ SF }
+    vlen: ${SF}
 
 templates:
     imports: import lora2

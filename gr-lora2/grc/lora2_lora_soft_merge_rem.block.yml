@@ -1,0 +1,25 @@
+id: lora2_lora_soft_merge_rem
+label: LoRa Soft Merge Rem.
+category: '[lora2]'
+
+parameters:
+-   id: SF
+    label: SF
+    dtype: int
+-   id: len_tag_key
+    label: Length Tag Key
+    dtype: string
+
+inputs:
+-   domain: stream
+    dtype: float
+
+outputs:
+-   domain: stream
+    dtype: float
+
+templates:
+    imports: import lora2
+    make: lora2.lora_soft_merge_rem(${SF}, ${len_tag_key})
+
+file_format: 1

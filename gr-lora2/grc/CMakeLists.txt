@@ -50,5 +50,8 @@ install(FILES
     lora2_lora_merge_rem.block.yml
     lora2_lora_soft_dewhiten.block.yml
     lora2_lora_whiten.block.yml
-    lora2_lora_align_sof.block.yml DESTINATION share/gnuradio/grc/blocks
+    lora2_lora_align_sof.block.yml
+    lora2_lora_soft_low_rate_opt_rx.block.yml
+    lora2_lora_extract_rem.block.yml
+    lora2_lora_soft_merge_rem.block.yml DESTINATION share/gnuradio/grc/blocks
 )

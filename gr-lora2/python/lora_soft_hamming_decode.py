@@ -42,13 +42,15 @@ class lora_soft_hamming_decode(gr.basic_block):
         if len(len_tag_key) != 0:
             self.len_tag_key = len_tag_key
 
-        self.set_output_multiple(4)
+        self.set_relative_rate(0.5)
+        #self.set_output_multiple(4)
         self.set_tag_propagation_policy(gr.TPP_CUSTOM)
 
     def forecast(self, noutput_items, ninput_items_required):
-        #setup size of input_items[i] for work call
-        for i in range(len(ninput_items_required)):
-            ninput_items_required[i] = noutput_items
+        #How many block of data shall we produce?
+        n_blocks = noutput_items // 4
+
+        ninput_items_required[0] = n_blocks * self.cw_len
 
     def encode_one_block(self, data_block):
         out = numpy.zeros(self.cw_len)

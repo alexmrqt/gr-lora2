@@ -8,18 +8,20 @@ parameters:
 -   id: SF
     label: SF
     dtype: int
-    hide: ${ 'part' if vlen == 1 else 'none' }
+    default: 9
 -   id: CR
     label: CR
     dtype: int
+    default: 4
 -   id: reduced_rate
     label: Reduced rate
     dtype: bool
+    default: False
 
 inputs:
 -   domain: stream
     dtype: float
-    vlen: ${ SF }
+    vlen: ${SF-2 if reduced_rate else SF}
 
 outputs:
 -   domain: stream

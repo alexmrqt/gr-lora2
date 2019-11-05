@@ -65,7 +65,7 @@ class lora_header_decode(gr.sync_block):
         out['payload_len'] = numpy.packbits(vect[0:8])[0]
         out['CR'] = (numpy.packbits(vect[8:11])>>5)[0]
         out['has_crc'] = (numpy.packbits(vect[11])>>7)[0]
-        out['rem_bits'] = vect[20:].tolist()
+        #out['rem_bits'] = vect[20:].tolist()
 
         out['packet_len'] = out['payload_len'] + 2*out['has_crc']
 
@@ -76,10 +76,10 @@ class lora_header_decode(gr.sync_block):
         #To be interleaved, the number of bits in the packet must be a multiple
         #of (CR+4)*SF. If not, the payload is padded with zeros
         bits_multiple = (out['CR'] + 4) * self.SF
-        out['packet_len_bits'] = int(numpy.ceil(float(n_bits)/bits_multiple) * bits_multiple)
+        out['packet_len_bits'] = int(numpy.ceil(n_bits/bits_multiple) * bits_multiple)
 
         #There is SF bits per symbol
-        out['packet_len_syms'] = out['packet_len_bits']/self.SF
+        out['packet_len_syms'] = out['packet_len_bits']//self.SF
 
         #Number of bits used to pad the payload
         out['pad_len'] = out['packet_len_bits'] - n_bits
@@ -112,10 +112,9 @@ class lora_header_decode(gr.sync_block):
         else:
             out_msg = pmt.dict_add(out_msg, pmt.intern('has_crc'), pmt.PMT_F)
 
-        if len(parsed_header['rem_bits']) != 0:
+        if 'rem_bits' in parsed_header:
             out_msg = pmt.dict_add(out_msg, pmt.intern('rem_bits'),
-                    pmt.init_u8vector(len(parsed_header['rem_bits']),
-                        parsed_header['rem_bits']))
+                    parsed_header['rem_bits'])
 
         return out_msg
 
@@ -133,8 +132,17 @@ class lora_header_decode(gr.sync_block):
                 computed_chk = self.compute_hdr_crc(vect[0:12].copy())
 
                 if (chk == computed_chk).all():
+                    #Parse header
                     parsed_header = self.compute_fields(vect)
 
+                    #Search for tag with remaining bits
+                    tags = self.get_tags_in_window(0, i*self.len_block,
+                            (i+1)*self.len_block, pmt.intern('rem_bits'))
+
+                    if len(tags)>0:
+                        parsed_header['rem_bits'] = tags[0].value
+                
+                    #Construct message
                     out_msg = self.construct_msg(parsed_header)
 
                     #Fire message!
@@ -143,8 +151,17 @@ class lora_header_decode(gr.sync_block):
                     #Signal that HDR demodulation fail with a PMT_F
                     self.message_port_pub(pmt.intern("hdr"), pmt.PMT_F)
             else:
+                #Parse header
                 parsed_header = self.compute_fields(vect)
 
+                #Search for tag with remaining bits
+                tags = self.get_tags_in_window(0, i*self.len_block,
+                        (i+1)*self.len_block, pmt.intern('rem_bits'))
+
+                if len(tags)>0:
+                    parsed_header['rem_bits'] = tags[0].value
+            
+                #Construct message
                 out_msg = self.construct_msg(parsed_header)
 
                 #Fire message!

@@ -122,14 +122,11 @@ class lora_preamble_detect(gr.sync_block):
         time_shift = (preamble_value - sof_value)//2
         freq_shift = (preamble_value + sof_value)//2
 
-        if self.M >= 512:
-            freq_shift = freq_shift%(self.M//2)
-            #We cannot correct frequency shifts higher than M/4 and lower than -M/4
-            if freq_shift >= self.M//4:
-                freq_shift -= self.M//2
-        else:
-            #This strangeness is likely due to the modulo M nature of the computation
-            freq_shift -= self.M//2 + 5
+        #if self.M >= 512:
+        freq_shift = freq_shift%(self.M//2)
+        #We cannot correct frequency shifts higher than M/4 and lower than -M/4
+        if freq_shift >= self.M//4:
+            freq_shift -= self.M//2
 
         time_shift = -time_shift
         if time_shift > numpy.abs(freq_shift):

@@ -8,17 +8,17 @@ parameters:
 -   id: M
     label: M
     dtype: int
-    hide: ${ 'part' if vlen == 1 else 'none' }
+    default: 9
 
 inputs:
 -   domain: stream
     dtype: float
-    vlen: ${ M }
+    vlen: ${M}
 
 outputs:
 -   domain: stream
     dtype: float
-    vlen: ${ M }
+    vlen: ${M}
 
 templates:
     imports: import lora2

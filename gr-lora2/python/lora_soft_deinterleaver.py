@@ -29,7 +29,7 @@ class lora_soft_deinterleaver(gr.basic_block):
     def __init__(self, SF, CR, reduced_rate = False):
         gr.basic_block.__init__(self,
             name="lora_soft_deinterleaver",
-            in_sig=[(numpy.float32, SF)],
+            in_sig=[(numpy.float32, SF-2 if reduced_rate else SF)],
             out_sig=[numpy.float32])
 
         #Storing arguments as attributes
@@ -84,11 +84,6 @@ class lora_soft_deinterleaver(gr.basic_block):
 
             #Process items
             mtx = numpy.flipud(in0[in_idx_start:in_idx_stop+1,:].transpose())
-
-            # In reduced rate mode, the last two line of the interleaving matrix
-            # are removed.
-            if self.reduced_rate:
-                mtx = mtx[:-2,:]
 
             #Cyclic shift each column of mtx by its column index
             for i in range(0, mtx.shape[1]):

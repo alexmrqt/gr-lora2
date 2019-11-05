@@ -23,26 +23,27 @@
 #endif
 
 #include <gnuradio/io_signature.h>
-#include "lora_merge_rem_impl.h"
+#include "lora_soft_merge_rem_impl.h"
 
 namespace gr {
   namespace lora2 {
 
-    lora_merge_rem::sptr
-    lora_merge_rem::make(int SF, const std::string &len_tag_key)
+    lora_soft_merge_rem::sptr
+    lora_soft_merge_rem::make(int SF, const std::string &len_tag_key)
     {
       return gnuradio::get_initial_sptr
-        (new lora_merge_rem_impl(SF, len_tag_key));
+        (new lora_soft_merge_rem_impl(SF, len_tag_key));
     }
+
 
     /*
      * The private constructor
      */
-    lora_merge_rem_impl::lora_merge_rem_impl(int SF, const std::string &len_tag_key)
-      : gr::tagged_stream_block("lora_merge_rem",
-              gr::io_signature::make(1, 1, sizeof(uint8_t)),
-              gr::io_signature::make(1, 1, sizeof(uint8_t)), len_tag_key),
-      d_SF(SF)
+    lora_soft_merge_rem_impl::lora_soft_merge_rem_impl(int SF, const std::string &len_tag_key)
+      : gr::tagged_stream_block("lora_soft_merge_rem",
+              gr::io_signature::make(1, 1, sizeof(float)),
+              gr::io_signature::make(1, 1, sizeof(float)), len_tag_key),
+		d_SF(SF)
     {
 		//Number of payload bits remaining in header
         d_rem_key = pmt::intern("rem_bits");
@@ -52,21 +53,21 @@ namespace gr {
 	}
 
     int
-    lora_merge_rem_impl::calculate_output_stream_length(const gr_vector_int &ninput_items)
+    lora_soft_merge_rem_impl::calculate_output_stream_length(const gr_vector_int &ninput_items)
     {
 		//Allocate for worst case (CR+4 == 8)
 		return ninput_items[0] + (d_SF-7)*8;
     }
 
     int
-    lora_merge_rem_impl::work (int noutput_items,
+    lora_soft_merge_rem_impl::work (int noutput_items,
                        gr_vector_int &ninput_items,
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
-      const uint8_t *in = (const uint8_t *) input_items[0];
-      uint8_t *out = (uint8_t *) output_items[0];
-	  std::vector<uint8_t> rem_bits;
+      const float *in = (const float *) input_items[0];
+      float *out = (float *) output_items[0];
+	  std::vector<float> rem_bits;
 
       // Recover tags (expected to be on the first item)
       std::vector<tag_t> tags;
@@ -81,11 +82,11 @@ namespace gr {
       }
 
       //Copy payload bits remaining in header at the begining of the payload
-	  rem_bits = pmt::u8vector_elements(tags[0].value);
-      memcpy(out, &rem_bits[0], rem_bits.size());
+	  rem_bits = pmt::f32vector_elements(tags[0].value);
+      memcpy(out, &rem_bits[0], rem_bits.size()*sizeof(float));
 
       //Copy the rest of the payload
-      memcpy(out+rem_bits.size(), in, ninput_items[0]);
+      memcpy(out+rem_bits.size(), in, ninput_items[0]*sizeof(float));
 
       //Handle tag propagation (taken from gr-digital's crc_32_bb)
       tags.clear();

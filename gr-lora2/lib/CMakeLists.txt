@@ -31,6 +31,7 @@ list(APPEND lora2_sources
     lora_merge_rem_impl.cc
     lora_soft_dewhiten_impl.cc
     lora_whiten_impl.cc
+    lora_soft_merge_rem_impl.cc
 )
 
 set(lora2_sources "${lora2_sources}" PARENT_SCOPE)

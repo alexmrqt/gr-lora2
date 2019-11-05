@@ -60,7 +60,8 @@ class lora_hamming_decode(gr.basic_block):
         if len(len_tag_key) != 0:
             self.len_tag_key = len_tag_key
 
-        self.set_output_multiple(4)
+        self.set_relative_rate(0.5)
+        #self.set_output_multiple(4)
         self.set_tag_propagation_policy(gr.TPP_CUSTOM)
 
     def forecast(self, noutput_items, ninput_items_required):

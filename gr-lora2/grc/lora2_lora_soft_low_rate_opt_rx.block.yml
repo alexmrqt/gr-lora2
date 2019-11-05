@@ -1,0 +1,27 @@
+id: lora2_lora_soft_low_rate_opt_rx
+label: LoRa Soft Low Rate Opt RX
+category: '[lora2]'
+
+parameters:
+- id: SF
+  label: SF
+  dtype: int
+  default: 9
+
+inputs:
+- label: in
+  dtype: float
+  vlen: ${SF}
+
+outputs:
+- label: out
+  dtype: float
+  vlen: ${SF-2}
+
+templates:
+  imports: import lora2
+  make: lora2.lora_soft_low_rate_opt_rx(${SF})
+
+#  'file_format' specifies the version of the GRC yml format used in the file
+#  and should usually not be changed.
+file_format: 1
