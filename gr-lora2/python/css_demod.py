@@ -23,20 +23,23 @@ import pmt
 import numpy
 from gnuradio import gr
 
+from lora2 import css_mod_algo
 from lora2 import css_demod_algo
 
 class css_demod(gr.basic_block):
     """
     docstring for block css_demod
     """
-    def __init__(self, M, B_cfo):
+    def __init__(self, M, B_cfo, B_delay, interp):
         gr.basic_block.__init__(self,
             name="css_demod",
             in_sig=[numpy.complex64],
-            out_sig=[numpy.uint16, (numpy.complex64, M), numpy.float32])
+            out_sig=[numpy.uint16, (numpy.complex64, M), numpy.float32, numpy.float32])
 
         self.M = M
+        self.Q = interp
         self.demodulator = css_demod_algo.css_demod_algo(self.M)
+        self.modulator = css_mod_algo.css_mod_algo(self.M, self.Q)
         self.global_sym_count = 0
 
         ##CFO-related attributes
@@ -46,6 +49,10 @@ class css_demod(gr.basic_block):
         #Keep track of the last two phases
         self.phase_buff = numpy.zeros(2, dtype=numpy.float32)
 
+        ##Delay-related attributes
+        self.b1_delay = B_delay
+        self.delay = 0.0
+
         ##GNURadio
         self.set_tag_propagation_policy(gr.TPP_CUSTOM)
         self.set_relative_rate(1.0/self.M)
@@ -53,6 +60,12 @@ class css_demod(gr.basic_block):
     def forecast(self, noutput_items, ninput_items_required):
         #Most of the time, this block simply decimates by M
         ninput_items_required[0] = self.M * noutput_items
+
+    def delay_detect(self, sig, hard_sym):
+        reconst_sig = numpy.zeros(self.M*self.Q + 2*self.Q, dtype=numpy.complex64)
+        reconst_sig[self.Q:-self.Q] = self.modulator.modulate(hard_sym)
+
+        return numpy.argmax(numpy.correlate(sig, reconst_sig)) - self.Q
 
     def cfo_detect(self):
         #Frequency discriminator
@@ -79,7 +92,7 @@ class css_demod(gr.basic_block):
         return phasor
 
     def cfo_correct(self, in_sig):
-        return in_sig*self.vco_advance_vec(-self.est_cfo, self.M)
+        return in_sig*self.vco_advance_vec(-self.est_cfo/self.Q, self.M*self.Q)
 
     def init_est_cfo_with_tag(self, start, stop):
         tags_fine_cfo = self.get_tags_in_window(0, start, stop, \
@@ -117,11 +130,12 @@ class css_demod(gr.basic_block):
         out0 = output_items[0]
         out1 = output_items[1]
         out2 = output_items[2]
+        out3 = output_items[3]
 
         sym_count = 0
 
         start_idx = 0
-        stop_idx = self.M - 1
+        stop_idx = self.M*self.Q - 1
         while (stop_idx < len(in0)) and (sym_count < len(out0)):
             ##Check for pkt_start
             tags_pkt_start = self.get_tags_in_window(0, start_idx, stop_idx+1, \
@@ -137,7 +151,7 @@ class css_demod(gr.basic_block):
 
                     #Skip items to align to can_start_idx
                     start_idx = can_start_idx
-                    stop_idx = start_idx + self.M - 1
+                    stop_idx = start_idx + self.M*self.Q - 1
 
                     self.global_sym_count = 0
 
@@ -147,8 +161,8 @@ class css_demod(gr.basic_block):
             self.handle_tag_prop(start_idx, stop_idx, sym_count)
 
             ##Demodulate
-            (sym, spectrum) = self.demodulator.demodulate_with_spectrum(\
-                    self.cfo_correct(in0[start_idx:(stop_idx+1)]))
+            sig = self.cfo_correct(in0[start_idx:(stop_idx+1)])
+            (sym, spectrum) = self.demodulator.demodulate_with_spectrum(sig[::self.Q])
 
             self.phase_buff = numpy.roll(self.phase_buff, -1)
             self.phase_buff[-1] = numpy.angle(spectrum[0][sym])
@@ -162,18 +176,25 @@ class css_demod(gr.basic_block):
             else:
                 self.global_sym_count += 1
 
-            #Save this spectrum for next timing error estimation
-            self.prev_spectrum = spectrum[0]
+            ##Delay estimation
+            delay_err = self.delay_detect(sig, sym)
+            self.delay += self.b1_delay * delay_err
 
             #Next symbol
-            start_idx += self.M
-            stop_idx = start_idx + self.M - 1
+            start_idx += self.M*self.Q + int(numpy.round(self.delay))
+            stop_idx = start_idx + self.M*self.Q-1
+
+            #Acount for delay compensation in start_idx
+            self.delay -= int(numpy.round(self.delay))
+
+            ##TODO: Handle tag propagation of deleted items (?)
 
             ##Outputs
             out0[sym_count] = sym
             out1[sym_count] = spectrum[0]
             #out2[sym_count] = self.est_cfo
-            out2[sym_count] = cfo_err 
+            out2[sym_count] = cfo_err
+            out3[sym_count] = delay_err
 
             #Increment number of processed symbols in this call of work
             sym_count += 1

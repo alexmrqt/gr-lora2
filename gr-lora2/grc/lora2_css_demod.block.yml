@@ -8,9 +8,19 @@ parameters:
 -   id: M
     label: M
     dtype: int
--   id: freq_loop_gain
+    default: 512
+-   id: interp
+    label: Interpolation
+    dtype: int
+    default: 2
+-   id: B_cfo
     label: Freq Loop Gain
     dtype: float
+    default: 0.35
+-   id: B_delay
+    label: Delay Loop Gain
+    dtype: float
+    default: 0.4
 
 inputs:
 -   domain: stream
@@ -23,12 +33,15 @@ outputs:
     domain: stream
     dtype: complex
     vlen: ${ M }
--   label: cfo_est
+-   label: cfo_err
+    domain: stream
+    dtype: float
+-   label: delay_err
     domain: stream
     dtype: float
 
 templates:
     imports: import lora2
-    make: lora2.css_demod(${M}, ${freq_loop_gain})
+    make: lora2.css_demod(${M}, ${B_cfo}, ${B_delay}, ${interp})
 
 file_format: 1

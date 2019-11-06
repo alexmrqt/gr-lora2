@@ -61,4 +61,6 @@ from .css_mod_algo import css_mod_algo
 from .lora_align_sof import lora_align_sof
 from .lora_soft_low_rate_opt_rx import lora_soft_low_rate_opt_rx
 from .lora_extract_rem import lora_extract_rem
+from .css_fine_delay_detector import css_fine_delay_detector
+from .css_fine_delay_track import css_fine_delay_track
 #
