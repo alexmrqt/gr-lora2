@@ -59,7 +59,7 @@ class css_demod(gr.basic_block):
 
     def forecast(self, noutput_items, ninput_items_required):
         #Most of the time, this block simply decimates by M
-        ninput_items_required[0] = self.M * noutput_items
+        ninput_items_required[0] = self.M * self.Q * noutput_items
 
     def delay_detect(self, sig, hard_sym):
         reconst_sig = numpy.zeros(self.M*self.Q + 2*self.Q, dtype=numpy.complex64)
