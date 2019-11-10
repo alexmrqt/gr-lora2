@@ -42,8 +42,13 @@ class lora_soft_hamming_decode(gr.basic_block):
         if len(len_tag_key) != 0:
             self.len_tag_key = len_tag_key
 
-        self.set_relative_rate(0.5)
-        #self.set_output_multiple(4)
+        self.cw_table = [\
+                self.encode_one_block([(i>>k)&0x01 for k in reversed(range(0, 4))])\
+                for i in range(0, 2**4)]
+        self.cw_table = numpy.array(self.cw_table)
+
+        #self.set_relative_rate(0.5)
+        self.set_output_multiple(4)
         self.set_tag_propagation_policy(gr.TPP_CUSTOM)
 
     def forecast(self, noutput_items, ninput_items_required):
@@ -70,16 +75,17 @@ class lora_soft_hamming_decode(gr.basic_block):
 
     #Brute-force ML decoder (only 16 comparisons to perform, though)
     def decode_one_block(self, data_block):
-        min_idx = 0
-        min_dist = numpy.Inf
+        min_idx = numpy.argmin(numpy.sum(self.cw_table*data_block, axis=1))
+        #min_idx = 0
+        #min_dist = numpy.Inf
 
-        for i in range(0, 2**4):
-            can_block = self.encode_one_block([(i>>k)&0x01 for k in reversed(range(0, 4))])
+        #for i in range(0, 2**4):
+        #    can_block = self.encode_one_block([(i>>k)&0x01 for k in reversed(range(0, 4))])
 
-            dist = numpy.sum(can_block*data_block)
-            if dist < min_dist:
-                min_dist = dist
-                min_idx = i
+        #    dist = numpy.sum(can_block*data_block)
+        #    if dist < min_dist:
+        #        min_dist = dist
+        #        min_idx = i
 
         return [(min_idx>>k)&0x01 for k in reversed(range(0, 4))]
 

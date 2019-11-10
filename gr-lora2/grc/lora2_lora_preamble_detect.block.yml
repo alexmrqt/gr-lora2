@@ -8,6 +8,9 @@ parameters:
 -   id: SF
     label: SF
     dtype: int
+-   id: Q
+    label: Interp
+    dtype: int
 -   id: thres
     label: Threshold
     dtype: float
@@ -26,6 +29,6 @@ outputs:
 
 templates:
     imports: import lora2
-    make: lora2.lora_preamble_detect(${SF}, ${preamble_len}, thres=${thres})
+    make: lora2.lora_preamble_detect(${SF}, ${Q}, ${preamble_len}, thres=${thres})
 
 file_format: 1

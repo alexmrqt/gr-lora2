@@ -46,28 +46,29 @@ class css_fine_delay_track(gr.decim_block):
         self.delay = 0.0
         self.cum_delay = 0.0
 
+        #History : we want interp/2 items before and after the symbol
+        self.set_history(self.Q//2+1)
+
     def forecast(self, noutput_items, ninput_items_required):
         #Most of the time, this block simply decimates by M*Q
-        ninput_items_required[0] = self.M * self.Q * noutput_items
+        ninput_items_required[0] = (self.M * self.Q + self.Q//2) * noutput_items
 
     def delay_detect(self, sig, hard_sym):
-        reconst_sig = numpy.zeros(self.M*self.Q + 2*self.Q, dtype=numpy.complex64)
-        reconst_sig[self.Q:-self.Q] = self.modulator.modulate(hard_sym)
+        reconst_sig = self.modulator.modulate(hard_sym)
 
-        return numpy.argmax(numpy.correlate(sig, reconst_sig)) - self.Q
+        return numpy.argmax(numpy.correlate(sig, reconst_sig)) - self.Q/2
 
     def general_work(self, input_items, output_items):
         in0 = input_items[0]
         out = output_items[0]
 
-        start_idx = 0
+        start_idx = self.history()-1
         stop_idx = start_idx + self.M*self.Q
         sym_count = 0
         while (stop_idx < len(in0)) and (sym_count < len(out)):
-            sig = in0[start_idx:stop_idx]
+            hard_sym = self.demodulator.demodulate(in0[start_idx:stop_idx:self.Q])
 
-            hard_sym = self.demodulator.demodulate(sig[::self.Q])
-
+            sig = in0[(start_idx-self.Q//2):(stop_idx+self.Q//2)]
             self.delay += self.b1 * self.delay_detect(sig, hard_sym)
 
             self.cum_delay += int(numpy.round(self.delay))
@@ -81,5 +82,5 @@ class css_fine_delay_track(gr.decim_block):
             sym_count += 1
 
         #Tell GNURadio how many items were produced
-        self.consume(0, start_idx)
+        self.consume(0, start_idx-(self.history()-1))
         return sym_count

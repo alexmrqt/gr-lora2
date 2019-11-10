@@ -55,5 +55,7 @@ install(FILES
     lora2_lora_extract_rem.block.yml
     lora2_lora_soft_merge_rem.block.yml
     lora2_css_fine_delay_detector.block.yml
-    lora2_css_fine_delay_track.block.yml DESTINATION share/gnuradio/grc/blocks
+    lora2_css_fine_delay_track.block.yml
+    lora2_lora_soft_depad.block.yml
+    lora2_lora_crc_check.block.yml DESTINATION share/gnuradio/grc/blocks
 )

@@ -30,7 +30,7 @@ class lora_preamble_detect(gr.sync_block):
     """
     docstring for block lora_preamble_detect
     """
-    def __init__(self, SF, preamble_len, debug=False, thres=1e-4):
+    def __init__(self, SF, interp, preamble_len, thres=1e-4):
         gr.sync_block.__init__(self,
             name="lora_preamble_detect",
             in_sig=[numpy.complex64],
@@ -39,6 +39,7 @@ class lora_preamble_detect(gr.sync_block):
         self.M=int(2**SF)
         self.preamble_len = preamble_len
         self.thres = thres
+        self.Q = interp
 
         self.demod = css_demod_algo(self.M)
         self.demod_conj = css_demod_algo(self.M, True)
@@ -56,7 +57,7 @@ class lora_preamble_detect(gr.sync_block):
             self.complex_buffer = numpy.zeros(5, dtype=numpy.complex64)
             self.buffer_meta = [dict() for i in range(0, 5)]
 
-        self.set_output_multiple(self.M)
+        self.set_output_multiple(self.M*self.Q)
 
     def detect_preamble(self):
         #Buffer not full yet
@@ -85,10 +86,6 @@ class lora_preamble_detect(gr.sync_block):
 
         #Save sync value
         self.buffer_meta[-1]['sync_value'] = numpy.int16(sync_val)
-
-        tmp1 = self.complex_buffer[2:-1] * numpy.conj(self.complex_buffer[1:-2])
-        tmp2 = numpy.angle(tmp1[1:] * numpy.conj(tmp1[:-1]))
-        tmp2 *= 1.0/(2*self.M*numpy.pi)
 
         #Compute and save fine frequency offset, corresponding to
         #fine_cfo + fine_delay
@@ -138,18 +135,17 @@ class lora_preamble_detect(gr.sync_block):
 
     def compute_fine_tf_shifts(self, fine_offset, conj_fine_offset):
         #Compute time and frequency shift
-        fine_time_shift = (fine_offset - conj_fine_offset)/(2*2*numpy.pi)
         fine_freq_shift = (fine_offset + conj_fine_offset)/(2*self.M*2*numpy.pi)
 
-        return (fine_freq_shift, fine_time_shift)
+        return fine_freq_shift
 
-    def tag_end_preamble(self, freq_shift, fine_freq_shift, time_shift, fine_time_shift, sync_value, sof_idx):
+    def tag_end_preamble(self, freq_shift, fine_freq_shift, time_shift, sync_value, sof_idx):
         #Prepare tag
         #This delay estimator has an uncertainty of +/-M (by steps of M/2).
         #So we put the tag M items before the estimated SOF item, to allow
         #A successive block to remove this uncertainty.
-        tag_offset = self.nitems_written(0) + time_shift + sof_idx*self.M \
-                + self.M//4
+        tag_offset = self.nitems_written(0) + time_shift*self.Q + sof_idx*self.M*self.Q \
+                + (self.M*self.Q)//4
 
         tag1_key = pmt.intern('fine_freq_offset')
         tag1_value = pmt.to_pmt(fine_freq_shift)
@@ -159,21 +155,18 @@ class lora_preamble_detect(gr.sync_block):
         tag3_value = pmt.to_pmt(sync_value)
         tag4_key = pmt.intern('time_offset')
         tag4_value = pmt.to_pmt(int(time_shift))
-        #tag5_key = pmt.intern('fine_time_offset')
-        #tag5_value = pmt.to_pmt(fine_time_shift)
 
         #Append tags
         self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
         self.add_item_tag(0, tag_offset, tag2_key, tag2_value)
         self.add_item_tag(0, tag_offset, tag3_key, tag3_value)
         self.add_item_tag(0, tag_offset, tag4_key, tag4_value)
-        #self.add_item_tag(0, tag_offset, tag5_key, tag5_value)
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
         out0 = output_items[0]
 
-        n_syms = len(in0)//self.M
+        n_syms = len(in0)//(self.M*self.Q)
 
         for i in range(0, n_syms):
             #Demod and shift buffer
@@ -182,8 +175,8 @@ class lora_preamble_detect(gr.sync_block):
             self.buffer_meta.pop(0)
             self.buffer_meta.append(dict())
 
-            (hard_sym, complex_sym) = \
-                    self.demod.complex_demodulate(in0[i*self.M:(i+1)*self.M])
+            sig = in0[i*(self.M*self.Q):(i+1)*(self.M*self.Q):self.Q]
+            (hard_sym, complex_sym) = self.demod.complex_demodulate(sig)
             self.buffer[-1] = hard_sym[0]
             self.complex_buffer[-1] = complex_sym[0]
 
@@ -194,8 +187,7 @@ class lora_preamble_detect(gr.sync_block):
                 self.conj_buffer = numpy.roll(self.conj_buffer, -1)
                 self.conj_complex_buffer = numpy.roll(self.conj_complex_buffer, -1)
 
-                (hard_sym, complex_sym) = self.demod_conj.complex_demodulate(
-                                                in0[i*self.M:(i+1)*self.M])
+                (hard_sym, complex_sym) = self.demod_conj.complex_demodulate(sig)
                 self.conj_buffer[-1] = hard_sym[0]
                 self.conj_complex_buffer[-1] = complex_sym[0]
 
@@ -223,11 +215,11 @@ class lora_preamble_detect(gr.sync_block):
                         (freq_shift, time_shift) = self.compute_tf_shifts(preamble_value, sof_value)
 
                         fine_offset = self.buffer_meta[-3]['fine_offset']
-                        (fine_freq_shift, fine_time_shift) = self.compute_fine_tf_shifts(fine_offset, conj_fine_offset)
+                        fine_freq_shift = self.compute_fine_tf_shifts(fine_offset, conj_fine_offset)
 
                         #Tag
                         sync_value = self.buffer_meta[-3]['sync_value']
-                        self.tag_end_preamble(freq_shift, fine_freq_shift, time_shift, fine_time_shift, sync_value, i)
+                        self.tag_end_preamble(freq_shift, fine_freq_shift, time_shift, sync_value, i)
 
         #Copy input to output
         out0[:] = in0[:]

@@ -2,6 +2,7 @@ import numpy
 import json
 from matplotlib import pyplot as plt
 
+from gnuradio import filter
 from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import gr
@@ -10,7 +11,7 @@ from lora2 import css_fine_cfo_track
 import channels
 
 class css_cfo_est(gr.top_block):
-    def __init__(self, SF, cfo, EbN0dB, B, n_syms):
+    def __init__(self, SF, cfo, delay, interp, EbN0dB, B, n_syms):
         gr.top_block.__init__(self, "CSS CFO Estimator")
 
         ##################################################
@@ -36,7 +37,23 @@ class css_cfo_est(gr.top_block):
         self.tag_gate = blocks.tag_gate(gr.sizeof_gr_complex)
         self.awgn_chan = channels.awgn(noisevar)
 
-        #Channel (2: cfo)
+        #Channel (2: delay)
+        int_delay = 0
+        frac_delay = 0.0
+        self.int_delayer = None
+        if delay > 0:
+            int_delay = int(delay)
+            frac_delay = delay-int_delay
+            self.int_delayer = blocks.delay(gr.sizeof_gr_complex, int_delay)
+        else:
+            int_delay = int(-delay)
+            frac_delay = -delay-int_delay
+            self.int_delayer = blocks.skiphead(gr.sizeof_gr_complex, int_delay)
+        self.frac_delayer = filter.mmse_resampler_cc(frac_delay, 1.0)
+        #Frac delayer introduces a delay of 3
+        self.frac_delayer_fix = blocks.delay(gr.sizeof_gr_complex, 3)
+
+        #Channel (3: cfo)
         self.cfo_source = analog.sig_source_c(1.0, analog.GR_COS_WAVE, self.cfo,
                 1, 0)
         self.multiplicator = blocks.multiply_vcc(1)
@@ -51,7 +68,10 @@ class css_cfo_est(gr.top_block):
         self.connect((self.syms_src, 0), (self.css_mod, 0))
         self.connect((self.css_mod, 0), (self.tag_gate, 0))
 
-        self.connect((self.tag_gate, 0), (self.multiplicator, 0))
+        self.connect((self.tag_gate, 0), (self.int_delayer, 0))
+        self.connect((self.int_delayer, 0), (self.frac_delayer, 0))
+        self.connect((self.frac_delayer, 0), (self.frac_delayer_fix, 0))
+        self.connect((self.frac_delayer_fix, 0), (self.multiplicator, 0))
         self.connect((self.cfo_source, 0), (self.multiplicator, 1))
         self.connect((self.multiplicator, 0), (self.awgn_chan, 0))
 
@@ -61,9 +81,11 @@ class css_cfo_est(gr.top_block):
 if __name__ == "__main__":
     params = {
         'SF': 9,
-        'n_syms': 100,
+        'interp': 4,
+        'delay': 1.0/4,
         'cfo': 0.4/2**9,
-        'EbN0dB': 40,
+        'n_syms': 100,
+        'EbN0dB': 10,
         'B': 0.40,
     }
     M =  2**params['SF']
@@ -71,7 +93,8 @@ if __name__ == "__main__":
     save = False
     filename = 'CSS_CFO_TRACK_B_'+ str(params['B'])[2:] +'.json'
 
-    tb = css_cfo_est(params['SF'], params['cfo'], params['EbN0dB'], params['B'], params['n_syms'])
+    tb = css_cfo_est(params['SF'], params['cfo'], params['delay'],
+            params['interp'], params['EbN0dB'], params['B'], params['n_syms'])
     tb.run()
 
     est_cfos = tb.cfo_sink.data()

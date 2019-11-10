@@ -65,7 +65,7 @@ class css_demod(gr.basic_block):
         reconst_sig = numpy.zeros(self.M*self.Q + 2*self.Q, dtype=numpy.complex64)
         reconst_sig[self.Q:-self.Q] = self.modulator.modulate(hard_sym)
 
-        return numpy.argmax(numpy.correlate(sig, reconst_sig)) - self.Q
+        return numpy.argmax(numpy.abs(numpy.correlate(sig, reconst_sig))) - self.Q
 
     def cfo_detect(self):
         #Frequency discriminator
@@ -111,6 +111,9 @@ class css_demod(gr.basic_block):
         else:
             self.est_cfo = pmt.to_python(tags_fine_cfo[0])
 
+        #Reset VCO phase
+        self.init_phase = 0.0
+
     def handle_tag_prop(self, in_start_idx, in_stop_idx, out_idx):
         tags = self.get_tags_in_window(0, in_start_idx, in_stop_idx+1)
 
@@ -123,6 +126,9 @@ class css_demod(gr.basic_block):
 
             tag.offset = out_idx + self.nitems_written(2)
             self.add_item_tag(2, tag)
+
+            tag.offset = out_idx + self.nitems_written(3)
+            self.add_item_tag(3, tag)
 
 
     def general_work(self, input_items, output_items):
@@ -141,18 +147,22 @@ class css_demod(gr.basic_block):
             tags_pkt_start = self.get_tags_in_window(0, start_idx, stop_idx+1, \
                     pmt.intern('pkt_start'))
             if len(tags_pkt_start) > 0:
+                #Initialize CFO estimate
                 self.init_est_cfo_with_tag(start_idx, stop_idx+1)
+                #Reset delay estimate
+                self.delay = 0.0
 
                 can_start_idx = tags_pkt_start[0].offset - self.nitems_read(0)
 
                 if can_start_idx != start_idx:
-                    #Shift tags of items that will be deleted
+                    #Shift tags by the number of items to be deleted
                     self.handle_tag_prop(start_idx, can_start_idx-1, sym_count)
 
                     #Skip items to align to can_start_idx
                     start_idx = can_start_idx
                     stop_idx = start_idx + self.M*self.Q - 1
 
+                    #Reset global symbol counter
                     self.global_sym_count = 0
 
                     continue
@@ -169,32 +179,42 @@ class css_demod(gr.basic_block):
 
             ##CFO estimation if at least 2 symbols were demodulated
             cfo_err = 0.0
-            if self.global_sym_count > 1:
+            old_cfo = self.est_cfo
+            if self.global_sym_count > 0:
                 cfo_err = self.cfo_detect()
                 #Loop Filter
                 self.est_cfo += self.b1_cfo * cfo_err
             else:
                 self.global_sym_count += 1
+            out2[sym_count] = self.est_cfo
+            #out2[sym_count] = cfo_err
 
-            ##Delay estimation
+            ##Delay estimation is sensitive to CFO. Thus, it is estimated only
+            ##once an estimate of the CFO is produced
             delay_err = self.delay_detect(sig, sym)
             self.delay += self.b1_delay * delay_err
+            out3[sym_count] = self.delay
+            #out3[sym_count] = delay_err
 
             #Next symbol
-            start_idx += self.M*self.Q + int(numpy.round(self.delay))
+            int_delay = int(numpy.round(self.delay))
+
+            start_idx += self.M*self.Q + int_delay
             stop_idx = start_idx + self.M*self.Q-1
 
             #Acount for delay compensation in start_idx
-            self.delay -= int(numpy.round(self.delay))
+            self.delay -= int_delay
+            #Acount for delay compensation in the VCO
+            if int_delay > 0:
+                self.vco_advance(self.est_cfo/self.Q, int_delay);
+            else:
+                self.vco_advance(old_cfo/self.Q, int_delay);
 
             ##TODO: Handle tag propagation of deleted items (?)
 
             ##Outputs
             out0[sym_count] = sym
             out1[sym_count] = spectrum[0]
-            #out2[sym_count] = self.est_cfo
-            out2[sym_count] = cfo_err
-            out3[sym_count] = delay_err
 
             #Increment number of processed symbols in this call of work
             sym_count += 1

@@ -23,6 +23,7 @@ class ber_vs_ebn0_awgn(gr.top_block):
         # Variables
         ##################################################
         self.n_syms= n_syms
+        interp = 1
 
         noisevar = numpy.sqrt(float(M)/numpy.log2(M) * 10**(-EbN0dB/10.0))
 
@@ -33,18 +34,18 @@ class ber_vs_ebn0_awgn(gr.top_block):
         ##################################################
         self.syms_src = blocks.vector_source_s(self.syms_vec, False)
 
-        self.css_mod = css_mod(M)
+        self.css_mod = css_mod(M, interp)
 
         #Channel (1: noise)
         self.awgn_chan = channels.awgn(noisevar)
 
         #Channel (2: cfo)
-        self.cfo = gr_chan.cfo_model(1.0, sigma2_cfo, max_cfo, numpy.random.randint(0, 255))
+        self.cfo = gr_chan.cfo_model(interp, sigma2_cfo, max_cfo, numpy.random.randint(0, 255))
 
-        self.css_demod = css_demod(M, 0.0, 0.0, 1)
+        self.css_demod = css_demod(M, 0.0, 0.0, interp)
         #self.css_demod = grc_css_demod(M)
-        self.css_demod_cfo = css_demod(M, B_cfo, 0.0, 1)
-        self.css_demod_nocfo = css_demod(M, 0.0, 0.0, 1)
+        self.css_demod_cfo = css_demod(M, B_cfo, 0.0, interp)
+        self.css_demod_nocfo = css_demod(M, 0.0, 0.0, interp)
 
         self.est_syms_sink = blocks.vector_sink_s()
         self.spectrum_sink1 = blocks.null_sink(gr.sizeof_gr_complex*M)
@@ -89,6 +90,23 @@ class ber_vs_ebn0_awgn(gr.top_block):
         self.connect((self.css_demod_nocfo, 1), (self.spectrum_sink3, 0))
         self.connect((self.css_demod_nocfo, 2), (self.cfo_err_sink3, 0))
         self.connect((self.css_demod_nocfo, 3), (self.delay_err_sink3, 0))
+
+def plot(EbN0dB, BER, BER_cfo, BER_nocfo):
+    plt.clf()
+
+    #Plot results
+    plt.semilogy(EbN0dB, BER, '-x', label="Without CFO tracking")
+    plt.semilogy(EbN0dB, BER_cfo, '-x', label="With CFO tracking")
+    plt.semilogy(EbN0dB, BER_nocfo, '-+', label="No CFO")
+
+    plt.grid(which='both')
+    plt.ylabel('BER')
+    plt.xlabel('Eb/N0 (dB)')
+
+    axes = plt.gca()
+    axes.set_ylim([1e-5, 0.5])
+    plt.legend()
+    plt.pause(0.1)
 
 def main():
     params = {
@@ -160,6 +178,8 @@ def main():
         BER_cfo[i] = float(n_err_cfo)/n_tot_bits
         BER_nocfo[i] = float(n_err_nocfo)/n_tot_bits
 
+        plot(EbN0dB, BER, BER_cfo, BER_nocfo)
+
     #save data
     if save:
         results = {}
@@ -174,19 +194,8 @@ def main():
         fid.close()
         print('Results written in ' + filename + '.')
 
-    #Plot results
-    plt.semilogy(EbN0dB, BER, '-x', label="Without CFO tracking")
-    plt.semilogy(EbN0dB, BER_cfo, '-x', label="With CFO tracking")
-    plt.semilogy(EbN0dB, BER_nocfo, '-+', label="No CFO")
-
-    plt.grid(which='both')
-    plt.ylabel('BER')
-    plt.xlabel('Eb/N0 (dB)')
-
-    axes = plt.gca()
-    axes.set_ylim([1e-5, 0.5])
-    plt.legend()
-    plt.show()
+    print('Appuyez sur une touche pour fermer.')
+    input()
 
 if __name__ == '__main__':
     main()

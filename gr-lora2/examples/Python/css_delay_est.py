@@ -37,7 +37,6 @@ class css_delay_est(gr.top_block):
         self.awgn_chan = channels.awgn(noisevar)
 
         #Channel (2: delay)
-
         int_delay = 0
         frac_delay = 0.0
         self.int_delayer = None
@@ -80,7 +79,7 @@ if __name__ == "__main__":
     }
     M =  2**params['SF']
     #delays = numpy.linspace(-params['interp'], params['interp'], 20)
-    delays = numpy.arange(-params['interp']/2, params['interp']/2, 0.1)
+    delays = numpy.arange(-params['interp'], params['interp'], 0.1)
 
     save = False
     filename = 'CSS_DELAY_EST.json'

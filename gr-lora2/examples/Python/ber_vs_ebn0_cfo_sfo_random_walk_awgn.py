@@ -1,5 +1,3 @@
-import time
-
 import json
 from gnuradio import channels as gr_chan
 from gnuradio import blocks
@@ -18,7 +16,8 @@ import channels
 
 class ber_vs_ebn0_awgn(gr.top_block):
 
-    def __init__(self, M, max_sfo, sigma2_sfo, EbN0dB, B_delay, interp, n_syms):
+    def __init__(self, M, max_cfo, sigma2_cfo, max_sfo, sigma2_sfo, EbN0dB,\
+            B_cfo, B_delay, interp, n_syms):
         gr.top_block.__init__(self, "BER vs Eb/N0 AWGN")
 
         ##################################################
@@ -40,13 +39,16 @@ class ber_vs_ebn0_awgn(gr.top_block):
         #Channel (1: noise)
         self.awgn_chan = channels.awgn(noisevar)
 
-        #Channel (2: sfo)
+        #Channel (2: cfo)
+        self.cfo = gr_chan.cfo_model(interp, sigma2_cfo, max_cfo, numpy.random.randint(0, 255))
+
+        #Channel (3: sfo)
         self.sfo = gr_chan.sro_model(1.0, sigma2_sfo, max_sfo, numpy.random.randint(0, 255))
         self.frac_delayer_fix = blocks.delay(gr.sizeof_gr_complex, 3)
 
         self.css_demod = css_demod(M, 0.0, 0.0, interp)
         #self.css_demod = grc_css_demod(M)
-        self.css_demod_sfo = css_demod(M, 0.0, B_delay, interp)
+        self.css_demod_sfo = css_demod(M, B_cfo, B_delay, interp)
         self.css_demod_nosfo = css_demod(M, 0.0, 0.0, interp)
 
         self.est_syms_sink = blocks.vector_sink_s()
@@ -71,7 +73,8 @@ class ber_vs_ebn0_awgn(gr.top_block):
         self.connect((self.syms_src, 0), (self.css_mod, 0))
 
         self.connect((self.css_mod, 0), (self.awgn_chan, 0))
-        self.connect((self.awgn_chan, 0), (self.sfo, 0))
+        self.connect((self.awgn_chan, 0), (self.cfo, 0))
+        self.connect((self.cfo, 0), (self.sfo, 0))
         self.connect((self.sfo, 0), (self.frac_delayer_fix, 0))
 
         self.connect((self.awgn_chan, 0), (self.css_demod_nosfo, 0))
@@ -96,10 +99,11 @@ class ber_vs_ebn0_awgn(gr.top_block):
 
 def plot(EbN0dB, BER, BER_sfo, BER_nosfo):
     plt.clf()
+
     #Plot results
-    plt.semilogy(EbN0dB, BER, '-x', label="Without delay tracking")
-    plt.semilogy(EbN0dB, BER_sfo, '-x', label="With delay tracking")
-    plt.semilogy(EbN0dB, BER_nosfo, '-+', label="No SFO")
+    plt.semilogy(EbN0dB, BER, '-x', label="Without CFO + Delay tracking")
+    plt.semilogy(EbN0dB, BER_sfo, '-x', label="With CFO + Delay tracking")
+    plt.semilogy(EbN0dB, BER_nosfo, '-+', label="No SFO, No CFO")
 
     plt.grid(which='both')
     plt.ylabel('BER')
@@ -113,6 +117,7 @@ def plot(EbN0dB, BER, BER_sfo, BER_nosfo):
 def main():
     params = {
         'SF': 9,
+        'B_cfo': 0.4,
         'B_delay': 0.1,
         'interp': 2,
         #'n_syms': 16384,
@@ -121,13 +126,19 @@ def main():
         'n_simus': 10,
         'n_min_err': 1000,
         'max_sfo': 0.1,
-        'sigma2_sfo': 1e-8,
+        'sigma2_sfo': 0.9e-8,
+        #'max_sfo': 0.0,
+        #'sigma2_sfo': 0.0,
+        'max_cfo': 1.0,
+        'sigma2_cfo': 0.4/2**18,
+        #'max_cfo': 0.0,
+        #'sigma2_cfo': 0.0,
     }
     EbN0dB = numpy.arange(0, 8)
     M = 2**params['SF']
 
     save = False
-    filename = 'BER_SFO_RANDOM_WALK.json'
+    filename = 'BER_CFO_SFO_RANDOM_WALK.json'
 
     BER = numpy.zeros(len(EbN0dB))          #No tracking
     BER_sfo = numpy.zeros(len(EbN0dB))      #Tracking
@@ -144,8 +155,10 @@ def main():
 
         for j in range(0, params['n_simus']):
             print(j)
-            tb = ber_vs_ebn0_awgn(M, params['max_sfo'], params['sigma2_sfo'],
-                    EbN0dB[i], params['B_delay'], params['interp'], params['n_syms'])
+            tb = ber_vs_ebn0_awgn(M, params['max_cfo'], params['sigma2_cfo'],
+                    params['max_sfo'], params['sigma2_sfo'],
+                    EbN0dB[i], params['B_cfo'], params['B_delay'],
+                    params['interp'], params['n_syms'])
             tb.run()
 
             syms = tb.syms_vec
@@ -166,10 +179,13 @@ def main():
                 n_err_sfo += numpy.sum(numpy.abs(numpy.array(bits)-numpy.array(est_bits_sfo)))
                 n_err_nosfo += numpy.sum(numpy.abs(numpy.array(bits)-numpy.array(est_bits_nosfo)))
 
-            if (n_err > params['n_min_err']) \
-                    and (n_err_sfo > params['n_min_err']) \
+            if (n_err_sfo > params['n_min_err']) \
                     and (n_err_nosfo > params['n_min_err']):
                 break
+           # if (n_err > params['n_min_err']) \
+           #         and (n_err_sfo > params['n_min_err']) \
+           #         and (n_err_nosfo > params['n_min_err']):
+           #     break
 
             if j == (params['n_simus']-1):
                 #print('Maximum number of simulations reached with ' + str(min(n_err, n_err_cfo)) + ' errors!')
@@ -182,6 +198,7 @@ def main():
         BER[i] = float(n_err)/n_tot_bits
         BER_sfo[i] = float(n_err_sfo)/n_tot_bits
         BER_nosfo[i] = float(n_err_nosfo)/n_tot_bits
+
         plot(EbN0dB, BER, BER_sfo, BER_nosfo)
 
     #save data
@@ -203,4 +220,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
