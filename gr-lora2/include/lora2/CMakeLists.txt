@@ -31,5 +31,5 @@ install(FILES
     lora_soft_dewhiten.h
     lora_whiten.h
     lora_soft_merge_rem.h
-    lora_soft_depad.h DESTINATION include/lora2
+    DESTINATION include/lora2
 )

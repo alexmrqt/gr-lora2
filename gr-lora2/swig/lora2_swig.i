@@ -16,7 +16,6 @@
 #include "lora2/lora_soft_dewhiten.h"
 #include "lora2/lora_whiten.h"
 #include "lora2/lora_soft_merge_rem.h"
-#include "lora2/lora_soft_depad.h"
 %}
 
 %include "lora2/css_llr_converter.h"
@@ -35,5 +34,4 @@ GR_SWIG_BLOCK_MAGIC2(lora2, lora_soft_dewhiten);
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_whiten);
 %include "lora2/lora_soft_merge_rem.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_soft_merge_rem);
-%include "lora2/lora_soft_depad.h"
-GR_SWIG_BLOCK_MAGIC2(lora2, lora_soft_depad);
+

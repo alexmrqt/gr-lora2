@@ -110,5 +110,4 @@ GR_ADD_TEST(qa_lora_extract_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}
 GR_ADD_TEST(qa_lora_soft_merge_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_merge_rem.py)
 GR_ADD_TEST(qa_css_fine_delay_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_delay_detector.py)
 GR_ADD_TEST(qa_css_fine_delay_track ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_delay_track.py)
-GR_ADD_TEST(qa_lora_soft_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_depad.py)
 GR_ADD_TEST(qa_lora_crc_check ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_crc_check.py)

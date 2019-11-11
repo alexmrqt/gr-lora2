@@ -17,7 +17,6 @@
 # along with GNU Radio; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
-
 install(FILES
     lora2_css_demod.block.yml
     lora2_css_fine_cfo_detector.block.yml
@@ -56,6 +55,5 @@ install(FILES
     lora2_lora_soft_merge_rem.block.yml
     lora2_css_fine_delay_detector.block.yml
     lora2_css_fine_delay_track.block.yml
-    lora2_lora_soft_depad.block.yml
     lora2_lora_crc_check.block.yml DESTINATION share/gnuradio/grc/blocks
 )
