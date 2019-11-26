@@ -33,10 +33,10 @@ outputs:
     domain: stream
     dtype: complex
     vlen: ${ M }
--   label: cfo_err
+-   label: cfo_est
     domain: stream
     dtype: float
--   label: delay_err
+-   label: delay_est
     domain: stream
     dtype: float
 

@@ -19,8 +19,9 @@
 # Boston, MA 02110-1301, USA.
 #
 
-
 import numpy
+import math
+import scipy.signal
 from gnuradio import gr
 from lora2 import css_mod_algo
 from lora2 import css_demod_algo
@@ -36,51 +37,92 @@ class css_fine_delay_track(gr.decim_block):
             out_sig=[numpy.float32])
 
         self.M = M
-        self.Q = interp
+        #self.Q_det = 3
+        self.Q_det = 4
+        self.Q_res = interp
         self.b1 = B
 
+        #zeta = 1 #Damping factor
+        #bw = 0.1 #Loop bandwidth
+        #Kp = 1.0 #Detector gain
+
+        #theta = bw / (zeta + 1/(4*zeta))
+        #self.K1 = -4*zeta*theta / ((1 + 2*zeta*theta + theta**2)*Kp)
+        #self.K2 = -4*theta**2 / ((1 + 2*zeta*theta + theta**2)*Kp)
+        #self.X2 = 0.0
+
         self.demodulator = css_demod_algo(self.M)
-        self.modulator = css_mod_algo(self.M, self.Q)
+        self.modulator = css_mod_algo(self.M, self.Q_det)
 
         #Delay estimate
         self.delay = 0.0
         self.cum_delay = 0.0
 
         #History : we want interp/2 items before and after the symbol
-        self.set_history(self.Q//2+1)
+        #self.set_history(self.Q//2+1)
+
+    #def forecast(self, noutput_items, ninput_items_required):
+    #    #Most of the time, this block simply decimates by M*Q
+    #    #ninput_items_required[0] = (self.M * self.Q + self.Q//2) * noutput_items
+    #    ninput_items_required[0] = (self.M * self.Q) * noutput_items
+
+    #def delay_detect(self, sig, hard_sym):
+    #    reconst_sig = numpy.zeros(self.M*self.Q + 2*self.Q, dtype=numpy.complex64)
+    #    reconst_sig[self.Q:-self.Q] = self.modulator.modulate(hard_sym)
+
+    #    return numpy.argmax(numpy.abs(numpy.correlate(sig, reconst_sig))) - self.Q
 
     def forecast(self, noutput_items, ninput_items_required):
-        #Most of the time, this block simply decimates by M*Q
-        ninput_items_required[0] = (self.M * self.Q + self.Q//2) * noutput_items
+        #Most of the time, this block simply decimates by M
+        ninput_items_required[0] = self.M * noutput_items
 
-    def delay_detect(self, sig, hard_sym):
-        reconst_sig = self.modulator.modulate(hard_sym)
+    def delay_detect(self, sig):
+        hard_sym = self.demodulator.demodulate(sig)
 
-        return numpy.argmax(numpy.correlate(sig, reconst_sig)) - self.Q/2
+        reconst_sig = self.modulator.modulate(hard_sym).reshape((self.Q_det, self.M), order='F')
+        reconst_sig[self.Q_det//2:,:] = numpy.roll(reconst_sig[self.Q_det//2:,:], 1)
+
+        delay = numpy.argmax(numpy.abs(numpy.dot(reconst_sig, numpy.conj(sig))))
+        if delay >= self.Q_det//2:
+            delay -= self.Q_det
+        return -delay/self.Q_det
+
+    def frac_delay(self, sig, delay, interp):
+        int_delay = int(delay*interp)
+        gcd = math.gcd(int_delay, interp)
+        new_delay = int_delay//gcd
+        new_interp = interp//gcd
+
+        return scipy.signal.resample_poly(sig, new_interp, 1)[new_delay::new_interp]
 
     def general_work(self, input_items, output_items):
         in0 = input_items[0]
         out = output_items[0]
 
-        start_idx = self.history()-1
-        stop_idx = start_idx + self.M*self.Q
+        start_idx = 0
+        stop_idx = start_idx + self.M
         sym_count = 0
         while (stop_idx < len(in0)) and (sym_count < len(out)):
-            hard_sym = self.demodulator.demodulate(in0[start_idx:stop_idx:self.Q])
+            #Fractional delay
+            sig = self.frac_delay(in0[start_idx:stop_idx], self.delay, self.Q_res)
 
-            sig = in0[(start_idx-self.Q//2):(stop_idx+self.Q//2)]
-            self.delay += self.b1 * self.delay_detect(sig, hard_sym)
-
-            self.cum_delay += int(numpy.round(self.delay))
+            #Detect
+            err = self.delay_detect(sig)
+            self.delay += self.b1 * err
+            self.cum_delay += self.b1 * err
             out[sym_count] = self.cum_delay
+            #out[sym_count] = err
 
-            start_idx += self.M*self.Q + int(numpy.round(self.delay))
-            stop_idx = start_idx + self.M*self.Q
-
-            self.delay -= int(numpy.round(self.delay))
+            #Correct integer delay
+            start_idx += self.M + int(self.delay)
+            self.delay -= int(self.delay)
+            if self.delay < -1e-6:
+                start_idx -= 1
+                self.delay += 1
+            stop_idx = start_idx + self.M
 
             sym_count += 1
 
         #Tell GNURadio how many items were produced
-        self.consume(0, start_idx-(self.history()-1))
+        self.consume(0, start_idx)
         return sym_count

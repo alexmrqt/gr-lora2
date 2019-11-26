@@ -77,24 +77,24 @@ class lora_detect_sof(gr.sync_block):
             offset = self.M*self.Q*argmax_noshift
 
             #Fine offset
-            reconst_sig = numpy.zeros(self.M*self.Q + 2*self.Q, dtype=numpy.complex64)
-            reconst_sig[self.Q:-self.Q] = self.mod.modulate([argmax_noshift])
+            reconst_sig = numpy.zeros(self.M*self.Q + self.Q, dtype=numpy.complex64)
+            reconst_sig[self.Q//2:-self.Q//2] = self.mod.modulate([argmax_noshift])
 
             fine_offset = numpy.argmax(numpy.abs(numpy.correlate(\
-                    sig[:self.M*self.Q], reconst_sig))) - self.Q
+                    sig[:self.M*self.Q], reconst_sig))) - self.Q//2
 
         else:
             offset = self.M*self.Q*argmax_shift + self.M*self.Q/2
 
             #Fine offset
-            reconst_sig = numpy.zeros(self.M*self.Q + 2*self.Q, dtype=numpy.complex64)
-            reconst_sig[self.Q:-self.Q] = self.mod.modulate([argmax_shift])
+            reconst_sig = numpy.zeros(self.M*self.Q + self.Q, dtype=numpy.complex64)
+            reconst_sig[self.Q//2:-self.Q//2] = self.mod.modulate([argmax_shift])
 
             fine_offset = numpy.argmax(numpy.abs(numpy.correlate(\
-                    sig[self.M*self.Q//2:-self.M*self.Q//2], reconst_sig))) - self.Q
+                    sig[self.M*self.Q:-self.M*self.Q], reconst_sig))) - self.Q//2
 
 
-        return (offset, -fine_offset)
+        return (offset, fine_offset)
 
     def relocate_tags(self, offset, fine_offset):
         tag_offset = self.nitems_written(0) + offset + fine_offset

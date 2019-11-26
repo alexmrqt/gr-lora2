@@ -20,13 +20,13 @@ class css_delay_track(gr.top_block):
         self.SF = SF
         self.cfo = cfo
 
-        self.intern_interp= 2
-        delay = delay*2*interp
+        self.intern_interp= 4
+        delay = delay*self.intern_interp*interp
         self.interp = interp
         self.M = M = 2**self.SF
 
         self.syms_vec = numpy.random.randint(0, M, n_syms)
-        noisevar = float(M)/numpy.log2(M) * 10**(-EbN0dB/10.0) * interp
+        noisevar = float(M)/numpy.log2(M) * 10**(-EbN0dB/10.0)
 
         ##################################################
         # Blocks
@@ -36,6 +36,10 @@ class css_delay_track(gr.top_block):
         self.css_mod = css_mod(M, self.intern_interp*self.interp)
 
         #Channel (1: noise)
+        self.tag_gate = blocks.tag_gate(gr.sizeof_gr_complex)
+        self.awgn_chan = channels.awgn(noisevar)
+
+        #Channel (2: delay)
         self.tag_gate = blocks.tag_gate(gr.sizeof_gr_complex)
         self.awgn_chan = channels.awgn(noisevar)
 
@@ -54,7 +58,8 @@ class css_delay_track(gr.top_block):
         self.frac_delayer = filter.mmse_resampler_cc(frac_delay, 1.0)
         #Frac delayer introduces a delay of 3
         self.frac_delayer_fix = blocks.delay(gr.sizeof_gr_complex, 3)
-        self.tmp = filter.fir_filter_ccf(self.intern_interp, [1.0])
+        #self.tmp = filter.fir_filter_ccf(self.intern_interp, [1.0])
+        self.tmp = filter.fir_filter_ccf(self.intern_interp*self.interp, [1.0])
 
         #Channel (3: cfo)
         self.cfo_source = analog.sig_source_c(1.0, analog.GR_COS_WAVE, self.cfo,
@@ -85,12 +90,13 @@ class css_delay_track(gr.top_block):
 if __name__ == "__main__":
     params = {
         'SF': 9,
-        'interp': 2,
-        'delay': 2.0/4,
+        'interp': 8,
+        #'delay': 2.0/(2*4),
+        'delay': 0.0,
         'cfo': 0.0/2**9,
         'n_syms': 1024,
-        'B': 0.1,
-        'EbN0dB': 100,
+        'B': 0.4,
+        'EbN0dB': 10,
     }
     M =  2**params['SF']
 
@@ -114,11 +120,11 @@ if __name__ == "__main__":
         fid.close()
         print('Results written in ' + filename + '.')
 
-    plt.plot(numpy.array(est_delays)/params['interp'], '-x')
+    plt.plot(numpy.array(est_delays), '-x')
     plt.plot(params['delay']*numpy.ones(params['n_syms']), '--')
 
     plt.grid(which='both')
-    plt.ylim([-1.0, 1.0])
+    #plt.ylim([-1.0, 1.0])
     plt.xlabel('Normalized Delay')
     plt.ylabel('Symbol Index')
 

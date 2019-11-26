@@ -82,9 +82,9 @@ if __name__ == "__main__":
     params = {
         'SF': 9,
         'interp': 4,
-        'delay': 1.0/4,
+        'delay': 0.0/4,
         'cfo': 0.4/2**9,
-        'n_syms': 100,
+        'n_syms': 1024,
         'EbN0dB': 10,
         'B': 0.40,
     }

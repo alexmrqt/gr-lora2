@@ -135,7 +135,7 @@ class lora_preamble_detect(gr.sync_block):
 
     def compute_fine_tf_shifts(self, fine_offset, conj_fine_offset):
         #Compute time and frequency shift
-        fine_freq_shift = (fine_offset + conj_fine_offset)/(2*self.M*2*numpy.pi)
+        fine_freq_shift = (fine_offset + conj_fine_offset)/(2*self.M*self.Q*2*numpy.pi)
 
         return fine_freq_shift
 

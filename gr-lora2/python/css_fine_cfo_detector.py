@@ -28,18 +28,20 @@ class css_fine_cfo_detector(gr.sync_block):
     """
     docstring for block css_fine_cfo_detector
     """
-    def __init__(self, M):
+    def __init__(self, M, timing=0):
         gr.sync_block.__init__(self,
             name="css_fine_cfo_detector",
             in_sig=[numpy.complex64],
             out_sig=[])
 
         self.M = M
+        self.timing = timing
         self.first_sym = True
 
         #Keep track of the last two phases
         #self.phase_buff = numpy.zeros(2, dtype=numpy.float32)
         self.cmplx_sym_buff = numpy.zeros(2, dtype=numpy.complex64)
+        self.sym_buff = numpy.zeros(2, dtype=numpy.uint16)
         self.demodulator = css_demod_algo(self.M)
 
         self.message_port_register_out(pmt.intern("cfo"))
@@ -75,13 +77,19 @@ class css_fine_cfo_detector(gr.sync_block):
             self.cmplx_sym_buff = numpy.roll(self.cmplx_sym_buff, -1)
             self.cmplx_sym_buff[-1] = spectrum[0][hard_sym]
 
+            self.sym_buff = numpy.roll(self.sym_buff, -1)
+            self.sym_buff[-1] = hard_sym
+
             ##CFO estimation if at least 2 symbols were demodulated
             if not self.first_sym:
                 #Frequency discriminator
-                phase_diff = numpy.angle(self.cmplx_sym_buff[-1]*numpy.conj(self.cmplx_sym_buff[0]))
+                phase_diff = self.cmplx_sym_buff[-1]*numpy.conj(self.cmplx_sym_buff[0])
+                phase_diff *= numpy.exp(-1j*2*numpy.pi*self.timing*(self.sym_buff[-1]-self.sym_buff[0])/self.M)
+                phase_diff = numpy.angle(phase_diff)
 
                 #Compute error
                 freq_error = phase_diff*0.5/(self.M*numpy.pi)
+
 
                 self.message_port_pub(pmt.intern("cfo"),
                         pmt.from_float(numpy.float64(freq_error)))

@@ -21,7 +21,6 @@
 
 
 import pmt
-import numpy
 from gnuradio import gr
 
 class lora_crc_check(gr.sync_block):
@@ -78,7 +77,7 @@ class lora_crc_check(gr.sync_block):
 
             if comp_crc == crc:
                 self.message_port_pub(pmt.intern('pdus'), pmt.cons(hdr, pmt.to_pmt(data)))
-                print('CRC OK')
+                print('CRC OK: ' + hex(crc) + ' == ' + hex(comp_crc))
             else:
                 print('CRC NOK: ' + hex(crc) + ' != ' + hex(comp_crc))
         else:
