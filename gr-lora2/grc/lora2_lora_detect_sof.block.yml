@@ -8,9 +8,6 @@ parameters:
 -   id: SF
     label: SF
     dtype: int
--   id: Q
-    label: Interp
-    dtype: int
 
 inputs:
 -   domain: stream
@@ -22,6 +19,6 @@ outputs:
 
 templates:
     imports: import lora2
-    make: lora2.lora_detect_sof(${SF}, ${Q})
+    make: lora2.lora_detect_sof(${SF})
 
 file_format: 1

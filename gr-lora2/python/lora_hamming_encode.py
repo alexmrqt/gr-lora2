@@ -55,14 +55,32 @@ class lora_hamming_encode(gr.basic_block):
     def encode_one_block(self, data_block):
         out = numpy.zeros(self.cw_len)
 
-        #Systematic part
-        out[4:] = data_block
-
         if self.CR == 4:
             out[0] = data_block[0] ^ data_block[1] ^ data_block[3]
             out[1] = data_block[0] ^ data_block[2] ^ data_block[3]
             out[2] = data_block[0] ^ data_block[1] ^ data_block[2]
             out[3] = data_block[1] ^ data_block[2] ^ data_block[3]
+
+            #Systematic part
+            out[4:] = data_block
+        elif self.CR == 3:
+            out[0] = data_block[0] ^ data_block[1] ^ data_block[3]
+            out[1] = data_block[0] ^ data_block[1] ^ data_block[2]
+            out[2] = data_block[1] ^ data_block[2] ^ data_block[3]
+
+            #Systematic part
+            out[3:] = data_block
+        elif self.CR == 2:
+            out[0] = data_block[0] ^ data_block[1] ^ data_block[2]
+            out[1] = data_block[1] ^ data_block[2] ^ data_block[3]
+
+            #Systematic part
+            out[2:] = data_block
+        elif self.CR == 1:
+            out[0] = data_block[0] ^ data_block[1] ^ data_block[2] ^ data_block[3]
+
+            #Systematic part
+            out[1:] = data_block
         else:
             out[4:] = numpy.zeros(self.CR)
 
@@ -74,7 +92,7 @@ class lora_hamming_encode(gr.basic_block):
         for tag in tags:
             #Handle len_tag_key, if any
             if (self.len_tag_key is not None ) and (pmt.to_python(tag.key) == self.len_tag_key):
-                new_len = pmt.to_python(tag.value) * (self.CR+4)/float(self.CR)
+                new_len = pmt.to_python(tag.value) * (self.CR+4)/4.0
                 tag.value = pmt.to_pmt(int(new_len))
 
             self.add_item_tag(0, out_tag_offset, tag.key, tag.value)

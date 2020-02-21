@@ -87,15 +87,15 @@ if __name__ == "__main__":
     params = {
         'SF': 9,
         'interp': 4,
-        'delay': 0.0/4,
-        'n_syms': 100,
-        'EbN0dB': 10,
+        'delay': 2.0/4,
+        'n_syms': 10,
+        'EbN0dB': 100,
     }
     M =  2**params['SF']
-    cfos = numpy.linspace(-0.5/M, 0.5/M, 20)
+    cfos = numpy.linspace(-0.5/M, 0.5/M, 100)
 
-    save = False
-    filename = 'CSS_CFO_EST.json'
+    save = True
+    filename = 'CSS_CFO_EST_W_DELAY2.json'
 
     est_cfos = numpy.zeros(len(cfos))
     for i in range(0, len(cfos)):

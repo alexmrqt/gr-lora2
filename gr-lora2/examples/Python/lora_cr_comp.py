@@ -40,10 +40,10 @@ import channels
 
 class ber_vs_ebn0_awgn(gr.top_block):
     """
-    A class to simulate performance of a LoRa transceiver (with CR=4) over AWGN.
+    A class to simulate performance of a LoRa transceiver over AWGN.
     """
 
-    def __init__(self, M, n_bits, n_pkts, len_int, EbN0dB, channel, coherent=True, fsk_lora=False):
+    def __init__(self, M, CR, n_bits, n_pkts, len_int, EbN0dB, channel, coherent=True, fsk_lora=False):
         gr.top_block.__init__(self, "BER vs Eb/N0")
 
         ##################################################
@@ -53,15 +53,20 @@ class ber_vs_ebn0_awgn(gr.top_block):
 
         self.M = M
         self.SF = SF = int(numpy.log2(M))
-        self.CR = CR = 4
-        self.code_eff = code_eff = CR / (CR+4.0)
+        self.CR = CR
+        self.code_eff = code_eff = 4.0 / (CR+4.0)
         noisevar=numpy.sqrt(1.0/code_eff * float(M)/SF * 10**(-EbN0dB/10.0))
 
+        n_pad = numpy.ceil(n_bits/(code_eff * SF * (CR+4))) \
+                    * (self.code_eff * SF * (CR+4)) - n_bits
+        n_bits += n_pad
+        n_bits = int(n_bits)
         self.bits_vec = numpy.random.randint(0, 2, n_bits*n_pkts)
 
         pkt_len_tag_key = 'pkt_len'
         self.pkt_len_tags = pkt_len_tags = []
         offset = 0
+
         for i in range(n_pkts):
             tag = gr.tag_t()
             tag.key = pmt.to_pmt(pkt_len_tag_key)
@@ -107,23 +112,6 @@ class ber_vs_ebn0_awgn(gr.top_block):
 
         if coherent:
             if fsk_lora:
-                self.demod = grc_mfsk_demod_coh(M)
-            else:
-                self.demod = grc_css_demod_coh(M, len_int)
-        else:
-            if fsk_lora:
-                self.demod = grc_mfsk_demod(M)
-            else:
-                self.demod = grc_css_demod(M)
-        self.gray = gray_encode()
-        self.deinterleaver = lora_deinterleaver(SF, CR)
-        self.dewhiten = lora_whiten(CR, pkt_len_tag_key)
-        self.decoder = lora_hamming_decode(CR, pkt_len_tag_key)
-
-        self.est_bits_sink = blocks.vector_sink_b()
-
-        if coherent:
-            if fsk_lora:
                 self.soft_demod = grc_mfsk_soft_demod_coh(M)
             else:
                 self.soft_demod = grc_css_soft_demod_coh(M)
@@ -162,14 +150,6 @@ class ber_vs_ebn0_awgn(gr.top_block):
             else:
                 self.connect((self.selective_chan, 0), (self.awgn_chan, 0))
 
-        #Demodulator
-        self.connect((self.awgn_chan, 0), (self.demod, 0))
-        self.connect((self.demod, 0), (self.gray, 0))
-        self.connect((self.gray, 0), (self.deinterleaver, 0))
-        self.connect((self.deinterleaver, 0), (self.dewhiten, 0))
-        self.connect((self.dewhiten, 0), (self.decoder, 0))
-        self.connect((self.decoder, 0), (self.est_bits_sink, 0))
-
         #Soft demodulator
         self.connect((self.awgn_chan, 0), (self.soft_demod, 0))
         self.connect((self.soft_demod, 0), (self.gray_deidx, 0))
@@ -179,65 +159,50 @@ class ber_vs_ebn0_awgn(gr.top_block):
         self.connect((self.soft_dewhiten, 0), (self.soft_decoder, 0))
         self.connect((self.soft_decoder, 0), (self.est_bits_soft_sink, 0))
 
+def plot(EbN0dB, CR, BER, label):
+    plt.clf()
+
+    for i in range(0, len(CR)):
+        plt.semilogy(EbN0dB, BER[i,:], '-x', label=label + ' CR=' + str(CR[i]))
+
+    plt.grid(which='both')
+    plt.ylabel('BER')
+    plt.xlabel('Eb/N0 (dB)')
+
+    axes = plt.gca()
+    axes.set_ylim([1e-5, 0.5])
+    plt.legend()
+    plt.pause(0.1)
+
+def save_to_json(filename, EbN0dB, CR, BER, params):
+    results = {}
+    results['params'] = params
+    results['CR'] = CR
+    results['EbN0dB'] = EbN0dB.tolist()
+
+    fid = open(filename, 'w')
+    results['BER'] = BER.tolist()
+    json.dump(results, fid)
+    fid.close()
+
 def main():
     params = {
         'comp_type': 'itu-in-out-ped-A',      #Type of simulation: awgn, basic-t-sel, proakis-b or itu-in-out-ped-A
-        'SF': 9,                   #Spreading factor
         'coherent': False,         #Coherent demodulation?
         'fsk_lora': False,         #Use FSK instead of CSS?
         'n_bits': 1008,            #Number of bits to be transmitted in a simulation
         'n_pkts': 40,              #Number of packets in a simulation run
-        'n_simus': 500,            #Max. number of simulations to perform
-        'n_min_err': 1000,         #Minimum number of errors to be observed to stop the simulation
-        'len_int': -1,             #Deactivate phase correction for the coherent demodulator.
-        'force': True              #Force all n_simus to be executed, even if number of errors is > n_min_err
+        'n_simus': 100,            #Max. number of simulations to perform
+        'SF': 9,                   #Spreading factor
+        'len_int': -1              #Deactivate phase correction for the coherent demodulator.
     }
+    CR = [1, 2]
     #EbN0dB = numpy.linspace(0, 30, 11) #Eb/N0 points to simulate
     EbN0dB = numpy.arange(33, 42, 3) #Eb/N0 points to simulate
-    M = numpy.power(2, params['SF'])   #Number of symbols in the modulation alphabet
 
     save = True
 
-    BER = numpy.zeros(len(EbN0dB))
-    BER_soft = numpy.zeros(len(EbN0dB))
-
-    #Simu
-    for i in range(0, len(EbN0dB)):
-        print("Eb/N0=" + str(EbN0dB[i]))
-
-        n_err = 0
-        n_err_soft = 0
-        n_tot_bits = 0
-
-        for j in range(0, params['n_simus']):
-            tb = ber_vs_ebn0_awgn(M, params['n_bits'], params['n_pkts'],
-                    params['len_int'], EbN0dB[i], params['comp_type'],
-                    params['coherent'], params['fsk_lora'])
-            tb.run()
-
-            est_bits = tb.est_bits_sink.data()
-            soft_est_bits = tb.est_bits_soft_sink.data()
-            bits = tb.bits_vec[:len(est_bits)]
-
-            n_tot_bits += len(est_bits)
-            n_err += numpy.sum(numpy.abs(numpy.array(bits)-numpy.array(est_bits)))
-            n_err_soft += numpy.sum(numpy.abs(numpy.array(bits)-numpy.array(soft_est_bits)))
-
-            del tb
-
-            if (n_err > params['n_min_err']) \
-                    and (n_err_soft > params['n_min_err']) \
-                    and (not params['force']):
-                break
-
-            if j == (params['n_simus']-1):
-                print('Maximum number of simulations reached with ' + str(min(n_err, n_err_soft)) + ' errors!')
-
-        BER[i] = float(n_err)/n_tot_bits
-        BER_soft[i] = float(n_err_soft)/n_tot_bits
-
-        if (BER[i] == 0.0) and (BER_soft[i] == 0.0):
-            break
+    BER = numpy.zeros((len(CR), len(EbN0dB)))
 
     if params['comp_type'] == 'awgn':
         file_title = 'LORA_BER.json'
@@ -258,35 +223,44 @@ def main():
     if not params['coherent']:
         file_title = 'UNCOH_' + file_title
 
-    #save data
-    if save:
-        results = {}
-        results['params'] = params
-        results['EbN0dB'] = EbN0dB.tolist()
+    #Simu
+    for i in range(0, len(CR)):
+        print('CR=' + str(CR[i]))
+        M = 2**params['SF']
 
-        fid = open('SOFT_' + file_title, 'w')
-        results['BER'] = BER_soft.tolist()
-        json.dump(results, fid)
-        fid.close()
-        print('Results written in ' + 'SOFT_' + file_title + '.')
+        n_err = numpy.zeros(len(EbN0dB))
+        n_tot_bits = numpy.zeros(len(EbN0dB))
 
-        fid = open(file_title, 'w')
-        results['BER'] = BER.tolist()
-        json.dump(results, fid)
-        fid.close()
-        print('Results written in ' + file_title + '.')
+        for j in range(0, params['n_simus']):
+            print(j)
 
-    plt.semilogy(EbN0dB, BER, '-x', label=label)
-    plt.semilogy(EbN0dB, BER_soft, '-+', label=label + ' soft')
+            tbs = [ber_vs_ebn0_awgn(M, CR[i], params['n_bits'], params['n_pkts'],
+                    params['len_int'], EbN0dB_i, params['comp_type'],
+                    params['coherent'], params['fsk_lora']) for EbN0dB_i in EbN0dB]
 
-    plt.grid(which='both')
-    plt.ylabel('BER')
-    plt.xlabel('Eb/N0 (dB)')
+            for tb in tbs:
+                tb.start()
 
-    axes = plt.gca()
-    axes.set_ylim([1e-5, 0.5])
-    plt.legend()
-    plt.show()
+            for tb in tbs:
+                tb.wait()
+
+            for k in range(0, len(EbN0dB)):
+                est_bits = tbs[k].est_bits_soft_sink.data()
+                bits = tbs[k].bits_vec[:len(est_bits)]
+
+                n_tot_bits[k] += len(est_bits)
+                n_err[k] += numpy.sum(numpy.abs(numpy.array(bits)-numpy.array(est_bits)))
+
+                BER[i,k] = float(n_err[k])/n_tot_bits[k]
+
+            #save data
+            if save:
+                save_to_json('CR_' + str(CR[i]) + '_' + file_title, EbN0dB,
+                        CR[i], BER[i,:], params)
+
+            plot(EbN0dB, CR, BER, label)
+
+            del tbs
 
 if __name__ == '__main__':
     main()

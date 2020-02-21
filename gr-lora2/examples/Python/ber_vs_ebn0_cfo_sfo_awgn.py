@@ -1,6 +1,7 @@
 import json
-from gnuradio import channels as gr_chan
+from gnuradio import analog
 from gnuradio import blocks
+from gnuradio import filter
 from gnuradio import gr
 
 import numpy
@@ -16,8 +17,8 @@ import channels
 
 class ber_vs_ebn0_awgn(gr.top_block):
 
-    def __init__(self, M, max_cfo, sigma2_cfo, max_sfo, sigma2_sfo, EbN0dB,\
-            B_cfo, B_delay, interp, n_syms, seed_cfo, seed_sfo):
+    def __init__(self, M, EbN0dB, B_cfo, B_delay, interp, n_syms, cfo_drift,
+            sfo_drift):
         gr.top_block.__init__(self, "BER vs Eb/N0 AWGN")
 
         ##################################################
@@ -40,10 +41,11 @@ class ber_vs_ebn0_awgn(gr.top_block):
         self.awgn_chan = channels.awgn(noisevar)
 
         #Channel (2: cfo)
-        self.cfo = gr_chan.cfo_model(1.0, sigma2_cfo, max_cfo, numpy.random.randint(0, 254)+1)
+        self.cfo = analog.sig_source_c(1.0, analog.GR_SIN_WAVE, cfo_drift, 1.0)
+        self.cfo_mul = blocks.multiply_cc()
 
         #Channel (3: sfo)
-        self.sfo = gr_chan.sro_model(1.0, sigma2_sfo, max_sfo, numpy.random.randint(0, 254)+1)
+        self.sfo = filter.mmse_resampler_cc(0.0, 1.0 + sfo_drift)
         self.frac_delayer_fix = blocks.delay(gr.sizeof_gr_complex, 3)
 
         self.css_demod = css_demod(M, 0.0, 0.0, interp)
@@ -85,8 +87,9 @@ class ber_vs_ebn0_awgn(gr.top_block):
         self.connect((self.syms_src, 0), (self.css_mod, 0))
 
         self.connect((self.css_mod, 0), (self.awgn_chan, 0))
-        self.connect((self.awgn_chan, 0), (self.cfo, 0))
-        self.connect((self.cfo, 0), (self.sfo, 0))
+        self.connect((self.awgn_chan, 0), (self.cfo_mul, 0))
+        self.connect((self.cfo, 0), (self.cfo_mul, 1))
+        self.connect((self.cfo_mul, 0), (self.sfo, 0))
         self.connect((self.sfo, 0), (self.frac_delayer_fix, 0))
 
         self.connect((self.awgn_chan, 0), (self.css_demod_nosfocfo, 0))
@@ -175,8 +178,8 @@ def save_to_json(filename, params, EbN0dB, BER, BER_sfo, BER_nosfocfo, BER_nosfo
     results['BER'] = BER.tolist()
     results['BER_sfo'] = BER_sfo.tolist()
     results['BER_nosfocfo'] = BER_nosfocfo.tolist()
-    results['BER_nocfo'] = BER_nocfo.tolist()
-    results['BER_nosfo'] = BER_nosfo.tolist()
+    results['BER_nocfo'] = BER_nosfocfo.tolist()
+    results['BER_nosfo'] = BER_nosfocfo.tolist()
 
     fid = open(filename, 'w')
     json.dump(results, fid)
@@ -188,26 +191,18 @@ def main():
         'B_cfo': 0.35,
         'B_delay': 0.3,
         'interp': 8,
+        #'n_syms': 16384,
+        #'n_simus': 100,
         'n_syms': 227,
         'n_simus': 1000,
-        'max_sfo': 50e-6,#ppm
-        'sigma2_sfo': 1.0e-6,
-        #'max_sfo': 0.0,
-        #'sigma2_sfo': 0.0,
-        'max_cfo': 1.0,
-        'sigma2_cfo': 1.0e-6,
-        #'max_cfo': 0.0,
-        #'sigma2_cfo': 0.0,
-        #'seed_cfo': numpy.random.randint(0, 255),
-        #'seed_sfo': numpy.random.randint(0, 255),
-        'seed_cfo': None,
-        'seed_sfo': None,
+        'cfo': 0.0,
+        'sfo': 25e-6,
     }
     EbN0dB = numpy.arange(0, 8)
     M = 2**params['SF']
 
-    save = True
-    filename = 'BER_CFO_SFO_RANDOM_WALK.json'
+    save = False
+    filename = 'BER_CFO_SFO.json'
 
     BER = numpy.zeros(len(EbN0dB))          #No tracking
     BER_sfo = numpy.zeros(len(EbN0dB))      #Tracking
@@ -229,11 +224,9 @@ def main():
     for j in range(0, params['n_simus']):
         print(j)
 
-        tbs = [ber_vs_ebn0_awgn(M, params['max_cfo'], params['sigma2_cfo'],
-                params['max_sfo'], params['sigma2_sfo'],
-                EbN0dB_i, params['B_cfo'], params['B_delay'],
-                params['interp'], params['n_syms'], params['seed_cfo'],
-                params['seed_cfo']) for EbN0dB_i in EbN0dB]
+        tbs = [ber_vs_ebn0_awgn(M, EbN0dB_i, params['B_cfo'], params['B_delay'],
+                params['interp'], params['n_syms'], params['cfo'],
+                params['sfo']) for EbN0dB_i in EbN0dB]
 
         for tb in tbs:
             tb.start()

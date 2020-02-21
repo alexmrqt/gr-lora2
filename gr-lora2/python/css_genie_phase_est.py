@@ -35,7 +35,7 @@ class css_genie_phase_est(gr.sync_block):
             out_sig=[numpy.complex64])
 
         self.M = M
-        self.demod = css_demod_algo.css_demod_algo(self.M)
+        self.demod = css_demod_algo(self.M)
 
         self.set_output_multiple(self.M)
 

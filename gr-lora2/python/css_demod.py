@@ -32,7 +32,7 @@ class css_demod(gr.basic_block):
     """
     docstring for block css_demod
     """
-    def __init__(self, M, B_cfo, B_delay, interp):
+    def __init__(self, M, B_cfo, B_delay, Q_res, Q_det=4):
         gr.basic_block.__init__(self,
             name="css_demod",
             in_sig=[numpy.complex64],
@@ -40,8 +40,8 @@ class css_demod(gr.basic_block):
                 numpy.float32])
 
         self.M = M
-        self.Q_det = 4
-        self.Q_res = interp
+        self.Q_det = Q_det
+        self.Q_res = Q_res
         self.demodulator = css_demod_algo.css_demod_algo(self.M)
         self.modulator = css_mod_algo.css_mod_algo(self.M, self.Q_det)
         self.global_sym_count = 0
@@ -116,8 +116,9 @@ class css_demod(gr.basic_block):
         tags_coarse_cfo = self.get_tags_in_window(0, start, stop, \
                 pmt.intern('coarse_freq_offset'))
 
+        #Init to 0 if no tag found
         if (len(tags_fine_cfo) == 0) and (len(tags_coarse_cfo) == 0):
-            return
+            self.est_cfo = 0.0
 
         if (len(tags_fine_cfo) > 0) and (len(tags_coarse_cfo) > 0):
             self.est_cfo = pmt.to_python(tags_fine_cfo[0].value) \
@@ -129,6 +130,16 @@ class css_demod(gr.basic_block):
 
         #Reset VCO phase
         self.init_phase = 0.0
+
+    def init_delay_with_tag(self, start, stop):
+        tags_fine_delay = self.get_tags_in_window(0, start, stop, \
+                pmt.intern('fine_time_offset'))
+
+        #Init to 0 if no tag found
+        if (len(tags_fine_delay) == 0):
+            self.delay = 0.0
+        else:
+            self.delay = pmt.to_python(tags_fine_delay[0].value)
 
     def handle_tag_prop(self, in_start_idx, in_stop_idx, out_idx):
         tags = self.get_tags_in_window(0, in_start_idx, in_stop_idx+1)
@@ -165,11 +176,17 @@ class css_demod(gr.basic_block):
             if len(tags_pkt_start) > 0:
                 #Initialize CFO estimate
                 self.init_est_cfo_with_tag(start_idx, stop_idx+1)
+
                 #Reset delay estimate
-                self.delay = 0.0
-                self.cum_delay = 0
+                self.init_delay_with_tag(start_idx, stop_idx+1)
+                self.cum_delay = self.delay
 
                 can_start_idx = tags_pkt_start[0].offset - self.nitems_read(0)
+
+                if self.delay < -1e-6: #Negative fractional delay must converted to positive
+                    can_start_idx -= 1
+                    self.delay += 1
+                    self.cum_delay += 1
 
                 if can_start_idx != start_idx:
                     #Shift tags by the number of items to be deleted
@@ -208,11 +225,11 @@ class css_demod(gr.basic_block):
             out2[sym_count] = self.est_cfo
             #out2[sym_count] = cfo_err
 
-            ##Delay estimation is sensitive to CFO. Thus, it is estimated only
-            ##once an estimate of the CFO is produced
+            ##Delay estimation
             delay_err = self.delay_detect(sig, sym)
             self.delay += self.b1_delay * delay_err
             self.cum_delay += self.b1_delay * delay_err
+
             out3[sym_count] = self.cum_delay
             #out3[sym_count] = delay_err
 

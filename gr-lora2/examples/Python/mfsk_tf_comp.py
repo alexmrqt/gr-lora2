@@ -131,14 +131,15 @@ def do_simu(EbN0dB, n_simus, SF, n_syms, n_min_err, channel):
 
 def main():
     params = {
-        'comp_type': 'proakis-b',    #Type of simulation: awgn, basic-t-sel,
+        'comp_type': 'itu-in-out-ped-A',    #Type of simulation: awgn, basic-t-sel,
                                 # proakis-b or itu-in-out-ped-A
         'SF': 9,                #Spreading factor
         'n_syms': 16384,        #Number of symbols to be transmitted in a simulation
         'n_simus': 100,         #Max. number of simulations to perform
         'n_min_err': 1000,      #Minimum number of errors to be observed to stop the simulation
     }
-    EbN0dB = numpy.linspace(0, 10, 11) #Eb/N0 points to simulate
+    #EbN0dB = numpy.linspace(0, 10, 11) #Eb/N0 points to simulate
+    EbN0dB = numpy.arange(0, 42, 3) #Eb/N0 points to simulate
 
     save = True
 

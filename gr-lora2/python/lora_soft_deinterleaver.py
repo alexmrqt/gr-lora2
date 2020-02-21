@@ -79,7 +79,7 @@ class lora_soft_deinterleaver(gr.basic_block):
             out_idx_stop = out_idx_start + self.len_block_out - 1
 
             #Handle tag propagation
-            tags = self.get_tags_in_window(0, in_idx_start, in_idx_stop)
+            tags = self.get_tags_in_window(0, in_idx_start, in_idx_stop+1)
             self.propagate_tags(tags, out_idx_start)
 
             #Process items

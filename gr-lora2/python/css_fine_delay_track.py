@@ -30,16 +30,15 @@ class css_fine_delay_track(gr.decim_block):
     """
     docstring for block css_fine_delay_track
     """
-    def __init__(self, M, interp, B):
+    def __init__(self, M, Q_det, Q_res, B):
         gr.basic_block.__init__(self,
             name="css_fine_delay_track",
             in_sig=[numpy.complex64],
             out_sig=[numpy.float32])
 
         self.M = M
-        #self.Q_det = 3
-        self.Q_det = 4
-        self.Q_res = interp
+        self.Q_det = Q_det
+        self.Q_res = Q_res
         self.b1 = B
 
         #zeta = 1 #Damping factor

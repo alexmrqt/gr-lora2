@@ -63,7 +63,7 @@ class css_delay_est(gr.top_block):
         self.decim = filter.fir_filter_ccf(self.intern_interp*interp, [1.0])
 
         #Delay Estimator
-        self.delay_est = css_fine_delay_detector(self.M, interp, algo=2)
+        self.delay_est = css_fine_delay_detector(self.M, interp, algo=1)
         self.delay_sink = blocks.vector_sink_f()
 
         ##################################################
@@ -86,20 +86,20 @@ class css_delay_est(gr.top_block):
 if __name__ == "__main__":
     params = {
         'SF': 9,
-        'cfo': -0.0/2**9,
+        'cfo': 0.0/2**9,
         'intern_interp': 8,
-        'interp': 8,
-        'n_syms': 100,
-        'EbN0dB': 10,
+        'interp': 16,
+        'n_syms': 2,
+        'EbN0dB': 100,
     }
     M =  2**params['SF']
-    #delays = numpy.linspace(-params['interp'], params['interp'], 20)
+    #delays = numpy.linspace(-0.5, 0.5, 100)
     #delays = numpy.arange(-1.0, 1.0, 0.01)
 
     delays = numpy.arange(-params['interp']*params['intern_interp']//2,
             params['interp']*params['intern_interp']//2)/(params['interp']*params['intern_interp'])
 
-    save = False
+    save = True
     filename = 'CSS_DELAY_EST.json'
 
     est_delays = numpy.zeros(len(delays))
@@ -110,8 +110,8 @@ if __name__ == "__main__":
                 params['EbN0dB'], params['n_syms'])
         tb.run()
 
-        #est_delays[i] = tb.delay_sink.data()[0]
-        est_delays[i] = numpy.mean(tb.delay_sink.data())
+        est_delays[i] = tb.delay_sink.data()[0]
+        #est_delays[i] = numpy.mean(tb.delay_sink.data())
 
     if save:
         results = {}
@@ -124,7 +124,7 @@ if __name__ == "__main__":
         fid.close()
         print('Results written in ' + filename + '.')
 
-    plt.plot(delays, est_delays, '-x')
+    plt.plot(delays, est_delays, '-')
     plt.plot(delays, delays, '--')
 
     plt.grid(which='both')

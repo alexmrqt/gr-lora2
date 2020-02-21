@@ -39,7 +39,6 @@ class lora_interleaver(gr.basic_block):
 
         #For binary to short conversion
         self.base2 = [2**i  for i in range(SF-1, -1, -1)]
-        #self.base2 = [2**i  for i in range(0, SF)]
 
         #Length of one block of data
         self.len_block_in = self.SF * (self.CR+4)
@@ -79,38 +78,25 @@ class lora_interleaver(gr.basic_block):
             in_idx_stop = in_idx_start + self.len_block_in - 1
 
             out_idx_start = j*self.len_block_out
-            out_idx_stop = out_idx_start + self.len_block_out - 1
 
             vect_bin = in0[in_idx_start:in_idx_stop+1]
 
             #Handle tag propagation
-            tags = self.get_tags_in_window(0, in_idx_start, in_idx_stop)
+            tags = self.get_tags_in_window(0, in_idx_start, in_idx_stop+1)
             self.propagate_tags(tags, out_idx_start)
 
             #Process items
-            # In reduced rate mode, the last two line of the interleaving matrix
-            # will be padded with zeros.
-            if self.reduced_rate:
-                mtx = numpy.array(vect_bin).reshape(((self.SF-2), self.CR+4))
-            else:
-                mtx = numpy.array(vect_bin).reshape((self.SF, self.CR+4))
+            for i in range(0, self.CR+4):
+                tmp = numpy.zeros(self.SF, dtype=numpy.uint16)
 
-            #Reverse column order
-            mtx = numpy.fliplr(mtx)
+                #Shuffle
+                for j in range(0, self.SF if not self.reduced_rate else self.SF-2):
+                    idx = (self.SF-1 - ((j-i)%self.SF))*(self.CR+4) \
+                            + self.CR+4-1 - i
+                    tmp[j] = vect_bin[idx]
 
-            #Cyclic shift each column of mtx by its column index
-            for i in range(0, mtx.shape[1]):
-                mtx[:,i] = numpy.roll(mtx[:,i], -i)
-
-            #Add two all-zeros lines in reduced rate mode
-            if self.reduced_rate:
-                mtx = numpy.concatenate( (mtx, numpy.zeros((2, self.CR+4))) )
-
-            mtx = numpy.flipud(mtx)
-
-            #Convert to binary scalar
-            out[out_idx_start:out_idx_stop+1] = \
-                    numpy.dot(self.base2, mtx)
+                #Convert bit vector (of SF bits) to integer
+                out[out_idx_start+i] = numpy.dot(self.base2, tmp)
 
         #Tell GNURadio how many items were produced
         self.consume(0, n_blocks * self.len_block_in)
