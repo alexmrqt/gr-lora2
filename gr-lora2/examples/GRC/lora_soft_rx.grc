@@ -67,6 +67,18 @@ blocks:
     bus_structure: null
     coordinate: [112, 100.0]
     rotation: 0
+    state: disabled
+- name: RF_samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '2304000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 220.0]
+    rotation: 0
     state: enabled
 - name: SF
   id: variable
@@ -306,7 +318,7 @@ blocks:
     bus_structure: null
     coordinate: [64, 164.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_message_debug_0
   id: blocks_message_debug
   parameters:
@@ -543,6 +555,26 @@ blocks:
     bus_structure: null
     coordinate: [240, 324.0]
     rotation: 0
+    state: disabled
+- name: freq_xlating_fir_filter_xxx_0_0
+  id: freq_xlating_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    center_freq: 0.03e6
+    comment: ''
+    decim: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: RF_samp_rate
+    taps: '1'
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [320, 184.0]
+    rotation: 0
     state: enabled
 - name: import_0
   id: import
@@ -560,13 +592,13 @@ blocks:
 - name: lora2_css_demod_0
   id: lora2_css_demod
   parameters:
-    B_cfo: '0.3'
+    B_cfo: '0.0'
     B_delay: '0.3'
     M: M
     affinity: ''
     alias: ''
     comment: ''
-    interp: '8'
+    interp: '4'
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
@@ -658,23 +690,6 @@ blocks:
     coordinate: [992, 1444.0]
     rotation: 180
     state: enabled
-- name: lora2_lora_detect_sof_0
-  id: lora2_lora_detect_sof
-  parameters:
-    Q: '4'
-    SF: '9'
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [448, 524.0]
-    rotation: 0
-    state: enabled
 - name: lora2_lora_extract_rem_0
   id: lora2_lora_extract_rem
   parameters:
@@ -713,7 +728,6 @@ blocks:
 - name: lora2_lora_preamble_detect_0_0
   id: lora2_lora_preamble_detect
   parameters:
-    Q: '4'
     SF: SF
     affinity: ''
     alias: ''
@@ -1304,7 +1318,7 @@ blocks:
     bus_structure: null
     coordinate: [8, 284.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_sink_0
   id: virtual_sink
   parameters:
@@ -1438,7 +1452,7 @@ blocks:
 
 connections:
 - [blocks_complex_to_mag_0_0, '0', lora2_gray_deindexer_0, '0']
-- [blocks_file_source_0, '0', low_pass_filter_0, '0']
+- [blocks_file_source_0, '0', freq_xlating_fir_filter_xxx_0_0, '0']
 - [blocks_file_source_0, '0', qtgui_sink_x_0, '0']
 - [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0_0_0, '0']
 - [blocks_repack_bits_bb_0, '0', lora2_flip_half_bytes_0, '0']
@@ -1450,6 +1464,7 @@ connections:
 - [digital_header_payload_demux_0, '1', virtual_sink_4, '0']
 - [freq_xlating_fir_filter_xxx_0, '0', low_pass_filter_0, '0']
 - [freq_xlating_fir_filter_xxx_0, '0', qtgui_sink_x_0, '0']
+- [freq_xlating_fir_filter_xxx_0_0, '0', low_pass_filter_0, '0']
 - [lora2_css_demod_0, '0', blocks_null_sink_0_0, '0']
 - [lora2_css_demod_0, '1', blocks_complex_to_mag_0_0, '0']
 - [lora2_css_demod_0, '2', blocks_multiply_const_vxx_0, '0']
@@ -1460,12 +1475,11 @@ connections:
 - [lora2_lora_crc_check_0, pdus, blocks_message_debug_0, print_pdu]
 - [lora2_lora_crc_check_0, pdus, blocks_socket_pdu_0, pdus]
 - [lora2_lora_depad_0, '0', blocks_repack_bits_bb_0, '0']
-- [lora2_lora_detect_sof_0, '0', blocks_tag_debug_0_0, '0']
-- [lora2_lora_detect_sof_0, '0', lora2_css_demod_0, '0']
 - [lora2_lora_extract_rem_0, '0', lora2_lora_soft_hamming_decode_0, '0']
 - [lora2_lora_header_decode_0, hdr, blocks_message_debug_0_0, print]
 - [lora2_lora_header_decode_0, hdr, virtual_sink_2, '0']
-- [lora2_lora_preamble_detect_0_0, '0', lora2_lora_detect_sof_0, '0']
+- [lora2_lora_preamble_detect_0_0, '0', blocks_tag_debug_0_0, '0']
+- [lora2_lora_preamble_detect_0_0, '0', lora2_css_demod_0, '0']
 - [lora2_lora_soft_deinterleaver_0, '0', lora2_lora_extract_rem_0, '0']
 - [lora2_lora_soft_deinterleaver_0_0, '0', lora2_lora_soft_merge_rem_0, '0']
 - [lora2_lora_soft_dewhiten_0, '0', lora2_lora_soft_hamming_decode_0_0, '0']

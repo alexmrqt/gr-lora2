@@ -127,8 +127,9 @@ class lora_detect_sof(gr.sync_block):
             return n_items
 
         #Find offset and relocate tags accordingly
-        offset = self.delay_uncert_detect(in0)
-        self.relocate_tags(offset)
+        #offset = self.delay_uncert_detect(in0)
+        #self.relocate_tags(offset)
+        self.relocate_tags(0)
 
         #Copy items up to the next tag
         if len(tags) > 1:
