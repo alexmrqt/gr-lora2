@@ -25,6 +25,237 @@ from gnuradio import gr
 
 from lora2 import css_demod_algo
 
+_STATE_WAIT = 0
+_STATE_UP = 1
+_STATE_SYNC = 2
+_STATE_DOWN = 3
+
+class state_wait:
+    def __init__(self, M, N_up, thres):
+        self.M = M
+        self.N_up = N_up
+        self.thres = thres
+
+        self.demod = css_demod_algo(self.M)
+
+        self.buffer = numpy.zeros(self.N_up//2, dtype=numpy.int) - 1
+        self.buffer_phi = numpy.zeros(self.N_up//2-1)
+
+        self.samples_pre = numpy.zeros(self.M, dtype=numpy.complex64)
+
+        self.phi = 0.0 #Fine frequency shift estimate
+
+    def init_buffers(self):
+        self.buffer = numpy.zeros(self.N_up//2, dtype=numpy.int) - 1
+        self.buffer_phi = numpy.zeros(self.N_up//2-1)
+
+    def dechirp(self, samples):
+        return samples * numpy.exp(-1j*numpy.pi*(numpy.arange(0, self.M)**2)/self.M)
+
+    def compute_phi(self, samples):
+        return numpy.angle(numpy.sum(self.dechirp(self.samples_pre) * numpy.conjugate(self.dechirp(samples)))) / (2*numpy.pi)
+
+    #samples are samples of current symbol
+    #samples_pre are samples of previous symbol
+    def work(self, samples):
+        self.buffer = numpy.roll(self.buffer, -1)
+        self.buffer[-1] = self.demod.demodulate(samples)[0]
+
+        self.buffer_phi = numpy.roll(self.buffer_phi, -1)
+        self.buffer_phi[-1] = self.compute_phi(samples)
+
+        if self.buffer[-2] != -1:
+            pre_detected = True
+            for i in range(1, self.N_up//2):
+                if abs((self.buffer[0] - self.buffer[i])%self.M) > 1:
+                    pre_detected = False
+                    break
+
+            if pre_detected:
+                self.phi = numpy.mean(self.buffer_phi) / self.M
+
+                self.init_buffers()
+                return _STATE_UP
+
+        self.samples_pre = samples
+
+        return _STATE_WAIT
+
+    def get_fine_freq_shift(self):
+        return self.phi
+
+class state_up:
+    def __init__(self, M, N_up):
+        self.M = M
+        self.N_up = N_up
+
+        self.demod = css_demod_algo(self.M)
+
+        self.buffer = numpy.zeros((self.N_up//2, M), dtype=numpy.complex64)
+
+        self.up_cnt = 0
+
+        self.up = 0
+        self.neigh_up_val = numpy.zeros(3, dtype=numpy.complex64)
+
+    def init_buffer(self):
+        self.buffer = numpy.zeros((self.N_up//2, self.M), dtype=numpy.complex64)
+
+    def work(self, samples):
+        if self.up_cnt < (self.N_up//2-1):
+            self.buffer[self.up_cnt][:] = samples
+
+            self.up_cnt += 1
+
+            return _STATE_UP
+        else:
+            self.buffer[self.up_cnt][:] = samples
+            mean_samples = numpy.mean(self.buffer, axis=0)
+
+            (sym, spectrum) = self.demod.demodulate_with_spectrum(mean_samples)
+
+            self.up = sym[0]
+            self.neigh_up_val[0] = spectrum[0][(self.up-1)%self.M]
+            self.neigh_up_val[1] = spectrum[0][self.up]
+            self.neigh_up_val[2] = spectrum[0][(self.up+1)%self.M]
+
+            self.init_buffer()
+            self.up_cnt = 0
+            return _STATE_SYNC
+
+    def get_up(self):
+        return self.up
+
+    def get_neigh_up_val(self):
+        return self.neigh_up_val
+
+class state_sync:
+    def __init__(self, M):
+        self.M = M
+
+        self.demod = css_demod_algo(self.M)
+
+        self.sync_cnt = 0
+
+        self.sync_val = 0
+        self.sync_idx = numpy.zeros(2, dtype=numpy.int)
+        self.sync_conf = numpy.zeros(2, dtype=numpy.float32)
+
+    def work(self, samples, sym_up):
+        if self.sync_cnt == 0:
+            self.sync_cnt += 1
+
+            (self.sync_idx[0], self.sync_conf[0]) = self.demod.soft_demodulate(samples)
+
+            return _STATE_SYNC
+        else:
+            (self.sync_idx[1], self.sync_conf[1]) = self.demod.soft_demodulate(samples)
+
+            if self.sync_conf[0] > self.sync_conf[1]:
+                self.sync_val = numpy.uint16( 3*numpy.round(((self.sync_idx[0]-sym_up)%self.M)/3) )
+            else:
+                self.sync_val = numpy.uint16( 3*numpy.round(((self.sync_idx[1]-sym_up)%self.M)/3) )
+
+            self.sync_cnt = 0
+            return _STATE_DOWN
+
+    def get_sync_val(self):
+        return self.sync_val
+
+class state_down:
+    def __init__(self, M):
+        self.M = M
+
+        self.demod = css_demod_algo(self.M, conjugate=True)
+
+        self.down_cnt = 0
+
+        self.down_val = numpy.zeros(2, dtype=numpy.uint16)
+        self.neigh_down_val = numpy.zeros((2, 3), dtype=numpy.complex64)
+
+        self.freq_shift = 0
+        self.fine_time_shift = 0
+        self.time_shift = 0
+
+    def compute_freq_shift(self, up, down, neigh_up_val, neigh_down_val):
+        eps = 1e-6
+        up_diff = numpy.abs(neigh_up_val[2]) - numpy.abs(neigh_up_val[0])
+        down_diff = numpy.abs(neigh_down_val[2]) - numpy.abs(neigh_down_val[0])
+        nu = 0
+        nu_star = 0
+
+        if up_diff > eps:
+            nu = 1
+        elif up_diff < -eps:
+            nu = -1
+
+        if down_diff > eps:
+            nu_star = 1
+        elif down_diff < -eps:
+            nu_star = -1
+        gamma = nu if nu == nu_star else 0
+
+        Gamma = lambda N,k: k if (k < N/2) else (k-N)
+
+        tmp = int(up) + int(down) + gamma
+        #print(str(0.5*Gamma(self.M, tmp%self.M)) + ", " + str(gamma))
+        self.freq_shift = int(0.5*Gamma(self.M, tmp%self.M))
+
+    def compute_time_shift(self, up):
+        tmp = int(up) - int(self.freq_shift)
+        self.time_shift = numpy.uint16(tmp%self.M)
+
+    def compute_fine_time_shift(self, neigh_up_val):
+        w = 1j*2*numpy.pi*self.time_shift/self.M
+        tmp = numpy.exp(-w) * neigh_up_val[2] - numpy.exp(w) * neigh_up_val[0]
+        tmp /= 2*neigh_up_val[1] \
+                - numpy.exp(-w) * neigh_up_val[2] - numpy.exp(w) * neigh_up_val[0]
+
+        if numpy.isnan(tmp):
+            self.fine_time_shift = 0.0
+        elif numpy.abs(numpy.real(tmp)) < 1.0:
+            self.fine_time_shift = - numpy.real(tmp)
+        else:
+            self.fine_time_shift = 0.0
+
+    def work(self, samples, up, neigh_up_val):
+        if self.down_cnt == 0:
+            self.down_cnt += 1
+
+            (sym, spectrum) = self.demod.demodulate_with_spectrum(samples)
+            self.down_val[0] = sym[0]
+            self.neigh_down_val[0][0] = spectrum[0][(sym[0]-1)%self.M]
+            self.neigh_down_val[0][1] = spectrum[0][sym[0]]
+            self.neigh_down_val[0][2] = spectrum[0][(sym[0]+1)%self.M]
+
+            return _STATE_DOWN
+        else:
+            (sym, spectrum) = self.demod.demodulate_with_spectrum(samples)
+            self.down_val[1] = sym[0]
+            self.neigh_down_val[1][0] = spectrum[0][(sym[0]-1)%self.M]
+            self.neigh_down_val[1][1] = spectrum[0][sym[0]]
+            self.neigh_down_val[1][2] = spectrum[0][(sym[0]+1)%self.M]
+
+            if numpy.abs(self.neigh_down_val[0][1]) > numpy.abs(self.neigh_down_val[1][1]):
+                self.compute_freq_shift(up, self.down_val[0], neigh_up_val, self.neigh_down_val[0])
+            else:
+                self.compute_freq_shift(up, self.down_val[1], neigh_up_val, self.neigh_down_val[1])
+
+            self.compute_time_shift(up)
+            self.compute_fine_time_shift(neigh_up_val)
+
+            self.down_cnt = 0
+            return _STATE_WAIT
+
+    def get_freq_shift(self):
+        return self.freq_shift / self.M
+
+    def get_fine_time_shift(self):
+        return self.fine_time_shift
+
+    def get_time_shift(self):
+        return self.time_shift
+
 class lora_preamble_detect(gr.sync_block):
     """
     docstring for block lora_preamble_detect
@@ -36,126 +267,46 @@ class lora_preamble_detect(gr.sync_block):
             out_sig=[numpy.complex64])
 
         self.M=int(2**SF)
-        self.preamble_len = preamble_len
+        self.N_up = preamble_len
         self.thres = thres
 
-        self.demod = css_demod_algo(self.M)
-        self.demod_conj = css_demod_algo(self.M, True)
+        self.wait = state_wait(self.M, self.N_up, self.thres)
+        self.up = state_up(self.M, self.N_up)
+        self.sync = state_sync(self.M)
+        self.down = state_down(self.M)
 
-        #Buffers are initially set to -1
-        self.conj_buffer = numpy.zeros(2, dtype=numpy.int) - 1
-        self.conj_complex_buffer = numpy.zeros(2, dtype=numpy.complex64)
+        self.state = _STATE_WAIT
 
-        if preamble_len > 2:
-            self.buffer = numpy.zeros(preamble_len + 2, dtype=numpy.int) - 1
-            self.complex_buffer = numpy.zeros(preamble_len + 2, dtype=numpy.complex64)
-            self.buffer_meta = [dict() for i in range(0, preamble_len + 2)]
-        else:
-            self.buffer = numpy.zeros(5, dtype=numpy.int) - 1
-            self.complex_buffer = numpy.zeros(5, dtype=numpy.complex64)
-            self.buffer_meta = [dict() for i in range(0, 5)]
+        self.sym_up = 0
+        self.neigh_up_val = numpy.zeros(3, dtype=numpy.complex64)
+        self.sync_val = 0
+
+        self.vco_phase = 0.0
+        self.fine_freq_shift = 0.0
+        self.freq_shift = 0
+        self.fine_time_shift = 0
+        self.time_shift = 0
 
         self.set_output_multiple(self.M)
 
-    def detect_preamble(self):
-        #Buffer not full yet
-        if self.buffer[0] == -1:
-            return False
+    def tag_end_preamble(self, sof_idx):
 
-        mean = numpy.mean(self.buffer[-(self.preamble_len+2):-2])
-        mean_err_sq = numpy.sum(numpy.abs(self.buffer[-(self.preamble_len+2):-2] - mean)**2)
-        max_err_sq = self.M**2
+        time_shift = (self.M - self.time_shift) if self.time_shift != 0 else 0
 
-        if(mean_err_sq/max_err_sq < self.thres):
-            self.buffer_meta[self.preamble_len-1]['preamble_value'] = numpy.uint16(numpy.round(mean))
-
-            return True
-
-        return False
-
-
-    def detect_sync(self, preamble_value):
-        sync_val = [numpy.mod(numpy.int16(self.buffer[-2]) - preamble_value, self.M),
-                    numpy.mod(numpy.int16(self.buffer[-1]) - preamble_value, self.M)]
-
-        #First sync value must be different from preamble value
-        if sync_val[0] < 8:
-            return False
-
-        #Save sync value
-        self.buffer_meta[-1]['sync_value'] = numpy.int16(sync_val)
-
-        #Compute phases of complex samples corresponding to detected symbols
-        #Ignore first and last symbol as they are subject to time misalignment
-        phase_diff = numpy.angle(self.complex_buffer[2:-1] \
-                    * numpy.conj(self.complex_buffer[1:-2]))
-        fine_freq_offset = numpy.mean(phase_diff)
-
-        self.buffer_meta[-1]['fine_freq_offset'] = fine_freq_offset
-
-        return True
-
-    def check_downchirps(self):
-        #Allow an error of +/- 1 on the two symbols
-        if numpy.abs(self.conj_buffer[0] - self.conj_buffer[1]) <= 1:
-            #Return symbol with the most confidence
-            idx = numpy.argmax(numpy.abs(self.conj_complex_buffer))
-
-            #Compute and save fine frequency offset
-            conj_fine_freq_offset = numpy.angle(self.conj_complex_buffer[1] \
-                        * numpy.conj(self.conj_complex_buffer[0]))
-
-            return (self.conj_buffer[idx], conj_fine_freq_offset)
-
-        return None
-
-    def compute_tf_shifts(self, preamble_value, sof_value):
-        #Compute time and frequency shift
-        time_shift = (preamble_value - sof_value)//2
-        freq_shift = (preamble_value + sof_value)//2
-
-        #if self.M >= 512:
-        freq_shift = freq_shift%(self.M//2)
-        #We cannot correct frequency shifts higher than M/4 and lower than -M/4
-        if freq_shift >= self.M//4:
-            freq_shift -= self.M//2
-
-        time_shift = -time_shift
-        if time_shift > numpy.abs(freq_shift):
-            time_shift -= self.M//2
-        elif time_shift < -numpy.abs(freq_shift):
-            time_shift += self.M//2
-
-        return (freq_shift, time_shift)
-
-    def compute_fine_f_shifts(self, fine_freq_offset, conj_fine_freq_offset):
-        #Compute time and frequency shift
-        #fine_freq_shift = (fine_freq_offset + conj_fine_freq_offset)
-        #fine_freq_shift /= (2*self.M*2*numpy.pi)
-
-        #return fine_freq_shift
-        #Fine freq estimator is not susceptible to fine delay offset
-        return float(fine_freq_offset/(self.M*2*numpy.pi))
-
-    def tag_end_preamble(self, freq_shift, fine_freq_shift, time_shift,
-            fine_delay, sync_value, sof_idx):
         #Prepare tag
-        #This delay estimator has an uncertainty of +/-M (by steps of M/2).
-        #So we put the tag M items before the estimated SOF item, to allow
-        #A successive block to remove this uncertainty.
         tag_offset = self.nitems_written(0) + time_shift + sof_idx*self.M \
                 + self.M//4
 
         tag1_key = pmt.intern('fine_freq_offset')
-        tag1_value = pmt.to_pmt(fine_freq_shift)
+        tag1_value = pmt.to_pmt(-self.fine_freq_shift)
         tag2_key = pmt.intern('coarse_freq_offset')
-        tag2_value = pmt.to_pmt(freq_shift/self.M)
+        tag2_value = pmt.to_pmt(self.freq_shift)
         tag3_key = pmt.intern('sync_word')
-        tag3_value = pmt.to_pmt(sync_value)
+        tag3_value = pmt.to_pmt(int(self.sync_val))
         tag4_key = pmt.intern('time_offset')
         tag4_value = pmt.to_pmt(int(time_shift))
         tag5_key = pmt.intern('fine_time_offset')
-        tag5_value = pmt.to_pmt(float(fine_delay))
+        tag5_value = pmt.to_pmt(float(self.fine_time_shift))
 
         #Append tags
         self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
@@ -163,6 +314,21 @@ class lora_preamble_detect(gr.sync_block):
         self.add_item_tag(0, tag_offset, tag3_key, tag3_value)
         self.add_item_tag(0, tag_offset, tag4_key, tag4_value)
         self.add_item_tag(0, tag_offset, tag5_key, tag5_value)
+        self.add_item_tag(0, tag_offset, pmt.intern('pkt_start'), pmt.PMT_NIL)
+
+    def vco_advance_vec(self, freq, n_samples):
+        k = numpy.arange(0, n_samples)
+
+        phasor = numpy.exp(1j*2*numpy.pi*freq*k + 1j*self.vco_phase)
+
+        #Update initial phase
+        self.vco_phase = numpy.mod(self.vco_phase \
+                + 2*numpy.pi*freq*(n_samples-1), 2*numpy.pi)
+
+        return phasor
+
+    def cfo_correct(self, in_sig):
+        return in_sig*self.vco_advance_vec(self.fine_freq_shift, self.M)
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
@@ -171,60 +337,51 @@ class lora_preamble_detect(gr.sync_block):
         n_syms = len(in0)//self.M
 
         for i in range(0, n_syms):
-            #Demod and shift buffer
-            self.buffer = numpy.roll(self.buffer, -1)
-            self.complex_buffer = numpy.roll(self.complex_buffer, -1)
-            self.buffer_meta.pop(0)
-            self.buffer_meta.append(dict())
+            samples = in0[i*self.M:(i+1)*self.M]
 
-            sig = in0[i*self.M:(i+1)*self.M]
-            (hard_sym, complex_sym) = self.demod.complex_demodulate(sig)
-            self.buffer[-1] = hard_sym[0]
-            self.complex_buffer[-1] = complex_sym[0]
+            if self.state == _STATE_WAIT:
+                self.state = self.wait.work(samples)
 
-            #Conjugate demod and shift conjugate buffer, if needed
-            #AABBC or ABBCC
-            #   ^       ^
-            if ('sync_value' in self.buffer_meta[-2]) or ('sync_value' in self.buffer_meta[-3]):
-                self.conj_buffer = numpy.roll(self.conj_buffer, -1)
-                self.conj_complex_buffer = numpy.roll(self.conj_complex_buffer, -1)
+                if self.state == _STATE_UP: #On state change
+                    tag_offset = self.nitems_written(0) + (i+1)*self.M
+                    self.add_item_tag(0, tag_offset, pmt.intern('STATE_UP'), pmt.PMT_NIL)
 
-                (hard_sym, complex_sym) = self.demod_conj.complex_demodulate(sig)
-                self.conj_buffer[-1] = hard_sym[0]
-                self.conj_complex_buffer[-1] = complex_sym[0]
+                    self.init_phase = 0.0
+                    self.fine_freq_shift = self.wait.get_fine_freq_shift()
 
-            #Check for preamble
-            self.detect_preamble()
+            elif self.state == _STATE_UP:
+                self.state = self.up.work(self.cfo_correct(samples))
 
-            #Retrieve sync word value and compute fine frequency shift
-            #AAABB
-            #  ^
-            if 'preamble_value' in self.buffer_meta[-3]:
-                preamble_value = self.buffer_meta[-3]['preamble_value']
-                self.detect_sync(preamble_value)
+                if self.state == _STATE_SYNC: #On state change
+                    tag_offset = self.nitems_written(0) + (i+1)*self.M
+                    self.add_item_tag(0, tag_offset, pmt.intern('STATE_SYNC'), pmt.PMT_NIL)
 
-            #Compute time-frequency shift if downchirps has same value
-            #ABBCC
-            #  ^
-            if 'sync_value' in self.buffer_meta[-3]:
-                chk_down = self.check_downchirps()
-                if not chk_down is None:
-                    (sof_value, conj_fine_freq_offset) = chk_down
+                    self.sym_up = self.up.get_up()
+                    self.neigh_up_val = self.up.get_neigh_up_val()
 
-                    ##Compute shifts
-                    if sof_value >= 0:
-                        preamble_value = self.buffer_meta[-5]['preamble_value']
-                        (freq_shift, time_shift) = \
-                                self.compute_tf_shifts(preamble_value, sof_value)
+            elif self.state == _STATE_SYNC:
+                self.state = self.sync.work(self.cfo_correct(samples), self.sym_up)
 
-                        fine_freq_offset = self.buffer_meta[-3]['fine_freq_offset']
-                        fine_freq_shift = self.compute_fine_f_shifts(\
-                                fine_freq_offset, conj_fine_freq_offset)
+                if self.state == _STATE_DOWN: #On state change
+                    tag_offset = self.nitems_written(0) + (i+1)*self.M
+                    self.add_item_tag(0, tag_offset, pmt.intern('STATE_DOWN'), pmt.PMT_NIL)
 
-                        #Tag
-                        sync_value = self.buffer_meta[-3]['sync_value']
-                        self.tag_end_preamble(freq_shift, fine_freq_shift, \
-                                time_shift, 0.0, sync_value, i)
+                    self.sync_val = self.sync.get_sync_val()
+
+            else:
+                self.state = self.down.work(self.cfo_correct(samples), \
+                        self.sym_up, self.neigh_up_val)
+
+                if self.state == _STATE_WAIT: #On state change
+                    tag_offset = self.nitems_written(0) + (i+1)*self.M
+                    self.add_item_tag(0, tag_offset, pmt.intern('SYNCED'), pmt.PMT_NIL)
+
+                    self.freq_shift = self.down.get_freq_shift()
+
+                    self.fine_time_shift = -self.down.get_fine_time_shift()
+                    self.time_shift = self.down.get_time_shift()
+
+                    self.tag_end_preamble(i+1)
 
         #Copy input to output
         out0[:] = in0[:]
