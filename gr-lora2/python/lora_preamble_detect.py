@@ -214,8 +214,10 @@ class state_down:
 
         if numpy.isnan(tmp):
             self.lambda_hat = 0.0
-        else:
+        elif numpy.abs(numpy.real(tmp)) < 1.0:
             self.lambda_hat = - numpy.real(tmp)
+        else:
+            self.lambda_hat = 0.0
 
     def work(self, samples, up, neigh_up_val):
         if self.down_cnt == 0:
