@@ -43,7 +43,7 @@ class state_wait:
 
         self.samples_pre = numpy.zeros(self.M, dtype=numpy.complex64)
 
-        self.phi = 0.0
+        self.phi = 0.0 #Fine frequency shift estimate
 
     def init_buffers(self):
         self.buffer = numpy.zeros(self.N_up//2, dtype=numpy.int) - 1
@@ -72,7 +72,7 @@ class state_wait:
                     break
 
             if pre_detected:
-                self.phi = numpy.mean(self.buffer_phi)
+                self.phi = numpy.mean(self.buffer_phi) / self.M
 
                 self.init_buffers()
                 return _STATE_UP
@@ -81,7 +81,7 @@ class state_wait:
 
         return _STATE_WAIT
 
-    def get_phi(self):
+    def get_fine_freq_shift(self):
         return self.phi
 
 class state_up:
@@ -137,30 +137,30 @@ class state_sync:
 
         self.sync_cnt = 0
 
-        self.sync = 0
-        self.sync_val = numpy.zeros(2, dtype=numpy.int)
+        self.sync_val = 0
+        self.sync_idx = numpy.zeros(2, dtype=numpy.int)
         self.sync_conf = numpy.zeros(2, dtype=numpy.float32)
 
     def work(self, samples, sym_up):
         if self.sync_cnt == 0:
             self.sync_cnt += 1
 
-            (self.sync_val[0], self.sync_conf[0]) = self.demod.soft_demodulate(samples)
+            (self.sync_idx[0], self.sync_conf[0]) = self.demod.soft_demodulate(samples)
 
             return _STATE_SYNC
         else:
-            (self.sync_val[1], self.sync_conf[1]) = self.demod.soft_demodulate(samples)
+            (self.sync_idx[1], self.sync_conf[1]) = self.demod.soft_demodulate(samples)
 
             if self.sync_conf[0] > self.sync_conf[1]:
-                self.sync = numpy.uint16( 3*numpy.round(((self.sync_val[0]-sym_up)%self.M)/3) )
+                self.sync_val = numpy.uint16( 3*numpy.round(((self.sync_idx[0]-sym_up)%self.M)/3) )
             else:
-                self.sync = numpy.uint16( 3*numpy.round(((self.sync_val[1]-sym_up)%self.M)/3) )
+                self.sync_val = numpy.uint16( 3*numpy.round(((self.sync_idx[1]-sym_up)%self.M)/3) )
 
             self.sync_cnt = 0
             return _STATE_DOWN
 
-    def get_sync(self):
-        return self.sync
+    def get_sync_val(self):
+        return self.sync_val
 
 class state_down:
     def __init__(self, M):
@@ -173,11 +173,11 @@ class state_down:
         self.down_val = numpy.zeros(2, dtype=numpy.uint16)
         self.neigh_down_val = numpy.zeros((2, 3), dtype=numpy.complex64)
 
-        self.L_hat = 0
-        self.lambda_hat = 0
-        self.M_hat = 0
+        self.freq_shift = 0
+        self.fine_time_shift = 0
+        self.time_shift = 0
 
-    def compute_L(self, up, down, neigh_up_val, neigh_down_val):
+    def compute_freq_shift(self, up, down, neigh_up_val, neigh_down_val):
         eps = 1e-6
         up_diff = numpy.abs(neigh_up_val[2]) - numpy.abs(neigh_up_val[0])
         down_diff = numpy.abs(neigh_down_val[2]) - numpy.abs(neigh_down_val[0])
@@ -199,25 +199,24 @@ class state_down:
 
         tmp = int(up) + int(down) + gamma
         #print(str(0.5*Gamma(self.M, tmp%self.M)) + ", " + str(gamma))
-        self.L_hat = int(0.5*Gamma(self.M, tmp%self.M))
+        self.freq_shift = int(0.5*Gamma(self.M, tmp%self.M))
 
-    def compute_M(self, up):
-        tmp = int(up) - int(self.L_hat)
-        self.M_hat = numpy.uint16(tmp%self.M)
+    def compute_time_shift(self, up):
+        tmp = int(up) - int(self.freq_shift)
+        self.time_shift = numpy.uint16(tmp%self.M)
 
-    def compute_lambda(self, neigh_up_val):
-        tmp = numpy.exp(-1j*2*numpy.pi*self.M_hat/self.M) * neigh_up_val[2] \
-                - numpy.exp(1j*2*numpy.pi*self.M_hat/self.M) * neigh_up_val[0]
+    def compute_fine_time_shift(self, neigh_up_val):
+        w = 1j*2*numpy.pi*self.time_shift/self.M
+        tmp = numpy.exp(-w) * neigh_up_val[2] - numpy.exp(w) * neigh_up_val[0]
         tmp /= 2*neigh_up_val[1] \
-                - numpy.exp(-1j*2*numpy.pi*self.M_hat/self.M) * neigh_up_val[2] \
-                - numpy.exp(1j*2*numpy.pi*self.M_hat/self.M) * neigh_up_val[0]
+                - numpy.exp(-w) * neigh_up_val[2] - numpy.exp(w) * neigh_up_val[0]
 
         if numpy.isnan(tmp):
-            self.lambda_hat = 0.0
+            self.fine_time_shift = 0.0
         elif numpy.abs(numpy.real(tmp)) < 1.0:
-            self.lambda_hat = - numpy.real(tmp)
+            self.fine_time_shift = - numpy.real(tmp)
         else:
-            self.lambda_hat = 0.0
+            self.fine_time_shift = 0.0
 
     def work(self, samples, up, neigh_up_val):
         if self.down_cnt == 0:
@@ -238,23 +237,24 @@ class state_down:
             self.neigh_down_val[1][2] = spectrum[0][(sym[0]+1)%self.M]
 
             if numpy.abs(self.neigh_down_val[0][1]) > numpy.abs(self.neigh_down_val[1][1]):
-                self.compute_L(up, self.down_val[0], neigh_up_val, self.neigh_down_val[0])
+                self.compute_freq_shift(up, self.down_val[0], neigh_up_val, self.neigh_down_val[0])
             else:
-                self.compute_L(up, self.down_val[1], neigh_up_val, self.neigh_down_val[1])
-            self.compute_M(up)
-            self.compute_lambda(neigh_up_val)
+                self.compute_freq_shift(up, self.down_val[1], neigh_up_val, self.neigh_down_val[1])
+
+            self.compute_time_shift(up)
+            self.compute_fine_time_shift(neigh_up_val)
 
             self.down_cnt = 0
             return _STATE_WAIT
 
-    def get_L(self):
-        return self.L_hat
+    def get_freq_shift(self):
+        return self.freq_shift / self.M
 
-    def get_lambda(self):
-        return self.lambda_hat
+    def get_fine_time_shift(self):
+        return self.fine_time_shift
 
-    def get_M(self):
-        return self.M_hat
+    def get_time_shift(self):
+        return self.time_shift
 
 class lora_preamble_detect(gr.sync_block):
     """
@@ -282,32 +282,31 @@ class lora_preamble_detect(gr.sync_block):
         self.sync_val = 0
 
         self.vco_phase = 0.0
-        self.cfo_freq = 0.0
-        self.L_hat = 0
-        self.lambda_hat = 0
-        self.M_hat = 0
+        self.fine_freq_shift = 0.0
+        self.freq_shift = 0
+        self.fine_time_shift = 0
+        self.time_shift = 0
 
         self.set_output_multiple(self.M)
 
-    def tag_end_preamble(self, freq_shift, fine_freq_shift, time_shift,
-            fine_delay, sync_value, sof_idx):
+    def tag_end_preamble(self, sof_idx):
 
-        time_shift = (self.M - time_shift) if time_shift != 0 else 0
+        time_shift = (self.M - self.time_shift) if self.time_shift != 0 else 0
 
         #Prepare tag
         tag_offset = self.nitems_written(0) + time_shift + sof_idx*self.M \
                 + self.M//4
 
         tag1_key = pmt.intern('fine_freq_offset')
-        tag1_value = pmt.to_pmt(fine_freq_shift)
+        tag1_value = pmt.to_pmt(-self.fine_freq_shift)
         tag2_key = pmt.intern('coarse_freq_offset')
-        tag2_value = pmt.to_pmt(freq_shift)
+        tag2_value = pmt.to_pmt(self.freq_shift)
         tag3_key = pmt.intern('sync_word')
-        tag3_value = pmt.to_pmt(int(sync_value))
+        tag3_value = pmt.to_pmt(int(self.sync_val))
         tag4_key = pmt.intern('time_offset')
         tag4_value = pmt.to_pmt(int(time_shift))
         tag5_key = pmt.intern('fine_time_offset')
-        tag5_value = pmt.to_pmt(float(fine_delay))
+        tag5_value = pmt.to_pmt(float(self.fine_time_shift))
 
         #Append tags
         self.add_item_tag(0, tag_offset, tag1_key, tag1_value)
@@ -329,7 +328,7 @@ class lora_preamble_detect(gr.sync_block):
         return phasor
 
     def cfo_correct(self, in_sig):
-        return in_sig*self.vco_advance_vec(self.cfo_freq, self.M)
+        return in_sig*self.vco_advance_vec(self.fine_freq_shift, self.M)
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
@@ -348,7 +347,7 @@ class lora_preamble_detect(gr.sync_block):
                     self.add_item_tag(0, tag_offset, pmt.intern('STATE_UP'), pmt.PMT_NIL)
 
                     self.init_phase = 0.0
-                    self.cfo_freq = self.wait.get_phi() / self.M
+                    self.fine_freq_shift = self.wait.get_fine_freq_shift()
 
             elif self.state == _STATE_UP:
                 self.state = self.up.work(self.cfo_correct(samples))
@@ -367,7 +366,7 @@ class lora_preamble_detect(gr.sync_block):
                     tag_offset = self.nitems_written(0) + (i+1)*self.M
                     self.add_item_tag(0, tag_offset, pmt.intern('STATE_DOWN'), pmt.PMT_NIL)
 
-                    self.sync_val = self.sync.get_sync()
+                    self.sync_val = self.sync.get_sync_val()
 
             else:
                 self.state = self.down.work(self.cfo_correct(samples), \
@@ -377,11 +376,12 @@ class lora_preamble_detect(gr.sync_block):
                     tag_offset = self.nitems_written(0) + (i+1)*self.M
                     self.add_item_tag(0, tag_offset, pmt.intern('SYNCED'), pmt.PMT_NIL)
 
-                    self.L_hat = self.down.get_L()
-                    self.lambda_hat = self.down.get_lambda()
-                    self.M_hat = self.down.get_M()
-                    self.tag_end_preamble(self.L_hat/self.M, -self.cfo_freq,
-                            self.M_hat, -self.lambda_hat, self.sync_val, i+1)
+                    self.freq_shift = self.down.get_freq_shift()
+
+                    self.fine_time_shift = -self.down.get_fine_time_shift()
+                    self.time_shift = self.down.get_time_shift()
+
+                    self.tag_end_preamble(i+1)
 
         #Copy input to output
         out0[:] = in0[:]
