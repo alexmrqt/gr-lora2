@@ -43,7 +43,7 @@ blocks:
     bus_structure: null
     coordinate: [56, 1172.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: M
   id: variable
   parameters:
@@ -67,7 +67,7 @@ blocks:
     bus_structure: null
     coordinate: [112, 92]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: RF_samp_rate
   id: variable
   parameters:
@@ -79,7 +79,7 @@ blocks:
     bus_structure: null
     coordinate: [232, 92]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: RF_samp_rate
   id: variable
   parameters:
@@ -245,18 +245,6 @@ blocks:
     coordinate: [1048, 12]
     rotation: 0
     state: enabled
-- name: radio_offset
-  id: variable
-  parameters:
-    comment: ''
-    value: 15e3
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [304, 452.0]
-    rotation: 0
-    state: enabled
 - name: samp_rate
   id: variable
   parameters:
@@ -377,7 +365,7 @@ blocks:
     bus_structure: null
     coordinate: [136, 1296.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_message_debug_0_0
   id: blocks_message_debug
   parameters:
@@ -425,7 +413,7 @@ blocks:
     bus_structure: null
     coordinate: [648, 960.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_null_sink_0_0
   id: blocks_null_sink
   parameters:
@@ -513,7 +501,7 @@ blocks:
     bus_structure: null
     coordinate: [784, 1364.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_socket_pdu_0
   id: blocks_socket_pdu
   parameters:
@@ -569,7 +557,7 @@ blocks:
     bus_structure: null
     coordinate: [392, 1372.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: blocks_throttle_0
   id: blocks_throttle
   parameters:
@@ -632,7 +620,7 @@ blocks:
     bus_structure: null
     coordinate: [256, 796.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: freq_xlating_fir_filter_xxx_0
   id: freq_xlating_fir_filter_xxx
   parameters:
@@ -719,7 +707,7 @@ blocks:
     bus_structure: null
     coordinate: [616, 1376.0]
     rotation: 180
-    state: enabled
+    state: disabled
 - name: lora2_gray_encode_0
   id: lora2_gray_encode
   parameters:
@@ -734,7 +722,7 @@ blocks:
     bus_structure: null
     coordinate: [408, 1056.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora2_gray_encode_0_0
   id: lora2_gray_encode
   parameters:
@@ -749,7 +737,7 @@ blocks:
     bus_structure: null
     coordinate: [216, 1248.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora2_lora_deinterleaver_0
   id: lora2_lora_deinterleaver
   parameters:
@@ -767,7 +755,7 @@ blocks:
     bus_structure: null
     coordinate: [544, 1036.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora2_lora_deinterleaver_0_0
   id: lora2_lora_deinterleaver
   parameters:
@@ -785,7 +773,7 @@ blocks:
     bus_structure: null
     coordinate: [352, 1228.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora2_lora_depad_0
   id: lora2_lora_depad
   parameters:
@@ -802,7 +790,7 @@ blocks:
     bus_structure: null
     coordinate: [976, 1364.0]
     rotation: 180
-    state: bypassed
+    state: disabled
 - name: lora2_lora_extract_rem_0
   id: lora2_lora_extract_rem
   parameters:
@@ -820,7 +808,7 @@ blocks:
     bus_structure: null
     coordinate: [720, 1036.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora2_lora_hamming_decode_0
   id: lora2_lora_hamming_decode
   parameters:
@@ -837,7 +825,7 @@ blocks:
     bus_structure: null
     coordinate: [888, 1044.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora2_lora_hamming_decode_0_0
   id: lora2_lora_hamming_decode
   parameters:
@@ -854,7 +842,7 @@ blocks:
     bus_structure: null
     coordinate: [1216, 1364.0]
     rotation: 180
-    state: bypassed
+    state: disabled
 - name: lora2_lora_header_decode_0
   id: lora2_lora_header_decode
   parameters:
@@ -871,7 +859,7 @@ blocks:
     bus_structure: null
     coordinate: [1096, 1044.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora2_lora_header_decode_0_0
   id: lora2_lora_header_decode
   parameters:
@@ -903,7 +891,7 @@ blocks:
     bus_structure: null
     coordinate: [184, 1056.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora2_lora_merge_rem_0
   id: lora2_lora_merge_rem
   parameters:
@@ -920,7 +908,7 @@ blocks:
     bus_structure: null
     coordinate: [760, 1236.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: lora2_lora_preamble_detect_0_0
   id: lora2_lora_preamble_detect
   parameters:
@@ -955,7 +943,7 @@ blocks:
     bus_structure: null
     coordinate: [1216, 1236.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: low_pass_filter_0
   id: low_pass_filter
   parameters:
@@ -1109,7 +1097,7 @@ blocks:
     clock_source6: ''
     clock_source7: ''
     comment: ''
-    corr0: '0'
+    corr0: '11.1'
     corr1: '0'
     corr10: '0'
     corr11: '0'
@@ -1173,7 +1161,7 @@ blocks:
     dc_offset_mode7: '0'
     dc_offset_mode8: '0'
     dc_offset_mode9: '0'
-    freq0: chan_freq+freq_offset+radio_offset
+    freq0: chan_freq+freq_offset
     freq1: 100e6
     freq10: 100e6
     freq11: 100e6
@@ -1338,7 +1326,7 @@ blocks:
     nchan: '1'
     num_mboards: '1'
     sample_rate: RF_samp_rate
-    sync: pc_clock
+    sync: none
     time_source0: ''
     time_source1: ''
     time_source2: ''
@@ -1491,7 +1479,7 @@ blocks:
     alpha7: '1.0'
     alpha8: '1.0'
     alpha9: '1.0'
-    autoscale: 'False'
+    autoscale: 'True'
     axislabels: 'True'
     color1: blue
     color10: dark blue
@@ -1889,7 +1877,7 @@ blocks:
     bus_structure: null
     coordinate: [640, 844.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_sink_2
   id: virtual_sink
   parameters:
@@ -1902,7 +1890,7 @@ blocks:
     bus_structure: null
     coordinate: [1304, 1052.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_sink_3
   id: virtual_sink
   parameters:
@@ -1928,7 +1916,7 @@ blocks:
     bus_structure: null
     coordinate: [640, 892.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_source_0
   id: virtual_source
   parameters:
@@ -1954,7 +1942,7 @@ blocks:
     bus_structure: null
     coordinate: [0, 1052.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_source_2
   id: virtual_source
   parameters:
@@ -1967,7 +1955,7 @@ blocks:
     bus_structure: null
     coordinate: [64, 892.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_source_3
   id: virtual_source
   parameters:
@@ -1980,7 +1968,7 @@ blocks:
     bus_structure: null
     coordinate: [48, 828.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: virtual_source_4
   id: virtual_source
   parameters:
@@ -1993,7 +1981,7 @@ blocks:
     bus_structure: null
     coordinate: [8, 1244.0]
     rotation: 0
-    state: enabled
+    state: disabled
 
 connections:
 - [analog_quadrature_demod_cf_0, '0', qtgui_time_sink_x_0_0_1, '0']

@@ -79,6 +79,18 @@ blocks:
     bus_structure: null
     coordinate: [184, 220.0]
     rotation: 0
+    state: disabled
+- name: RF_samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: int(8e6)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [240, 92.0]
+    rotation: 0
     state: enabled
 - name: SF
   id: variable
@@ -233,18 +245,6 @@ blocks:
     coordinate: [1056, 20.0]
     rotation: 0
     state: enabled
-- name: radio_offset
-  id: variable
-  parameters:
-    comment: ''
-    value: 17.5e3
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [312, 420.0]
-    rotation: 0
-    state: enabled
 - name: samp_rate
   id: variable
   parameters:
@@ -331,19 +331,6 @@ blocks:
     bus_structure: null
     coordinate: [32, 1392.0]
     rotation: 180
-    state: enabled
-- name: blocks_message_debug_0_0
-  id: blocks_message_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1328, 1128.0]
-    rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
   id: blocks_multiply_const_vxx
@@ -455,7 +442,7 @@ blocks:
     bus_structure: null
     coordinate: [656, 412.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_tagged_stream_to_pdu_0
   id: blocks_tagged_stream_to_pdu
   parameters:
@@ -593,7 +580,7 @@ blocks:
   id: lora2_css_demod
   parameters:
     B_cfo: '0.3'
-    B_delay: '0.4'
+    B_delay: '1.0'
     M: M
     affinity: ''
     alias: ''
@@ -689,7 +676,7 @@ blocks:
     bus_structure: null
     coordinate: [992, 1444.0]
     rotation: 180
-    state: enabled
+    state: bypassed
 - name: lora2_lora_extract_rem_0
   id: lora2_lora_extract_rem
   parameters:
@@ -1016,7 +1003,7 @@ blocks:
     clock_source6: ''
     clock_source7: ''
     comment: ''
-    corr0: '0'
+    corr0: '11.1'
     corr1: '0'
     corr10: '0'
     corr11: '0'
@@ -1080,7 +1067,7 @@ blocks:
     dc_offset_mode7: '0'
     dc_offset_mode8: '0'
     dc_offset_mode9: '0'
-    freq0: chan_freq+freq_offset+radio_offset
+    freq0: chan_freq+freq_offset
     freq1: 100e6
     freq10: 100e6
     freq11: 100e6
@@ -1245,7 +1232,7 @@ blocks:
     nchan: '1'
     num_mboards: '1'
     sample_rate: RF_samp_rate
-    sync: pc_clock
+    sync: none
     time_source0: ''
     time_source1: ''
     time_source2: ''
@@ -1289,35 +1276,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [584, 284.0]
-    rotation: 0
-    state: disabled
-- name: qtgui_sink_x_0_0
-  id: qtgui_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    bw: chan_bw
-    comment: ''
-    fc: '0'
-    fftsize: '1024'
-    gui_hint: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    name: '""'
-    plotconst: 'True'
-    plotfreq: 'True'
-    plottime: 'True'
-    plotwaterfall: 'True'
-    rate: '10'
-    showports: 'True'
-    showrf: 'False'
-    type: complex
-    wintype: firdes.WIN_BLACKMAN_hARRIS
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1304, 268.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0_0
@@ -1768,7 +1726,6 @@ connections:
 - [lora2_lora_crc_check_0, pdus, blocks_socket_pdu_0, pdus]
 - [lora2_lora_depad_0, '0', blocks_repack_bits_bb_0, '0']
 - [lora2_lora_extract_rem_0, '0', lora2_lora_soft_hamming_decode_0, '0']
-- [lora2_lora_header_decode_0, hdr, blocks_message_debug_0_0, print]
 - [lora2_lora_header_decode_0, hdr, virtual_sink_2, '0']
 - [lora2_lora_preamble_detect_0_0, '0', blocks_tag_debug_0_0, '0']
 - [lora2_lora_preamble_detect_0_0, '0', lora2_css_demod_0, '0']
@@ -1781,7 +1738,6 @@ connections:
 - [lora2_lora_soft_merge_rem_0, '0', lora2_lora_soft_dewhiten_0, '0']
 - [low_pass_filter_0, '0', mmse_resampler_xx_0, '0']
 - [mmse_resampler_xx_0, '0', blocks_throttle_0, '0']
-- [mmse_resampler_xx_0, '0', qtgui_sink_x_0_0, '0']
 - [osmosdr_source_0, '0', freq_xlating_fir_filter_xxx_0, '0']
 - [virtual_source_0, '0', lora2_lora_preamble_detect_0_0, '0']
 - [virtual_source_1, '0', lora2_lora_soft_low_rate_opt_rx_0, '0']

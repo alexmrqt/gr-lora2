@@ -157,7 +157,6 @@ class css_demod(gr.basic_block):
             tag.offset = out_idx + self.nitems_written(3)
             self.add_item_tag(3, tag)
 
-
     def general_work(self, input_items, output_items):
         in0 = input_items[0]
         out0 = output_items[0]
@@ -222,26 +221,42 @@ class css_demod(gr.basic_block):
             else:
                 self.global_sym_count += 1
 
-            out2[sym_count] = self.est_cfo
-            #out2[sym_count] = cfo_err
-
             ##Delay estimation
             delay_err = self.delay_detect(sig, sym)
             self.delay += self.b1_delay * delay_err
             self.cum_delay += self.b1_delay * delay_err
 
+            ##Outputs
+            out0[sym_count] = sym
+            out1[sym_count] = spectrum[0]
+            out2[sym_count] = self.est_cfo
             out3[sym_count] = self.cum_delay
+            #out2[sym_count] = cfo_err
             #out3[sym_count] = delay_err
 
-            #Next symbol
+            ##Increment number of processed symbols in this call of work
+            sym_count += 1
+
+            ##Handle delay
             int_delay = int(numpy.round(self.delay))
+
+            #If items are to be deleted, check that we are not missing a pkt_start
+            if int_delay > 0:
+                tags_pkt_start = self.get_tags_in_window(0, start_idx + self.M,
+                        start_idx + self.M + int_delay, pmt.intern('pkt_start'))
+
+                if len(tags_pkt_start) > 0:
+                    start_idx = tags_pkt_start[0].offset - self.nitems_read(0)
+                    stop_idx = start_idx + self.M - 1
+
+                    continue
 
             #Acount for delay compensation in start_idx
             self.delay -= int_delay
-
             #Update start/stop indices
-            start_idx += self.M + int_delay
-            if self.delay < -1e-6: #Negative fractional delay must converted to positive
+            start_idx += self.M + int_delay #TODO: Handle case where start_idx < 0
+            #Negative fractional delay must converted to positive
+            if self.delay < -1e-6:
                 start_idx -= 1
                 self.delay += 1
             stop_idx = start_idx + self.M - 1
@@ -251,15 +266,6 @@ class css_demod(gr.basic_block):
                 self.vco_advance(self.est_cfo, int_delay);
             else:
                 self.vco_advance(old_cfo, int_delay);
-
-            ##TODO: Handle tag propagation of deleted items (?)
-
-            ##Outputs
-            out0[sym_count] = sym
-            out1[sym_count] = spectrum[0]
-
-            #Increment number of processed symbols in this call of work
-            sym_count += 1
 
         #Tell GNURadio how many items were produced
         self.consume(0, start_idx)
