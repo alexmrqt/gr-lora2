@@ -708,7 +708,7 @@ blocks:
     bus_structure: null
     coordinate: [40, 668.0]
     rotation: 0
-    state: true
+    state: bypassed
 - name: channels_distortion_2_gen_0
   id: channels_distortion_2_gen
   parameters:
@@ -897,7 +897,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     phase_shift: '0.0'
-    resamp_ratio: 1.0+5e-5
+    resamp_ratio: 1.0-5e-5
     type: complex
   states:
     bus_sink: false

@@ -55,6 +55,7 @@ class css_demod(gr.basic_block):
 
         ##Delay-related attributes
         self.b1_delay = B_delay
+        self.init_delay = 0
         self.delay = 0.0
         self.cum_delay = 0.0
 
@@ -164,10 +165,19 @@ class css_demod(gr.basic_block):
         out2 = output_items[2]
         out3 = output_items[3]
 
-        sym_count = 0
-
-        start_idx = 0
+        start_idx = self.init_delay
         stop_idx = start_idx + self.M - 1
+
+        #If items are to be deleted, check that we are not missing a pkt_start
+        if self.init_delay > 0:
+            tags_pkt_start = self.get_tags_in_window(0, 0,
+                    self.init_delay, pmt.intern('pkt_start'))
+
+            if len(tags_pkt_start) > 0:
+                start_idx = tags_pkt_start[0].offset - self.nitems_read(0)
+                stop_idx = start_idx + self.M - 1
+
+        sym_count = 0
         while (stop_idx < len(in0)) and (sym_count < len(out0)):
             ##Check for pkt_start
             tags_pkt_start = self.get_tags_in_window(0, start_idx, stop_idx+1, \
@@ -240,10 +250,21 @@ class css_demod(gr.basic_block):
             ##Handle delay
             int_delay = int(numpy.round(self.delay))
 
+            #Acount for delay compensation in start_idx
+            self.delay -= int_delay
+            #Update start/stop indices
+            start_idx += self.M + int_delay
+            #Negative fractional delay must converted to positive
+            if self.delay < -1e-6:
+                start_idx -= 1
+                self.delay += 1
+                int_delay += 1
+            stop_idx = start_idx + self.M - 1
+
             #If items are to be deleted, check that we are not missing a pkt_start
             if int_delay > 0:
-                tags_pkt_start = self.get_tags_in_window(0, start_idx + self.M,
-                        start_idx + self.M + int_delay, pmt.intern('pkt_start'))
+                tags_pkt_start = self.get_tags_in_window(0, start_idx - int_delay,
+                        start_idx, pmt.intern('pkt_start'))
 
                 if len(tags_pkt_start) > 0:
                     start_idx = tags_pkt_start[0].offset - self.nitems_read(0)
@@ -251,22 +272,12 @@ class css_demod(gr.basic_block):
 
                     continue
 
-            #Acount for delay compensation in start_idx
-            self.delay -= int_delay
-            #Update start/stop indices
-            start_idx += self.M + int_delay #TODO: Handle case where start_idx < 0
-            #Negative fractional delay must converted to positive
-            if self.delay < -1e-6:
-                start_idx -= 1
-                self.delay += 1
-            stop_idx = start_idx + self.M - 1
-
-            #Acount for delay compensation in the VCO
-            if int_delay > 0:
-                self.vco_advance(self.est_cfo, int_delay);
-            else:
-                self.vco_advance(old_cfo, int_delay);
-
         #Tell GNURadio how many items were produced
+        if start_idx > len(in0):
+            start_idx = len(in0)
+            self.init_delay = start_idx - len(in0)
+        else:
+            self.init_delay = 0
+
         self.consume(0, start_idx)
         return sym_count
