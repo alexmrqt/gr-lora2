@@ -41,7 +41,7 @@ class state_wait:
         self.buffer = numpy.zeros(self.N_up//2, dtype=numpy.int) - 1
         self.buffer_phi = numpy.zeros(self.N_up//2-1)
 
-        self.samples_pre = numpy.zeros(self.M, dtype=numpy.complex64)
+        self.cmplx_val_pre = 0.0
 
         self.phi = 0.0 #Fine frequency shift estimate
 
@@ -49,20 +49,15 @@ class state_wait:
         self.buffer = numpy.zeros(self.N_up//2, dtype=numpy.int) - 1
         self.buffer_phi = numpy.zeros(self.N_up//2-1)
 
-    def dechirp(self, samples):
-        return samples * numpy.exp(-1j*numpy.pi*(numpy.arange(0, self.M)**2)/self.M)
+    def compute_phi(self, cmplx_val):
+        return numpy.angle(self.cmplx_val_pre * numpy.conjugate(cmplx_val)) / (2*numpy.pi)
 
-    def compute_phi(self, samples):
-        return numpy.angle(numpy.sum(self.dechirp(self.samples_pre) * numpy.conjugate(self.dechirp(samples)))) / (2*numpy.pi)
-
-    #samples are samples of current symbol
-    #samples_pre are samples of previous symbol
     def work(self, samples):
         self.buffer = numpy.roll(self.buffer, -1)
-        self.buffer[-1] = self.demod.demodulate(samples)[0]
+        (self.buffer[-1], cmplx_val) = self.demod.complex_demodulate(samples)
 
         self.buffer_phi = numpy.roll(self.buffer_phi, -1)
-        self.buffer_phi[-1] = self.compute_phi(samples)
+        self.buffer_phi[-1] = self.compute_phi(cmplx_val)
 
         if self.buffer[-2] != -1:
             pre_detected = True
@@ -77,7 +72,7 @@ class state_wait:
                 self.init_buffers()
                 return _STATE_UP
 
-        self.samples_pre = samples
+        self.cmplx_val_pre = cmplx_val
 
         return _STATE_WAIT
 
