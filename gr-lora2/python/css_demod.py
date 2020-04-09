@@ -239,9 +239,9 @@ class css_demod(gr.basic_block):
             ##Outputs
             out0[sym_count] = sym
             out1[sym_count] = spectrum[0]
-            out2[sym_count] = self.est_cfo
+            #out2[sym_count] = self.est_cfo
             out3[sym_count] = self.cum_delay
-            #out2[sym_count] = cfo_err
+            out2[sym_count] = cfo_err
             #out3[sym_count] = delay_err
 
             ##Increment number of processed symbols in this call of work

@@ -52,6 +52,21 @@ class state_wait:
     def compute_phi(self, cmplx_val):
         return numpy.angle(self.cmplx_val_pre * numpy.conjugate(cmplx_val)) / (2*numpy.pi)
 
+    def detect_preamble(self):
+        #Buffer not full yet
+        if self.buffer[0] == -1:
+            return False
+
+        mean = numpy.mean(self.buffer[-self.N_up//2:])
+        mean_err_sq = numpy.sum(numpy.abs(self.buffer[-self.N_up//2:] - mean)**2)
+        max_err_sq = self.M**2
+
+        if(mean_err_sq/max_err_sq < self.thres):
+            return True
+
+        return False
+
+
     def work(self, samples):
         self.buffer = numpy.roll(self.buffer, -1)
         (self.buffer[-1], cmplx_val) = self.demod.complex_demodulate(samples)
@@ -59,18 +74,24 @@ class state_wait:
         self.buffer_phi = numpy.roll(self.buffer_phi, -1)
         self.buffer_phi[-1] = self.compute_phi(cmplx_val)
 
-        if self.buffer[-2] != -1:
-            pre_detected = True
-            for i in range(1, self.N_up//2):
-                if abs((self.buffer[0] - self.buffer[i])%self.M) > 1:
-                    pre_detected = False
-                    break
+        if self.detect_preamble():
+            self.phi = numpy.mean(self.buffer_phi) / self.M
 
-            if pre_detected:
-                self.phi = numpy.mean(self.buffer_phi) / self.M
+            self.init_buffers()
+            return _STATE_UP
 
-                self.init_buffers()
-                return _STATE_UP
+        #if self.buffer[-2] != -1:
+        #    pre_detected = True
+        #    for i in range(1, self.N_up//2):
+        #        if abs((self.buffer[0] - self.buffer[i])%self.M) > 1:
+        #            pre_detected = False
+        #            break
+
+        #    if pre_detected:
+        #        self.phi = numpy.mean(self.buffer_phi) / self.M
+
+        #        self.init_buffers()
+        #        return _STATE_UP
 
         self.cmplx_val_pre = cmplx_val
 
@@ -193,8 +214,8 @@ class state_down:
         Gamma = lambda N,k: k if (k < N/2) else (k-N)
 
         tmp = int(up) + int(down) + gamma
-        #print(str(0.5*Gamma(self.M, tmp%self.M)) + ", " + str(gamma))
-        self.freq_shift = int(0.5*Gamma(self.M, tmp%self.M))
+        #print(str(0.5*Gamma(self.M, tmp%self.M)) + ", " + str(up) + ", " + str(down) + ", " + str(gamma))
+        self.freq_shift = int(numpy.ceil(0.5*Gamma(self.M, tmp%self.M)))
 
     def compute_time_shift(self, up):
         tmp = int(up) - int(self.freq_shift)
