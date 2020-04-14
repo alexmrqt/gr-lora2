@@ -311,7 +311,7 @@ class lora_preamble_detect(gr.sync_block):
 
         #Prepare tag
         tag_offset = self.nitems_written(0) + time_shift + sof_idx*self.M \
-                + self.M//4
+                + self.M//4 -1
 
         tag1_key = pmt.intern('fine_freq_offset')
         tag1_value = pmt.to_pmt(-self.fine_freq_shift)
