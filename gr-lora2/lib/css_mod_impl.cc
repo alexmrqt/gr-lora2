@@ -40,10 +40,11 @@ namespace gr {
      */
     css_mod_impl::css_mod_impl(int M, int interp)
       : gr::sync_interpolator("css_mod",
-              gr::io_signature::make(1, 1, sizeof(short)),
-              gr::io_signature::make(1, 1, sizeof(gr_complex)), M*interp),
-	  d_M(M), d_Q(interp)
-    {}
+          gr::io_signature::make(1, 1, sizeof(short)),
+          gr::io_signature::make(1, 1, sizeof(gr_complex)), M*interp),
+      d_M(M), d_Q(interp)
+    {
+    }
 
     int
     css_mod_impl::work(int noutput_items,
@@ -53,19 +54,19 @@ namespace gr {
       const short *in = (const short *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
 
-	  int n_syms = noutput_items / (d_M * d_Q);
-	  float out_freq = 0.0;
-	  float out_phase = 0.0;
+      int n_syms = noutput_items / (d_M * d_Q);
+      float out_freq = 0.0;
+      float out_phase = 0.0;
 
-	  for (int i=0 ; i < n_syms ; ++i) {
-		  for (int k = 0 ; k < d_M*d_Q ; ++k) {
-			  out_freq = k/(2.0*d_Q) - d_M/2.0 + in[i] \
-						 - d_M * round((float)k/(d_M*d_Q) - 0.5 + (float)in[i]/d_M);
-			  out_phase = 2.0 * M_PI * out_freq / (d_M*d_Q) * k;
+      for (int i=0 ; i < n_syms ; ++i) {
+        for (int k = 0 ; k < d_M*d_Q ; ++k) {
+          out_freq = k/(2.0*d_Q) - d_M/2.0 + in[i] \
+                     - d_M * round((float)k/(d_M*d_Q) - 0.5 + (float)in[i]/d_M);
+          out_phase = 2.0 * M_PI * out_freq / (d_M*d_Q) * k;
 
-			  *(out++) = gr_expj(out_phase);
-		  }
-	  }
+          *(out++) = gr_expj(out_phase);
+        }
+      }
 
       // Tell runtime system how many output items we produced.
       return noutput_items;

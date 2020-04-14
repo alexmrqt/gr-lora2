@@ -28,23 +28,23 @@ namespace gr {
 
     class lora_soft_dewhiten_impl : public lora_soft_dewhiten
     {
-     private:
-		const uint64_t d_seed1;
-		const uint64_t d_seed2;
-		const uint8_t d_CR;
+      private:
+        const uint64_t d_seed1;
+        const uint64_t d_seed2;
+        const uint8_t d_CR;
 
-     protected:
-      int calculate_output_stream_length(const gr_vector_int &ninput_items);
-	  void soft_lfsr(const float *in, float *out, const size_t bufferSize, const int bitOfs);
+      protected:
+        int calculate_output_stream_length(const gr_vector_int &ninput_items);
+        void soft_lfsr(const float *in, float *out, const size_t bufferSize, const int bitOfs);
 
-     public:
-      lora_soft_dewhiten_impl(uint8_t CR, const std::string &len_tag_key);
+      public:
+        lora_soft_dewhiten_impl(uint8_t CR, const std::string &len_tag_key);
 
-      // Where all the action really happens
-      int work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
+        // Where all the action really happens
+        int work(int noutput_items,
+            gr_vector_int &ninput_items,
+            gr_vector_const_void_star &input_items,
+            gr_vector_void_star &output_items);
     };
 
   } // namespace lora2

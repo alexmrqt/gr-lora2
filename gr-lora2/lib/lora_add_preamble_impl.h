@@ -29,28 +29,28 @@ namespace gr {
 
     class lora_add_preamble_impl : public lora_add_preamble
     {
-     private:
-		 static const int d_n_sync_syms = 2;
-		 int d_pre_len;
-		 short d_sync_word[2];
-		 pmt::pmt_t d_sync_word_tag_key;
-		 pmt::pmt_t d_payload_tag_key;
+      private:
+        static const int d_n_sync_syms = 2;
+        int d_pre_len;
+        short d_sync_word[2];
+        pmt::pmt_t d_sync_word_tag_key;
+        pmt::pmt_t d_payload_tag_key;
 
-     protected:
-      int calculate_output_stream_length(const gr_vector_int &ninput_items);
+      protected:
+        int calculate_output_stream_length(const gr_vector_int &ninput_items);
 
-     public:
-      lora_add_preamble_impl(int pre_len,
-			  int sync_word,
-			  const std::string &len_tag_key,
-              const std::string &sync_word_tag_key,
-			  const std::string &payload_tag_key);
+      public:
+        lora_add_preamble_impl(int pre_len,
+            int sync_word,
+            const std::string &len_tag_key,
+            const std::string &sync_word_tag_key,
+            const std::string &payload_tag_key);
 
-      // Where all the action really happens
-      int work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
+        // Where all the action really happens
+        int work(int noutput_items,
+            gr_vector_int &ninput_items,
+            gr_vector_const_void_star &input_items,
+            gr_vector_void_star &output_items);
     };
 
   } // namespace lora2

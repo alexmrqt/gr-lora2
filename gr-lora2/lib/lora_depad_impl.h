@@ -28,22 +28,22 @@ namespace gr {
 
     class lora_depad_impl : public lora_depad
     {
-     private:
-      pmt::pmt_t d_n_pad_key;
-      const uint8_t d_n_pad;
+      private:
+        pmt::pmt_t d_n_pad_key;
+        const uint8_t d_n_pad;
 
-     protected:
-      int calculate_output_stream_length(const gr_vector_int &ninput_items);
-	  //void update_length_tags(int n_produced, int n_ports);
+      protected:
+        int calculate_output_stream_length(const gr_vector_int &ninput_items);
+        //void update_length_tags(int n_produced, int n_ports);
 
-     public:
-      lora_depad_impl(const std::string &len_tag_key, const uint8_t n_pad);
+      public:
+        lora_depad_impl(const std::string &len_tag_key, const uint8_t n_pad);
 
-      // Where all the action really happens
-      int work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
+        // Where all the action really happens
+        int work(int noutput_items,
+            gr_vector_int &ninput_items,
+            gr_vector_const_void_star &input_items,
+            gr_vector_void_star &output_items);
     };
 
   } // namespace lora2

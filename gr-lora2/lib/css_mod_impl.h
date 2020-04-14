@@ -30,17 +30,17 @@ namespace gr {
 
     class css_mod_impl : public css_mod
     {
-     private:
-      int d_M;
-	  int d_Q;
+      private:
+        int d_M;
+        int d_Q;
 
-     public:
-      css_mod_impl(int M, int interp);
+      public:
+        css_mod_impl(int M, int interp);
 
-      // Where all the action really happens
-      int work(int noutput_items,
-         gr_vector_const_void_star &input_items,
-         gr_vector_void_star &output_items);
+        // Where all the action really happens
+        int work(int noutput_items,
+            gr_vector_const_void_star &input_items,
+            gr_vector_void_star &output_items);
     };
 
   } // namespace lora2

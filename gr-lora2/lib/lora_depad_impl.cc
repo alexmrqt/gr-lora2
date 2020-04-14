@@ -39,18 +39,18 @@ namespace gr {
      * The private constructor
      */
     lora_depad_impl::lora_depad_impl(const std::string &len_tag_key,
-			const uint8_t n_pad)
+        const uint8_t n_pad)
       : gr::tagged_stream_block("lora_depad",
-              gr::io_signature::make(1, 1, sizeof(uint8_t)),
-              gr::io_signature::make(1, 1, sizeof(uint8_t)), len_tag_key),
+          gr::io_signature::make(1, 1, sizeof(uint8_t)),
+          gr::io_signature::make(1, 1, sizeof(uint8_t)), len_tag_key),
       d_n_pad(n_pad)
     {
-		//Populate attributes
-        d_n_pad_key = pmt::intern("pad_len");
+      //Populate attributes
+      d_n_pad_key = pmt::intern("pad_len");
 
-		//Set tag propagation to custom
-		set_tag_propagation_policy(TPP_CUSTOM);
-	}
+      //Set tag propagation to custom
+      set_tag_propagation_policy(TPP_CUSTOM);
+    }
 
     int
     lora_depad_impl::calculate_output_stream_length(const gr_vector_int &ninput_items)
@@ -62,9 +62,9 @@ namespace gr {
 
     int
     lora_depad_impl::work (int noutput_items,
-                       gr_vector_int &ninput_items,
-                       gr_vector_const_void_star &input_items,
-                       gr_vector_void_star &output_items)
+        gr_vector_int &ninput_items,
+        gr_vector_const_void_star &input_items,
+        gr_vector_void_star &output_items)
     {
       const uint8_t *in = (const uint8_t *) input_items[0];
       uint8_t *out = (uint8_t *) output_items[0];
@@ -75,7 +75,7 @@ namespace gr {
       std::vector<tag_t> tags;
       get_tags_in_window(tags, 0, 0, 1, d_n_pad_key);
       if (tags.size() > 0) {
-          n_pad = (uint8_t)pmt::to_long(tags[0].value);
+        n_pad = (uint8_t)pmt::to_long(tags[0].value);
       }
 
       //Update noutput_items to take padding into account
@@ -89,16 +89,16 @@ namespace gr {
       get_tags_in_range(tags, 0, nitems_read(0), nitems_read(0) + noutput_items);
 
       for (size_t i = 0; i < tags.size(); i++) {
-		//Compute relative index
+        //Compute relative index
         tags[i].offset -= nitems_read(0);
 
-		//Shift tags assigned to dropped items to the last output item
+        //Shift tags assigned to dropped items to the last output item
         if (tags[i].offset >= (unsigned int)noutput_items) {
           tags[i].offset = noutput_items - 1;
         }
         add_item_tag(0, nitems_written(0) + tags[i].offset,
-                     tags[i].key,
-                     tags[i].value);
+            tags[i].key,
+            tags[i].value);
       }
 
       // Tell runtime system how many output items we produced.

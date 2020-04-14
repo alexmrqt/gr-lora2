@@ -28,22 +28,22 @@ namespace gr {
 
     class lora_merge_rem_impl : public lora_merge_rem
     {
-     private:
-      int d_SF;
-	  size_t d_rem_len;
-	  pmt::pmt_t d_rem_key;
+      private:
+        int d_SF;
+        size_t d_rem_len;
+        pmt::pmt_t d_rem_key;
 
-     protected:
-      int calculate_output_stream_length(const gr_vector_int &ninput_items);
+      protected:
+        int calculate_output_stream_length(const gr_vector_int &ninput_items);
 
-     public:
-      lora_merge_rem_impl(int SF, const std::string &len_tag_key);
+      public:
+        lora_merge_rem_impl(int SF, const std::string &len_tag_key);
 
-      // Where all the action really happens
-      int work(int noutput_items,
-           gr_vector_int &ninput_items,
-           gr_vector_const_void_star &input_items,
-           gr_vector_void_star &output_items);
+        // Where all the action really happens
+        int work(int noutput_items,
+            gr_vector_int &ninput_items,
+            gr_vector_const_void_star &input_items,
+            gr_vector_void_star &output_items);
     };
 
   } // namespace lora2
