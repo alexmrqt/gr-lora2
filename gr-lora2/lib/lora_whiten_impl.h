@@ -30,13 +30,13 @@ namespace gr {
     class lora_whiten_impl : public lora_whiten
     {
       private:
-        const uint64_t d_seed1;
-        const uint64_t d_seed2;
+        const uint64_t d_seed;
         const uint8_t d_CR;
+        const uint8_t d_n_skip;
 
       protected:
         int calculate_output_stream_length(const gr_vector_int &ninput_items);
-        void lfsr(const uint8_t *in, uint8_t *out, const size_t bufferSize, const int bitOfs);
+        void lfsr(const uint8_t *in, uint8_t *out, const size_t bufferSize);
 
       public:
         lora_whiten_impl(uint8_t CR, const std::string &len_tag_key);

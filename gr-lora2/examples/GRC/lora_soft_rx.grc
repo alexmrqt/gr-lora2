@@ -36,12 +36,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '4'
+    value: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 1188.0]
+    coordinate: [320, 100.0]
     rotation: 0
     state: enabled
 - name: M
@@ -60,36 +60,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: int(2e6)
+    value: 8e6
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [112, 100.0]
-    rotation: 0
-    state: disabled
-- name: RF_samp_rate
-  id: variable
-  parameters:
-    comment: ''
-    value: '2304000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [184, 220.0]
-    rotation: 0
-    state: disabled
-- name: RF_samp_rate
-  id: variable
-  parameters:
-    comment: ''
-    value: int(8e6)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [240, 92.0]
+    coordinate: [192, 148.0]
     rotation: 0
     state: enabled
 - name: SF
@@ -185,16 +161,28 @@ blocks:
     coordinate: [1264, 84.0]
     rotation: 0
     state: enabled
-- name: file
+- name: file_r
   id: variable
   parameters:
     comment: ''
-    value: sig_dir+'/'+sig_name
+    value: sig_dir+'/'+sig_name_r
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [720, 92.0]
+    coordinate: [1064, 148.0]
+    rotation: 0
+    state: enabled
+- name: file_w
+  id: variable
+  parameters:
+    comment: ''
+    value: sig_dir+'/'+sig_name_w
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [720, 100.0]
     rotation: 0
     state: enabled
 - name: frac_decim
@@ -245,6 +233,18 @@ blocks:
     coordinate: [1056, 20.0]
     rotation: 0
     state: enabled
+- name: ppm
+  id: variable
+  parameters:
+    comment: ''
+    value: '10.7'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [104, 148.0]
+    rotation: 0
+    state: enabled
 - name: samp_rate
   id: variable
   parameters:
@@ -254,31 +254,43 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 100.0]
+    coordinate: [8, 148.0]
     rotation: 0
     state: enabled
 - name: sig_dir
   id: variable
   parameters:
     comment: ''
-    value: '''/home/amarquet/Documents/postdoc-imt/enseignements/projets-S5/2018/sdr/emetteur-recepteur-lora-sdr/scripts/signals'''
+    value: '''/localdata/marqueal/Documents/sdr/gr-lora2/'''
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [384, 92.0]
+    coordinate: [392, 100.0]
     rotation: 0
     state: enabled
-- name: sig_name
+- name: sig_name_r
   id: variable
   parameters:
     comment: ''
-    value: '''zeros_SF'' + str(SF) + ''_CR4.raw'''
+    value: '''zeros_SF'' + str(SF) + ''_CR'' + str(CR) + ''_p.raw'''
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [560, 92.0]
+    coordinate: [904, 148.0]
+    rotation: 0
+    state: enabled
+- name: sig_name_w
+  id: variable
+  parameters:
+    comment: ''
+    value: '''zeros_SF'' + str(SF) + ''_CR'' + str(CR) + ''.raw'''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 100.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_mag_0_0
@@ -297,6 +309,24 @@ blocks:
     coordinate: [904, 540.0]
     rotation: 0
     state: enabled
+- name: blocks_file_sink_1
+  id: blocks_file_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    append: 'False'
+    comment: ''
+    file: file_w
+    type: complex
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1232, 300.0]
+    rotation: 0
+    state: disabled
 - name: blocks_file_source_0
   id: blocks_file_source
   parameters:
@@ -304,7 +334,7 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: file
+    file: file_r
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -316,9 +346,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 164.0]
+    coordinate: [912, 348.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_message_debug_0
   id: blocks_message_debug
   parameters:
@@ -381,7 +411,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [912, 392.0]
+    coordinate: [904, 488.0]
     rotation: 0
     state: true
 - name: blocks_repack_bits_bb_0
@@ -424,25 +454,6 @@ blocks:
     coordinate: [32, 1500.0]
     rotation: 180
     state: disabled
-- name: blocks_tag_debug_0_0
-  id: blocks_tag_debug
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    display: 'True'
-    filter: '""'
-    name: Preamble detect
-    num_inputs: '1'
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [656, 412.0]
-    rotation: 0
-    state: disabled
 - name: blocks_tagged_stream_to_pdu_0
   id: blocks_tagged_stream_to_pdu
   parameters:
@@ -469,16 +480,16 @@ blocks:
     ignoretag: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: samp_rate
+    samples_per_second: chan_bw
     type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1240, 212.0]
+    coordinate: [1080, 380.0]
     rotation: 0
-    state: bypassed
+    state: enabled
 - name: blocks_vector_to_stream_1
   id: blocks_vector_to_stream
   parameters:
@@ -540,27 +551,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [304, 324.0]
-    rotation: 0
-    state: enabled
-- name: freq_xlating_fir_filter_xxx_0_0
-  id: freq_xlating_fir_filter_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    center_freq: 0.03e6
-    comment: ''
-    decim: '1'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_rate: RF_samp_rate
-    taps: '1'
-    type: ccc
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [320, 184.0]
+    coordinate: [368, 308.0]
     rotation: 0
     state: disabled
 - name: import_0
@@ -580,7 +571,7 @@ blocks:
   id: lora2_css_demod
   parameters:
     B_cfo: '0.3'
-    B_delay: '1.0'
+    B_delay: '0.3'
     M: M
     affinity: ''
     alias: ''
@@ -628,7 +619,7 @@ blocks:
     bus_structure: null
     coordinate: [624, 1456.0]
     rotation: 180
-    state: enabled
+    state: bypassed
 - name: lora2_gray_deindexer_0
   id: lora2_gray_deindexer
   parameters:
@@ -766,23 +757,6 @@ blocks:
     coordinate: [400, 1244.0]
     rotation: 0
     state: enabled
-- name: lora2_lora_soft_dewhiten_0
-  id: lora2_lora_soft_dewhiten
-  parameters:
-    CR: '4'
-    affinity: ''
-    alias: ''
-    comment: ''
-    len_tag_key: packet_len_bits
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1216, 1252.0]
-    rotation: 0
-    state: enabled
 - name: lora2_lora_soft_hamming_decode_0
   id: lora2_lora_soft_hamming_decode
   parameters:
@@ -814,8 +788,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1216, 1444.0]
-    rotation: 180
+    coordinate: [1176, 1252.0]
+    rotation: 0
     state: enabled
 - name: lora2_lora_soft_low_rate_opt_rx_0
   id: lora2_lora_soft_low_rate_opt_rx
@@ -847,8 +821,25 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [976, 1252.0]
+    coordinate: [696, 1252.0]
     rotation: 0
+    state: bypassed
+- name: lora2_lora_whiten_0
+  id: lora2_lora_whiten
+  parameters:
+    CR: CR
+    affinity: ''
+    alias: ''
+    comment: ''
+    len_tag_key: packet_len_bits
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 1444.0]
+    rotation: 180
     state: enabled
 - name: low_pass_filter_0
   id: low_pass_filter
@@ -871,9 +862,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [800, 164.0]
+    coordinate: [712, 172.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: mmse_resampler_xx_0
   id: mmse_resampler_xx
   parameters:
@@ -889,9 +880,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 184.0]
+    coordinate: [896, 224.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: osmosdr_source_0
   id: osmosdr_source
   parameters:
@@ -1003,7 +994,7 @@ blocks:
     clock_source6: ''
     clock_source7: ''
     comment: ''
-    corr0: '11.1'
+    corr0: ppm
     corr1: '0'
     corr10: '0'
     corr11: '0'
@@ -1035,7 +1026,7 @@ blocks:
     corr7: '0'
     corr8: '0'
     corr9: '0'
-    dc_offset_mode0: '0'
+    dc_offset_mode0: '2'
     dc_offset_mode1: '0'
     dc_offset_mode10: '0'
     dc_offset_mode11: '0'
@@ -1246,9 +1237,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 276.0]
+    coordinate: [16, 228.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: qtgui_sink_x_0
   id: qtgui_sink_x
   parameters:
@@ -1275,104 +1266,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 284.0]
-    rotation: 0
-    state: enabled
-- name: qtgui_time_sink_x_0_0
-  id: qtgui_time_sink_x
-  parameters:
-    affinity: ''
-    alias: ''
-    alpha1: '1.0'
-    alpha10: '1.0'
-    alpha2: '1.0'
-    alpha3: '1.0'
-    alpha4: '1.0'
-    alpha5: '1.0'
-    alpha6: '1.0'
-    alpha7: '1.0'
-    alpha8: '1.0'
-    alpha9: '1.0'
-    autoscale: 'False'
-    axislabels: 'True'
-    color1: blue
-    color10: dark blue
-    color2: red
-    color3: green
-    color4: black
-    color5: cyan
-    color6: magenta
-    color7: yellow
-    color8: dark red
-    color9: dark green
-    comment: ''
-    ctrlpanel: 'True'
-    entags: 'True'
-    grid: 'False'
-    gui_hint: ''
-    label1: ''
-    label10: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    label5: ''
-    label6: ''
-    label7: ''
-    label8: ''
-    label9: ''
-    legend: 'True'
-    marker1: '8'
-    marker10: '-1'
-    marker2: '-1'
-    marker3: '-1'
-    marker4: '-1'
-    marker5: '-1'
-    marker6: '-1'
-    marker7: '-1'
-    marker8: '-1'
-    marker9: '-1'
-    name: '"Spectrum"'
-    nconnections: '1'
-    size: n_syms*M
-    srate: '1.0'
-    stemplot: 'True'
-    style1: '1'
-    style10: '1'
-    style2: '1'
-    style3: '1'
-    style4: '1'
-    style5: '1'
-    style6: '1'
-    style7: '1'
-    style8: '1'
-    style9: '1'
-    tr_chan: '0'
-    tr_delay: '0'
-    tr_level: '0.0'
-    tr_mode: qtgui.TRIG_MODE_TAG
-    tr_slope: qtgui.TRIG_SLOPE_POS
-    tr_tag: '"pkt_start"'
-    type: float
-    update_time: '0.10'
-    width1: '1'
-    width10: '1'
-    width2: '1'
-    width3: '1'
-    width4: '1'
-    width5: '1'
-    width6: '1'
-    width7: '1'
-    width8: '1'
-    width9: '1'
-    ylabel: Amplitude
-    ymax: M
-    ymin: -M
-    yunit: '""'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1232, 420.0]
+    coordinate: [696, 316.0]
     rotation: 0
     state: disabled
 - name: qtgui_time_sink_x_0_0_0
@@ -1569,7 +1463,7 @@ blocks:
     coordinate: [1088, 708.0]
     rotation: 0
     state: enabled
-- name: virtual_sink_0
+- name: virtual_sink_0_0
   id: virtual_sink
   parameters:
     alias: ''
@@ -1579,7 +1473,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1416, 212.0]
+    coordinate: [1240, 236.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_1
@@ -1702,19 +1596,17 @@ blocks:
 
 connections:
 - [blocks_complex_to_mag_0_0, '0', lora2_gray_deindexer_0, '0']
-- [blocks_file_source_0, '0', freq_xlating_fir_filter_xxx_0_0, '0']
-- [blocks_file_source_0, '0', qtgui_sink_x_0, '0']
+- [blocks_file_source_0, '0', blocks_throttle_0, '0']
 - [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0_0_0, '0']
 - [blocks_repack_bits_bb_0, '0', lora2_flip_half_bytes_0, '0']
 - [blocks_tagged_stream_to_pdu_0, pdus, lora2_lora_crc_check_0, pdus]
-- [blocks_throttle_0, '0', virtual_sink_0, '0']
+- [blocks_throttle_0, '0', virtual_sink_0_0, '0']
 - [blocks_vector_to_stream_1, '0', digital_header_payload_demux_0, '0']
 - [digital_header_payload_demux_0, '0', virtual_sink_1, '0']
 - [digital_header_payload_demux_0, '1', blocks_null_sink_0, '0']
 - [digital_header_payload_demux_0, '1', virtual_sink_4, '0']
 - [freq_xlating_fir_filter_xxx_0, '0', low_pass_filter_0, '0']
 - [freq_xlating_fir_filter_xxx_0, '0', qtgui_sink_x_0, '0']
-- [freq_xlating_fir_filter_xxx_0_0, '0', low_pass_filter_0, '0']
 - [lora2_css_demod_0, '0', blocks_null_sink_0_0, '0']
 - [lora2_css_demod_0, '1', blocks_complex_to_mag_0_0, '0']
 - [lora2_css_demod_0, '2', blocks_multiply_const_vxx_0, '0']
@@ -1727,17 +1619,16 @@ connections:
 - [lora2_lora_depad_0, '0', blocks_repack_bits_bb_0, '0']
 - [lora2_lora_extract_rem_0, '0', lora2_lora_soft_hamming_decode_0, '0']
 - [lora2_lora_header_decode_0, hdr, virtual_sink_2, '0']
-- [lora2_lora_preamble_detect_0_0, '0', blocks_tag_debug_0_0, '0']
 - [lora2_lora_preamble_detect_0_0, '0', lora2_css_demod_0, '0']
 - [lora2_lora_soft_deinterleaver_0, '0', lora2_lora_extract_rem_0, '0']
 - [lora2_lora_soft_deinterleaver_0_0, '0', lora2_lora_soft_merge_rem_0, '0']
-- [lora2_lora_soft_dewhiten_0, '0', lora2_lora_soft_hamming_decode_0_0, '0']
 - [lora2_lora_soft_hamming_decode_0, '0', lora2_lora_header_decode_0, '0']
-- [lora2_lora_soft_hamming_decode_0_0, '0', lora2_lora_depad_0, '0']
+- [lora2_lora_soft_hamming_decode_0_0, '0', lora2_lora_whiten_0, '0']
 - [lora2_lora_soft_low_rate_opt_rx_0, '0', lora2_lora_soft_deinterleaver_0, '0']
-- [lora2_lora_soft_merge_rem_0, '0', lora2_lora_soft_dewhiten_0, '0']
+- [lora2_lora_soft_merge_rem_0, '0', lora2_lora_soft_hamming_decode_0_0, '0']
+- [lora2_lora_whiten_0, '0', lora2_lora_depad_0, '0']
 - [low_pass_filter_0, '0', mmse_resampler_xx_0, '0']
-- [mmse_resampler_xx_0, '0', blocks_throttle_0, '0']
+- [mmse_resampler_xx_0, '0', blocks_file_sink_1, '0']
 - [osmosdr_source_0, '0', freq_xlating_fir_filter_xxx_0, '0']
 - [virtual_source_0, '0', lora2_lora_preamble_detect_0_0, '0']
 - [virtual_source_1, '0', lora2_lora_soft_low_rate_opt_rx_0, '0']

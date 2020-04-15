@@ -42,8 +42,7 @@ namespace gr {
       : gr::tagged_stream_block("lora_whiten",
           gr::io_signature::make(1, 1, sizeof(uint8_t)),
           gr::io_signature::make(1, 1, sizeof(uint8_t)), len_tag_key),
-      d_CR(CR), d_seed1((1 == CR)?0x4048C0C0C4C4CCCC:0x724AE1F0F7F4FEFF),
-      d_seed2((1 == CR)?0x2C426AC0C2C4C6CC:0X1D734BF0F1F7F4FF)
+      d_CR(CR), d_seed(0x8e0d1a3478f0f1f3), d_n_skip(8)
     {
     }
 
@@ -51,22 +50,6 @@ namespace gr {
     lora_whiten_impl::calculate_output_stream_length(const gr_vector_int &ninput_items)
     {
       return ninput_items[0];
-    }
-
-    //Implementation from MyriadRF
-    void
-    lora_whiten_impl::lfsr(const uint8_t *in, uint8_t *out, const size_t bufferSize, const int bitOfs)
-    {
-      uint64_t r[2] = {d_seed1, d_seed2};
-
-      int i,j;
-      for (i = 0 ; i < bitOfs ; i++){
-        r[i & 1] = (r[i & 1] >> 1) | (((r[i & 1] >> 32) ^ (r[i & 1] >> 24) ^ (r[i & 1] >> 16) ^ r[i & 1]) << 63);   // poly: 0x1D
-      }
-      for (j = 0 ; j < bufferSize ; j++,i++) {
-        out[j] = in[j]^(r[i & 1]&0x01);
-        r[i & 1] = (r[i & 1] >> 1) | (((r[i & 1] >> 32) ^ (r[i & 1] >> 24) ^ (r[i & 1] >> 16) ^ r[i & 1]) << 63);
-      }
     }
 
     int
@@ -77,9 +60,16 @@ namespace gr {
     {
       const uint8_t *in = (const uint8_t *) input_items[0];
       uint8_t *out = (uint8_t *) output_items[0];
+      uint64_t r = d_seed; //Shift register
 
-      //Whiten
-      lfsr(in, out, ninput_items[0], 0);
+      //For some reason, the 8 first bits of the packet should be ignored...
+      memcpy(out, &in[0], d_n_skip);
+
+      //Whitening
+      for (size_t i = d_n_skip ; i < (ninput_items[0]-d_n_skip) ; ++i) {
+        out[i] = in[i]^(r&0x01);
+        r = (r >> 1) | (((r >> 32) ^ (r >> 24) ^ (r >> 16) ^ r) << 63);
+      }
 
       // Tell runtime system how many output items we produced.
       return ninput_items[0];
