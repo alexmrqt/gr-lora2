@@ -42,7 +42,6 @@ GR_PYTHON_INSTALL(
     gray_encode.py
     lora_add_reversed_chirps.py
     lora_deinterleaver.py
-    lora_detect_sof.py
     lora_hamming_decode.py
     lora_hamming_encode.py
     lora_header_decode.py
@@ -82,7 +81,6 @@ GR_ADD_TEST(qa_gray_deindexer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/q
 GR_ADD_TEST(qa_gray_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_encode.py)
 GR_ADD_TEST(qa_lora_add_reversed_chirps ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_add_reversed_chirps.py)
 GR_ADD_TEST(qa_lora_deinterleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_deinterleaver.py)
-GR_ADD_TEST(qa_lora_detect_sof ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_detect_sof.py)
 GR_ADD_TEST(qa_lora_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_decode.py)
 GR_ADD_TEST(qa_lora_hamming_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_encode.py)
 GR_ADD_TEST(qa_lora_header_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_header_decode.py)

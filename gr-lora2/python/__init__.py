@@ -42,7 +42,7 @@ from .gray_deindexer import gray_deindexer
 from .gray_encode import gray_encode
 from .lora_add_reversed_chirps import lora_add_reversed_chirps
 from .lora_deinterleaver import lora_deinterleaver
-from .lora_detect_sof import lora_detect_sof
+
 from .lora_hamming_decode import lora_hamming_decode
 from .lora_hamming_encode import lora_hamming_encode
 from .lora_header_decode import lora_header_decode

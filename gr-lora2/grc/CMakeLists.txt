@@ -27,7 +27,6 @@ install(FILES
     lora2_gray_encode.block.yml
     lora2_lora_add_reversed_chirps.block.yml
     lora2_lora_deinterleaver.block.yml
-    lora2_lora_detect_sof.block.yml
     lora2_lora_hamming_decode.block.yml
     lora2_lora_hamming_encode.block.yml
     lora2_lora_header_decode.block.yml
