@@ -55,29 +55,6 @@ include(GrMiscUtils)
 GR_LIBRARY_FOO(gnuradio-lora2 RUNTIME_COMPONENT "lora2_runtime" DEVEL_COMPONENT "lora2_devel")
 
 ########################################################################
-# Build and register unit test
-########################################################################
-include(GrTest)
-
-include_directories(${CPPUNIT_INCLUDE_DIRS})
-list(APPEND test_lora2_sources
-	${CMAKE_CURRENT_SOURCE_DIR}/test_lora2.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora2.cc
-    )
-
-add_executable(test-lora2 ${test_lora2_sources})
-
-target_link_libraries(
-  test-lora2
-  ${GNURADIO_RUNTIME_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${CPPUNIT_LIBRARIES}
-  gnuradio-lora2
-)
-
-GR_ADD_TEST(test_lora2 test-lora2)
-
-########################################################################
 # Print summary
 ########################################################################
 message(STATUS "Using install prefix: ${CMAKE_INSTALL_PREFIX}")
