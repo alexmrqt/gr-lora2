@@ -28,7 +28,6 @@ list(APPEND lora2_sources
     lora_add_preamble_impl.cc
     lora_depad_impl.cc
     lora_merge_rem_impl.cc
-    lora_soft_dewhiten_impl.cc
     lora_whiten_impl.cc
     lora_soft_merge_rem_impl.cc
     )

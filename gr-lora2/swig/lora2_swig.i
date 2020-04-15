@@ -13,7 +13,6 @@
 #include "lora2/lora_add_preamble.h"
 #include "lora2/lora_depad.h"
 #include "lora2/lora_merge_rem.h"
-#include "lora2/lora_soft_dewhiten.h"
 #include "lora2/lora_whiten.h"
 #include "lora2/lora_soft_merge_rem.h"
 %}
@@ -28,8 +27,7 @@ GR_SWIG_BLOCK_MAGIC2(lora2, lora_add_preamble);
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_depad);
 %include "lora2/lora_merge_rem.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_merge_rem);
-%include "lora2/lora_soft_dewhiten.h"
-GR_SWIG_BLOCK_MAGIC2(lora2, lora_soft_dewhiten);
+
 %include "lora2/lora_whiten.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_whiten);
 %include "lora2/lora_soft_merge_rem.h"
