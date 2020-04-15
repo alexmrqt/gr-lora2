@@ -827,7 +827,6 @@ blocks:
 - name: lora2_lora_whiten_0
   id: lora2_lora_whiten
   parameters:
-    CR: CR
     affinity: ''
     alias: ''
     comment: ''
@@ -838,7 +837,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1200, 1444.0]
+    coordinate: [1200, 1452.0]
     rotation: 180
     state: enabled
 - name: low_pass_filter_0

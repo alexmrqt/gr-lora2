@@ -31,7 +31,6 @@ namespace gr {
     {
       private:
         const uint64_t d_seed;
-        const uint8_t d_CR;
         const uint8_t d_n_skip;
 
       protected:
@@ -39,7 +38,7 @@ namespace gr {
         void lfsr(const uint8_t *in, uint8_t *out, const size_t bufferSize);
 
       public:
-        lora_whiten_impl(uint8_t CR, const std::string &len_tag_key);
+        lora_whiten_impl(const std::string &len_tag_key);
 
         // Where all the action really happens
         int work(int noutput_items,

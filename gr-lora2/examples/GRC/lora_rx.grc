@@ -355,7 +355,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
-    repeat: 'True'
+    repeat: 'False'
     type: complex
     vlen: '1'
   states:
@@ -807,7 +807,6 @@ blocks:
 - name: lora2_lora_whiten_0
   id: lora2_lora_whiten
   parameters:
-    CR: CR
     affinity: ''
     alias: ''
     comment: ''
@@ -818,7 +817,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1224, 1364.0]
+    coordinate: [1224, 1372.0]
     rotation: 180
     state: enabled
 - name: low_pass_filter_0
