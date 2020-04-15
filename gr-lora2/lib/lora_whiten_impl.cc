@@ -29,20 +29,20 @@ namespace gr {
   namespace lora2 {
 
     lora_whiten::sptr
-    lora_whiten::make(const std::string &len_tag_key)
+    lora_whiten::make(uint8_t CR, const std::string &len_tag_key)
     {
       return gnuradio::get_initial_sptr
-        (new lora_whiten_impl(len_tag_key));
+        (new lora_whiten_impl(CR, len_tag_key));
     }
 
     /*
      * The private constructor
      */
-    lora_whiten_impl::lora_whiten_impl(const std::string &len_tag_key)
+    lora_whiten_impl::lora_whiten_impl(uint8_t CR, const std::string &len_tag_key)
       : gr::tagged_stream_block("lora_whiten",
           gr::io_signature::make(1, 1, sizeof(uint8_t)),
           gr::io_signature::make(1, 1, sizeof(uint8_t)), len_tag_key),
-      d_seed(0x8e0d1a3478f0f1f3), d_n_skip(8)
+      d_CR(CR), d_seed(0x8e0d1a3478f0f1f3), d_n_skip(8)
     {
     }
 

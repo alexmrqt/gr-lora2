@@ -100,6 +100,7 @@ GR_ADD_TEST(qa_css_mod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_m
 GR_ADD_TEST(qa_lora_add_preamble ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_add_preamble.py)
 GR_ADD_TEST(qa_lora_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_depad.py)
 GR_ADD_TEST(qa_lora_merge_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_merge_rem.py)
+GR_ADD_TEST(qa_lora_whiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_whiten.py)
 GR_ADD_TEST(qa_lora_align_sof ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_align_sof.py)
 GR_ADD_TEST(qa_lora_soft_low_rate_opt_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_low_rate_opt_rx.py)
 GR_ADD_TEST(qa_lora_extract_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_extract_rem.py)
@@ -107,4 +108,3 @@ GR_ADD_TEST(qa_lora_soft_merge_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_D
 GR_ADD_TEST(qa_css_fine_delay_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_delay_detector.py)
 GR_ADD_TEST(qa_css_fine_delay_track ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_delay_track.py)
 GR_ADD_TEST(qa_lora_crc_check ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_crc_check.py)
-GR_ADD_TEST(qa_lora_whiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_whiten.py)

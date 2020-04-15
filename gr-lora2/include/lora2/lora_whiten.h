@@ -46,7 +46,7 @@ namespace gr {
        * class. lora2::lora_whiten::make is the public interface for
        * creating new instances.
        */
-      static sptr make(const std::string &len_tag_key);
+      static sptr make(uint8_t CR, const std::string &len_tag_key);
     };
 
   } // namespace lora2

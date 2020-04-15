@@ -5,6 +5,9 @@ label: LoRa Whiten
 category: '[lora2]'
 
 parameters:
+-   id: CR
+    label: CR
+    dtype: int
 -   id: len_tag_key
     label: Length Tag Key
     dtype: string
@@ -19,6 +22,6 @@ outputs:
 
 templates:
     imports: import lora2
-    make: lora2.lora_whiten(${len_tag_key})
+    make: lora2.lora_whiten(${CR}, ${len_tag_key})
 
 file_format: 1

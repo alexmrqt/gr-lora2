@@ -28,6 +28,7 @@ install(FILES
     lora_add_preamble.h
     lora_depad.h
     lora_merge_rem.h
+    lora_whiten.h
     lora_soft_merge_rem.h
-    lora_whiten.h DESTINATION include/lora2
+    DESTINATION include/lora2
 )
