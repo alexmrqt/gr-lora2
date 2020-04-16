@@ -36,7 +36,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '1'
+    value: '4'
   states:
     bus_sink: false
     bus_source: false
@@ -619,7 +619,7 @@ blocks:
     bus_structure: null
     coordinate: [624, 1456.0]
     rotation: 180
-    state: bypassed
+    state: enabled
 - name: lora2_gray_deindexer_0
   id: lora2_gray_deindexer
   parameters:
@@ -650,24 +650,7 @@ blocks:
     bus_structure: null
     coordinate: [216, 1456.0]
     rotation: 180
-    state: bypassed
-- name: lora2_lora_depad_0
-  id: lora2_lora_depad
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    len_tag_key: packet_len_bits
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    n_pad: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [992, 1444.0]
-    rotation: 180
-    state: bypassed
+    state: enabled
 - name: lora2_lora_extract_rem_0
   id: lora2_lora_extract_rem
   parameters:
@@ -701,6 +684,23 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1096, 1060.0]
+    rotation: 0
+    state: enabled
+- name: lora2_lora_merge_rem_0
+  id: lora2_lora_merge_rem
+  parameters:
+    SF: SF
+    affinity: ''
+    alias: ''
+    comment: ''
+    len_tag_key: packet_len_bits
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1192, 1252.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_preamble_detect_0_0
@@ -757,6 +757,23 @@ blocks:
     coordinate: [400, 1244.0]
     rotation: 0
     state: enabled
+- name: lora2_lora_soft_depad_0
+  id: lora2_lora_soft_depad
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    len_tag_key: packet_len_bits
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    n_pad: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [720, 1252.0]
+    rotation: 0
+    state: enabled
 - name: lora2_lora_soft_hamming_decode_0
   id: lora2_lora_soft_hamming_decode
   parameters:
@@ -788,7 +805,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1176, 1252.0]
+    coordinate: [960, 1252.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_soft_low_rate_opt_rx_0
@@ -807,23 +824,6 @@ blocks:
     coordinate: [248, 1068.0]
     rotation: 0
     state: enabled
-- name: lora2_lora_soft_merge_rem_0
-  id: lora2_lora_soft_merge_rem
-  parameters:
-    SF: '9'
-    affinity: ''
-    alias: ''
-    comment: ''
-    len_tag_key: packet_len_bits
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [696, 1252.0]
-    rotation: 0
-    state: bypassed
 - name: lora2_lora_whiten_0
   id: lora2_lora_whiten
   parameters:
@@ -1615,17 +1615,17 @@ connections:
 - [lora2_gray_deindexer_0, '0', lora2_css_llr_converter_0, '0']
 - [lora2_lora_crc_check_0, pdus, blocks_message_debug_0, print_pdu]
 - [lora2_lora_crc_check_0, pdus, blocks_socket_pdu_0, pdus]
-- [lora2_lora_depad_0, '0', blocks_repack_bits_bb_0, '0']
 - [lora2_lora_extract_rem_0, '0', lora2_lora_soft_hamming_decode_0, '0']
 - [lora2_lora_header_decode_0, hdr, virtual_sink_2, '0']
+- [lora2_lora_merge_rem_0, '0', lora2_lora_whiten_0, '0']
 - [lora2_lora_preamble_detect_0_0, '0', lora2_css_demod_0, '0']
 - [lora2_lora_soft_deinterleaver_0, '0', lora2_lora_extract_rem_0, '0']
-- [lora2_lora_soft_deinterleaver_0_0, '0', lora2_lora_soft_merge_rem_0, '0']
+- [lora2_lora_soft_deinterleaver_0_0, '0', lora2_lora_soft_depad_0, '0']
+- [lora2_lora_soft_depad_0, '0', lora2_lora_soft_hamming_decode_0_0, '0']
 - [lora2_lora_soft_hamming_decode_0, '0', lora2_lora_header_decode_0, '0']
-- [lora2_lora_soft_hamming_decode_0_0, '0', lora2_lora_whiten_0, '0']
+- [lora2_lora_soft_hamming_decode_0_0, '0', lora2_lora_merge_rem_0, '0']
 - [lora2_lora_soft_low_rate_opt_rx_0, '0', lora2_lora_soft_deinterleaver_0, '0']
-- [lora2_lora_soft_merge_rem_0, '0', lora2_lora_soft_hamming_decode_0_0, '0']
-- [lora2_lora_whiten_0, '0', lora2_lora_depad_0, '0']
+- [lora2_lora_whiten_0, '0', blocks_repack_bits_bb_0, '0']
 - [low_pass_filter_0, '0', mmse_resampler_xx_0, '0']
 - [mmse_resampler_xx_0, '0', blocks_file_sink_1, '0']
 - [osmosdr_source_0, '0', freq_xlating_fir_filter_xxx_0, '0']
