@@ -42,7 +42,7 @@ namespace gr {
       : gr::tagged_stream_block("lora_whiten",
           gr::io_signature::make(1, 1, sizeof(uint8_t)),
           gr::io_signature::make(1, 1, sizeof(uint8_t)), len_tag_key),
-      d_seed(0x8e0d1a3478f0f1f3), d_n_skip(8)
+      d_seed(0x1a3478f0f1f3f7ff)
     {
     }
 
@@ -62,11 +62,8 @@ namespace gr {
       uint8_t *out = (uint8_t *) output_items[0];
       uint64_t r = d_seed; //Shift register
 
-      //For some reason, the 8 first bits of the packet should be ignored...
-      memcpy(out, &in[0], d_n_skip);
-
       //Whitening
-      for (size_t i = d_n_skip ; i < (ninput_items[0]-d_n_skip) ; ++i) {
+      for (size_t i = 0 ; i < ninput_items[0] ; ++i) {
         out[i] = in[i]^(r&0x01);
         r = (r >> 1) | (((r >> 32) ^ (r >> 24) ^ (r >> 16) ^ r) << 63);
       }

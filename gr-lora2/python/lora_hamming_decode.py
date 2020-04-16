@@ -122,7 +122,7 @@ class lora_hamming_decode(gr.basic_block):
         for tag in tags:
             #Handle len_tag_key, if any
             if (self.len_tag_key is not None ) and (pmt.to_python(tag.key) == self.len_tag_key):
-                new_len = pmt.to_python(tag.value) * float(self.CR)/(self.CR+4)
+                new_len = pmt.to_python(tag.value) * 4.0/self.cw_len
                 tag.value = pmt.to_pmt(int(new_len))
 
             self.add_item_tag(0, out_tag_offset, tag.key, tag.value)

@@ -31,7 +31,6 @@ namespace gr {
     {
       private:
         const uint64_t d_seed;
-        const uint8_t d_n_skip;
 
       protected:
         int calculate_output_stream_length(const gr_vector_int &ninput_items);
