@@ -49,7 +49,7 @@ def mtx_det_algo(A):
         
     return out
 
-def reduced_row_echelon_form(mtx):        
+def reduced_row_echelon_form(mtx):     
     for i in range(0,mtx.shape[0]):
         #Find lines with a 1 in column i
         non0_indices = mtx[i:,i].nonzero()[0] + i
