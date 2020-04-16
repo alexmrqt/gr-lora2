@@ -29,6 +29,5 @@ install(FILES
     lora_depad.h
     lora_merge_rem.h
     lora_whiten.h
-    lora_soft_merge_rem.h
     DESTINATION include/lora2
 )
