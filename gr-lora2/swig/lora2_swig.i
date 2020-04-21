@@ -40,3 +40,4 @@ GR_SWIG_BLOCK_MAGIC2(lora2, lora_soft_depad);
 lora_header_format_sptr.__repr__ = lambda self: "<lora_header_format>"
 lora_header_format = lora_header_format.make;
 %}
+

@@ -44,7 +44,6 @@ GR_PYTHON_INSTALL(
     lora_deinterleaver.py
     lora_hamming_decode.py
     lora_hamming_encode.py
-    lora_header_decode.py
     lora_implicit_get_payload.py
     lora_interleaver.py
     lora_low_rate_opt_rx.py
@@ -59,7 +58,6 @@ GR_PYTHON_INSTALL(
     css_mod_algo.py
     lora_align_sof.py
     lora_soft_low_rate_opt_rx.py
-    lora_extract_rem.py
     css_fine_delay_detector.py
     css_fine_delay_track.py
     lora_crc_check.py DESTINATION ${GR_PYTHON_DIR}/lora2
@@ -83,7 +81,6 @@ GR_ADD_TEST(qa_lora_add_reversed_chirps ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOU
 GR_ADD_TEST(qa_lora_deinterleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_deinterleaver.py)
 GR_ADD_TEST(qa_lora_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_decode.py)
 GR_ADD_TEST(qa_lora_hamming_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_encode.py)
-GR_ADD_TEST(qa_lora_header_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_header_decode.py)
 GR_ADD_TEST(qa_lora_implicit_get_payload ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_implicit_get_payload.py)
 GR_ADD_TEST(qa_lora_interleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_interleaver.py)
 GR_ADD_TEST(qa_lora_low_rate_opt_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_rx.py)
@@ -103,7 +100,6 @@ GR_ADD_TEST(qa_lora_merge_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/q
 GR_ADD_TEST(qa_lora_whiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_whiten.py)
 GR_ADD_TEST(qa_lora_align_sof ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_align_sof.py)
 GR_ADD_TEST(qa_lora_soft_low_rate_opt_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_low_rate_opt_rx.py)
-GR_ADD_TEST(qa_lora_extract_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_extract_rem.py)
 GR_ADD_TEST(qa_css_fine_delay_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_delay_detector.py)
 GR_ADD_TEST(qa_css_fine_delay_track ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_delay_track.py)
 GR_ADD_TEST(qa_lora_crc_check ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_crc_check.py)

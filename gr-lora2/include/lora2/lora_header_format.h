@@ -23,7 +23,6 @@
 
 #include <lora2/api.h>
 
-#include <iostream>
 #include <cmath>
 #include <gnuradio/digital/header_buffer.h>
 #include <gnuradio/digital/header_format_base.h>
@@ -58,11 +57,13 @@ namespace gr {
       private:
         const unsigned char d_SF;
         const unsigned char d_hdr_len = 20;
+        const unsigned char d_hdr_tot_len;
 
         uint8_t d_payload_len = 0;
         uint8_t d_CR = 0;
         uint8_t d_has_crc = 0;
         uint8_t d_crc = 0;
+        unsigned char d_rem[20] = {0};
 
       protected:
         //! Verify that the header is valid

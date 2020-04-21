@@ -29,7 +29,6 @@ install(FILES
     lora2_lora_deinterleaver.block.yml
     lora2_lora_hamming_decode.block.yml
     lora2_lora_hamming_encode.block.yml
-    lora2_lora_header_decode.block.yml
     lora2_lora_implicit_get_payload.block.yml
     lora2_lora_interleaver.block.yml
     lora2_lora_low_rate_opt_rx.block.yml
@@ -49,10 +48,10 @@ install(FILES
     lora2_lora_whiten.block.yml
     lora2_lora_align_sof.block.yml
     lora2_lora_soft_low_rate_opt_rx.block.yml
-    lora2_lora_extract_rem.block.yml
     lora2_css_fine_delay_detector.block.yml
     lora2_css_fine_delay_track.block.yml
     lora2_lora_crc_check.block.yml
     lora2_lora_soft_depad.block.yml
-    lora2_lora_header_format.block.yml DESTINATION share/gnuradio/grc/blocks
+    lora2_lora_header_format.block.yml
+    DESTINATION share/gnuradio/grc/blocks
 )

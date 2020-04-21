@@ -36,7 +36,7 @@ namespace gr {
     }
 
     lora_header_format::lora_header_format(unsigned char SF) :
-      header_format_base(), d_SF(SF)
+      header_format_base(), d_SF(SF), d_hdr_tot_len((SF-2)*4)
     {
     }
 
@@ -85,15 +85,21 @@ namespace gr {
       int bits_multiple = 0;  // Due to interleaving working on blocks of (CR+4)*SF, 
                               // n_bits_total can only by a multiple of bits_multiple.
       int n_bits_pad = 0; // Number of padding bits, to accomodate for the interleaver.
-
-      while ((d_hdr_reg.length() < d_hdr_len) && (nbits_processed < nbits_in)) {
-        d_hdr_reg.insert_bit(input[nbits_processed++]);
-      }
       
       //Abort if too few bits received
-      if (d_hdr_reg.length() < d_hdr_len) {
-        return false;
+      if (nbits_in < d_hdr_tot_len) {
+        nbits_processed = 0;
+        return true;
       }
+
+      //Copy data into buffer
+      for (int i = 0 ; i < d_hdr_len ; ++i) {
+        d_hdr_reg.insert_bit(input[i]);
+      }
+      for (int i=d_hdr_len ; i < (d_hdr_tot_len-d_hdr_len) ; ++i) {
+        d_rem[i] = input[i];
+      }
+      nbits_processed = d_hdr_tot_len;
 
       //Extract fields
       d_payload_len = d_hdr_reg.extract_field8(0, 8);
@@ -142,14 +148,16 @@ namespace gr {
         d_info = pmt::dict_add(d_info, pmt::intern("has_crc"),
                 (d_has_crc)?pmt::PMT_T:pmt::PMT_F);
 
+        if ((d_hdr_tot_len-d_hdr_len) > 0) {
+            d_info = pmt::dict_add(d_info, pmt::intern("rem_bits"),
+                    pmt::init_u8vector(d_hdr_tot_len-d_hdr_len, d_rem));
+        }
+
         info.push_back(d_info);
 
         d_hdr_reg.clear();
 
         return true;
-        //if 'rem_bits' in parsed_header:
-        //    out_msg = pmt.dict_add(out_msg, pmt.intern('rem_bits'),
-        //            pmt.init_u8vector(len(parsed_header['rem_bits']), parsed_header['rem_bits']))
       }
 
       d_hdr_reg.clear();

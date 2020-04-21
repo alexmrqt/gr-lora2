@@ -219,7 +219,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1000, 884.0]
+    coordinate: [1024, 988.0]
     rotation: 0
     state: enabled
 - name: interp
@@ -548,22 +548,6 @@ blocks:
     coordinate: [256, 796.0]
     rotation: 0
     state: enabled
-- name: digital_packet_headerparser_b_0
-  id: digital_packet_headerparser_b
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    header_formatter: hdr_format
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1104, 1164.0]
-    rotation: 0
-    state: true
 - name: digital_protocol_parser_b_0
   id: digital_protocol_parser_b
   parameters:
@@ -577,9 +561,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1104, 1116.0]
+    coordinate: [1024, 1052.0]
     rotation: 0
-    state: disabled
+    state: true
 - name: freq_xlating_fir_filter_xxx_0
   id: freq_xlating_fir_filter_xxx
   parameters:
@@ -745,24 +729,6 @@ blocks:
     coordinate: [608, 1236.0]
     rotation: 0
     state: enabled
-- name: lora2_lora_extract_rem_0
-  id: lora2_lora_extract_rem
-  parameters:
-    CR: '4'
-    SF: SF
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    sft: 'False'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [720, 1036.0]
-    rotation: 0
-    state: enabled
 - name: lora2_lora_hamming_decode_0
   id: lora2_lora_hamming_decode
   parameters:
@@ -777,7 +743,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [888, 1044.0]
+    coordinate: [744, 1044.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_hamming_decode_0_0
@@ -795,23 +761,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [880, 1236.0]
-    rotation: 0
-    state: enabled
-- name: lora2_lora_header_decode_0
-  id: lora2_lora_header_decode
-  parameters:
-    SF: SF
-    affinity: ''
-    alias: ''
-    check_crc: 'True'
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1096, 1044.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_low_rate_opt_rx_0
@@ -1838,7 +1787,7 @@ connections:
 - [blocks_vector_to_stream_0, '0', blocks_complex_to_mag_0, '0']
 - [digital_header_payload_demux_0, '0', virtual_sink_1, '0']
 - [digital_header_payload_demux_0, '1', virtual_sink_4, '0']
-- [digital_packet_headerparser_b_0, header_data, blocks_message_debug_0, print]
+- [digital_protocol_parser_b_0, info, virtual_sink_2, '0']
 - [freq_xlating_fir_filter_xxx_0, '0', low_pass_filter_0, '0']
 - [freq_xlating_fir_filter_xxx_0, '0', qtgui_sink_x_0, '0']
 - [lora2_css_demod_0, '0', virtual_sink_3, '0']
@@ -1849,16 +1798,11 @@ connections:
 - [lora2_gray_encode_0, '0', lora2_lora_deinterleaver_0, '0']
 - [lora2_gray_encode_0_0, '0', lora2_lora_deinterleaver_0_0, '0']
 - [lora2_lora_crc_check_0, pdus, blocks_socket_pdu_0, pdus]
-- [lora2_lora_deinterleaver_0, '0', lora2_lora_extract_rem_0, '0']
+- [lora2_lora_deinterleaver_0, '0', lora2_lora_hamming_decode_0, '0']
 - [lora2_lora_deinterleaver_0_0, '0', lora2_lora_depad_0, '0']
 - [lora2_lora_depad_0, '0', lora2_lora_hamming_decode_0_0, '0']
-- [lora2_lora_extract_rem_0, '0', lora2_lora_hamming_decode_0, '0']
-- [lora2_lora_hamming_decode_0, '0', digital_packet_headerparser_b_0, '0']
 - [lora2_lora_hamming_decode_0, '0', digital_protocol_parser_b_0, '0']
-- [lora2_lora_hamming_decode_0, '0', lora2_lora_header_decode_0, '0']
 - [lora2_lora_hamming_decode_0_0, '0', lora2_lora_merge_rem_0, '0']
-- [lora2_lora_header_decode_0, hdr, blocks_message_debug_0, print]
-- [lora2_lora_header_decode_0, hdr, virtual_sink_2, '0']
 - [lora2_lora_low_rate_opt_rx_0, '0', lora2_gray_encode_0, '0']
 - [lora2_lora_merge_rem_0, '0', lora2_lora_whiten_0, '0']
 - [lora2_lora_preamble_detect_0_0, '0', analog_quadrature_demod_cf_0, '0']
