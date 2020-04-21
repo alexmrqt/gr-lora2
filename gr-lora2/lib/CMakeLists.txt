@@ -29,7 +29,8 @@ list(APPEND lora2_sources
     lora_depad_impl.cc
     lora_merge_rem_impl.cc
     lora_whiten_impl.cc
-    lora_soft_depad_impl.cc )
+    lora_soft_depad_impl.cc
+    lora_header_format.cc )
 
 set(lora2_sources "${lora2_sources}" PARENT_SCOPE)
 if(NOT lora2_sources)
@@ -38,7 +39,7 @@ if(NOT lora2_sources)
 endif(NOT lora2_sources)
 
 add_library(gnuradio-lora2 SHARED ${lora2_sources})
-target_link_libraries(gnuradio-lora2 gnuradio::gnuradio-runtime)
+target_link_libraries(gnuradio-lora2 gnuradio::gnuradio-runtime gnuradio::gnuradio-digital)
 target_include_directories(gnuradio-lora2
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
     PUBLIC $<INSTALL_INTERFACE:include>

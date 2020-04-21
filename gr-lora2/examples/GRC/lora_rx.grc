@@ -209,6 +209,19 @@ blocks:
     coordinate: [880, 12.0]
     rotation: 0
     state: enabled
+- name: hdr_format
+  id: lora2_lora_header_format
+  parameters:
+    SF: SF
+    alias: ''
+    comment: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 884.0]
+    rotation: 0
+    state: enabled
 - name: interp
   id: variable
   parameters:
@@ -533,6 +546,22 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [256, 796.0]
+    rotation: 0
+    state: enabled
+- name: digital_protocol_parser_b_0
+  id: digital_protocol_parser_b
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    format: hdr_format
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1104, 1116.0]
     rotation: 0
     state: enabled
 - name: freq_xlating_fir_filter_xxx_0
@@ -1793,6 +1822,7 @@ connections:
 - [blocks_vector_to_stream_0, '0', blocks_complex_to_mag_0, '0']
 - [digital_header_payload_demux_0, '0', virtual_sink_1, '0']
 - [digital_header_payload_demux_0, '1', virtual_sink_4, '0']
+- [digital_protocol_parser_b_0, info, blocks_message_debug_0, print]
 - [freq_xlating_fir_filter_xxx_0, '0', low_pass_filter_0, '0']
 - [freq_xlating_fir_filter_xxx_0, '0', qtgui_sink_x_0, '0']
 - [lora2_css_demod_0, '0', virtual_sink_3, '0']
@@ -1802,14 +1832,15 @@ connections:
 - [lora2_flip_half_bytes_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [lora2_gray_encode_0, '0', lora2_lora_deinterleaver_0, '0']
 - [lora2_gray_encode_0_0, '0', lora2_lora_deinterleaver_0_0, '0']
-- [lora2_lora_crc_check_0, pdus, blocks_message_debug_0, print_pdu]
 - [lora2_lora_crc_check_0, pdus, blocks_socket_pdu_0, pdus]
 - [lora2_lora_deinterleaver_0, '0', lora2_lora_extract_rem_0, '0']
 - [lora2_lora_deinterleaver_0_0, '0', lora2_lora_depad_0, '0']
 - [lora2_lora_depad_0, '0', lora2_lora_hamming_decode_0_0, '0']
 - [lora2_lora_extract_rem_0, '0', lora2_lora_hamming_decode_0, '0']
+- [lora2_lora_hamming_decode_0, '0', digital_protocol_parser_b_0, '0']
 - [lora2_lora_hamming_decode_0, '0', lora2_lora_header_decode_0, '0']
 - [lora2_lora_hamming_decode_0_0, '0', lora2_lora_merge_rem_0, '0']
+- [lora2_lora_header_decode_0, hdr, blocks_message_debug_0, print]
 - [lora2_lora_header_decode_0, hdr, virtual_sink_2, '0']
 - [lora2_lora_low_rate_opt_rx_0, '0', lora2_gray_encode_0, '0']
 - [lora2_lora_merge_rem_0, '0', lora2_lora_whiten_0, '0']

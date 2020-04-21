@@ -1,0 +1,18 @@
+id: lora2_lora_header_format
+label: LoRa Header Format Obj.
+category: '[lora2]'
+flags: [ show_id ]
+
+parameters:
+- id: SF
+  label: SF
+  dtype: int
+value: ${ lora2.lora_header_format(SF) }
+
+templates:
+  imports: import lora2
+  var_make: self.${id} = ${id} = lora2.lora_header_format(${SF})
+
+#  'file_format' specifies the version of the GRC yml format used in the file
+#  and should usually not be changed.
+file_format: 1
