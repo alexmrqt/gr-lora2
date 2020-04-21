@@ -43,14 +43,19 @@ namespace gr {
     bool
     lora_header_format::header_ok()
     {
-      const uint8_t *d =  d_hdr_reg.header();
+      //const uint8_t *d =  d_hdr_reg.header();
+      uint16_t d =  d_hdr_reg.extract_field16(0, 12);
       uint8_t crc = 0;
 
-      crc |= (d[0]^d[1]^d[2]^d[3])<<4;
-      crc |= (d[0]^d[4]^d[5]^d[6]^d[11])<<3;
-      crc |= (d[1]^d[4]^d[7]^d[8]^d[10])<<2;
-      crc |= (d[2]^d[5]^d[7]^d[9]^d[10]^d[11])<<1;
-      crc |= (d[3]^d[6]^d[8]^d[9]^d[10]^d[11]);
+      if (d_hdr_reg.length() < d_hdr_len) {
+        return false;
+      }
+
+      crc |= (((d>>11)&0x01) ^ ((d>>10)&0x01) ^ ((d>>9)&0x01) ^ ((d>>8)&0x01))<<4;
+      crc |= (((d>>11)&0x01) ^ ((d>>7)&0x01) ^ ((d>>6)&0x01) ^ ((d>>5)&0x01) ^ (d&0x01))<<3;
+      crc |= (((d>>10)&0x01) ^ ((d>>7)&0x01) ^ ((d>>4)&0x01) ^ ((d>>3)&0x01) ^ ((d>>1)&0x01))<<2;
+      crc |= (((d>>9)&0x01) ^ ((d>>6)&0x01) ^ ((d>>4)&0x01) ^ ((d>>2)&0x01) ^ ((d>>1)&0x01) ^ (d&0x01))<<1;
+      crc |= (((d>>8)&0x01) ^ ((d>>5)&0x01) ^ ((d>>3)&0x01) ^ ((d>>2)&0x01) ^ ((d>>1)&0x01) ^ (d&0x01));
 
       return (crc == d_crc);
     }
@@ -81,15 +86,13 @@ namespace gr {
                               // n_bits_total can only by a multiple of bits_multiple.
       int n_bits_pad = 0; // Number of padding bits, to accomodate for the interleaver.
 
-      //Abort if too few bits received
-      if (nbits_in < d_hdr_len) {
-        nbits_processed = 0;
-        return false;
+      while ((d_hdr_reg.length() < d_hdr_len) && (nbits_processed < nbits_in)) {
+        d_hdr_reg.insert_bit(input[nbits_processed++]);
       }
-
-      //Copy incoming bits to the header buffer
-      for (unsigned char i=0 ; i < d_hdr_len ; ++i) {
-        d_hdr_reg.insert_bit(input[i]);
+      
+      //Abort if too few bits received
+      if (d_hdr_reg.length() < d_hdr_len) {
+        return false;
       }
 
       //Extract fields
@@ -99,12 +102,13 @@ namespace gr {
       d_crc = d_hdr_reg.extract_field8(12, 8);
 
       if ((!d_has_crc) || (d_has_crc && header_ok())) {
-        //Account for CRC presence in payload length
-        d_payload_len += 2*d_has_crc;
+        
 
         //Compute auxiliary variables
-        n_bits = d_payload_len * 8; //Before hamming coding
-        n_bits -= (d_SF-2)*4 - d_hdr_len; //Exclude payload bits included at the end of the header
+        n_bits = (d_payload_len + 2*d_has_crc) * 8; // Integrating CRC length,
+                                                    // and before hamming coding
+        n_bits -= (d_SF-2)*4 - d_hdr_len; // Excluding payload bits included at
+                                          // the end of the header
         n_bits /= 4;
         n_bits *= (4+d_CR); //After hamming coding
 
@@ -126,9 +130,6 @@ namespace gr {
         d_info = pmt::dict_add(d_info, pmt::intern("has_crc"),
                 pmt::from_long(d_has_crc));
 
-        d_info = pmt::dict_add(d_info, pmt::intern("header_crc"),
-                pmt::from_long(d_crc));
-
         d_info = pmt::dict_add(d_info, pmt::intern("packet_len_bits"),
                 pmt::from_long(n_bits_total));
 
@@ -143,11 +144,15 @@ namespace gr {
 
         info.push_back(d_info);
 
+        d_hdr_reg.clear();
+
         return true;
         //if 'rem_bits' in parsed_header:
         //    out_msg = pmt.dict_add(out_msg, pmt.intern('rem_bits'),
         //            pmt.init_u8vector(len(parsed_header['rem_bits']), parsed_header['rem_bits']))
       }
+
+      d_hdr_reg.clear();
 
       return false;
     }

@@ -23,6 +23,7 @@
 
 #include <lora2/api.h>
 
+#include <iostream>
 #include <cmath>
 #include <gnuradio/digital/header_buffer.h>
 #include <gnuradio/digital/header_format_base.h>
