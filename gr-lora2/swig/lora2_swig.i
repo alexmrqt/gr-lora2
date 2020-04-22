@@ -16,6 +16,7 @@
 #include "lora2/lora_whiten.h"
 #include "lora2/lora_soft_depad.h"
 #include "lora2/lora_header_format.h"
+#include "lora2/lora_pad.h"
 %}
 
 %include "lora2/css_llr_converter.h"
@@ -41,3 +42,5 @@ lora_header_format_sptr.__repr__ = lambda self: "<lora_header_format>"
 lora_header_format = lora_header_format.make;
 %}
 
+%include "lora2/lora_pad.h"
+GR_SWIG_BLOCK_MAGIC2(lora2, lora_pad);

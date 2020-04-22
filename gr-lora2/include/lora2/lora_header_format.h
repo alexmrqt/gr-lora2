@@ -24,9 +24,10 @@
 #include <lora2/api.h>
 
 #include <cmath>
+#include <pmt/pmt.h>
+#include <volk/volk.h>
 #include <gnuradio/digital/header_buffer.h>
 #include <gnuradio/digital/header_format_base.h>
-#include <pmt/pmt.h>
 #include <boost/enable_shared_from_this.hpp>
 
 namespace gr {
@@ -66,6 +67,9 @@ namespace gr {
         unsigned char d_rem[20] = {0};
 
       protected:
+        //! Compute a LoRa Header CRC from header data
+        uint8_t compute_crc(uint16_t data);
+
         //! Verify that the header is valid
         virtual bool header_ok();
 

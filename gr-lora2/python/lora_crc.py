@@ -66,7 +66,7 @@ class lora_crc(gr.sync_block):
         crc ^= lfsr_state
         lfsr_state = self.lfsr(lfsr_state)
         crc ^= (lfsr_state<<8)
-        
+
         return crc
 
     def handle_check(self, msg):
@@ -91,10 +91,13 @@ class lora_crc(gr.sync_block):
         hdr = pmt.car(msg)
         payload = pmt.to_python(pmt.cdr(msg))
 
-        crc = self.lora_payload_crc(payload)
-        payload = numpy.concatenate((payload, numpy.array([crc&0xFF, crc>>8], dtype=numpy.uint8)))
+        if pmt.equal(pmt.dict_ref(hdr, pmt.intern('has_crc'), pmt.PMT_F), pmt.PMT_T):
+            crc = self.lora_payload_crc(payload)
+            payload = numpy.concatenate((payload, numpy.array([crc&0xFF, crc>>8], dtype=numpy.uint8)))
 
-        self.message_port_pub(pmt.intern('pdus'), pmt.cons(hdr, pmt.to_pmt(payload)))
+            self.message_port_pub(pmt.intern('pdus'), pmt.cons(hdr, pmt.to_pmt(payload)))
+        else:
+            self.message_port_pub(pmt.intern('pdus'), msg)
 
     def work(self, input_items, output_items):
         return len(output_items[0])

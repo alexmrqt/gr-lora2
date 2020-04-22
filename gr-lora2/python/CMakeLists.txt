@@ -104,3 +104,4 @@ GR_ADD_TEST(qa_css_fine_delay_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOUR
 GR_ADD_TEST(qa_css_fine_delay_track ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_delay_track.py)
 GR_ADD_TEST(qa_lora_crc ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_crc.py)
 GR_ADD_TEST(qa_lora_soft_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_depad.py)
+GR_ADD_TEST(qa_lora_pad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_pad.py)

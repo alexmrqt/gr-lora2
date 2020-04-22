@@ -40,16 +40,10 @@ namespace gr {
     {
     }
 
-    bool
-    lora_header_format::header_ok()
+    uint8_t
+    lora_header_format::compute_crc(uint16_t d)
     {
-      //const uint8_t *d =  d_hdr_reg.header();
-      uint16_t d =  d_hdr_reg.extract_field16(0, 12);
       uint8_t crc = 0;
-
-      if (d_hdr_reg.length() < d_hdr_len) {
-        return false;
-      }
 
       crc |= (((d>>11)&0x01) ^ ((d>>10)&0x01) ^ ((d>>9)&0x01) ^ ((d>>8)&0x01))<<4;
       crc |= (((d>>11)&0x01) ^ ((d>>7)&0x01) ^ ((d>>6)&0x01) ^ ((d>>5)&0x01) ^ (d&0x01))<<3;
@@ -57,25 +51,26 @@ namespace gr {
       crc |= (((d>>9)&0x01) ^ ((d>>6)&0x01) ^ ((d>>4)&0x01) ^ ((d>>2)&0x01) ^ ((d>>1)&0x01) ^ (d&0x01))<<1;
       crc |= (((d>>8)&0x01) ^ ((d>>5)&0x01) ^ ((d>>3)&0x01) ^ ((d>>2)&0x01) ^ ((d>>1)&0x01) ^ (d&0x01));
 
+      return crc;
+    }
+
+    bool
+    lora_header_format::header_ok()
+    {
+      uint16_t data =  d_hdr_reg.extract_field16(0, 12);
+      uint8_t crc = 0;
+
+      if (d_hdr_reg.length() < d_hdr_len) {
+        return false;
+      }
+
+      crc = compute_crc(data);
+
       return (crc == d_crc);
     }
 
     int
     lora_header_format::header_payload()
-    {
-      return 0;
-    }
-
-    bool
-    lora_header_format::format(int nbytes_in, const unsigned char* input,
-        pmt::pmt_t& output, pmt::pmt_t& info)
-    {
-      return false;
-    }
-
-    bool
-    lora_header_format::parse(int nbits_in, const unsigned char* input,
-        std::vector<pmt::pmt_t>& info, int& nbits_processed)
     {
       int n_bits = 0; // Number of coded bits in the payload, excluding those
                       // appended at the end of the header.
@@ -86,6 +81,100 @@ namespace gr {
                               // n_bits_total can only by a multiple of bits_multiple.
       int n_bits_pad = 0; // Number of padding bits, to accomodate for the interleaver.
       
+      //Compute auxiliary variables
+      n_bits = (d_payload_len + 2*d_has_crc) * 8; // Integrating CRC length,
+                                                  // and before hamming coding
+      n_bits -= (d_SF-2)*4 - d_hdr_len; // Excluding payload bits included at
+                                        // the end of the header
+      n_bits /= 4;
+      n_bits *= (4+d_CR); //After hamming coding
+
+      bits_multiple = (d_CR + 4) * d_SF;
+
+      n_bits_total = (int)ceil(n_bits/(float)bits_multiple) * bits_multiple;
+
+      n_bits_pad = n_bits_total - n_bits;
+
+      //Make PMT message
+      d_info = pmt::make_dict();
+
+      d_info = pmt::dict_add(d_info, pmt::intern("payload_len"),
+              pmt::from_long(d_payload_len));
+
+      d_info = pmt::dict_add(d_info, pmt::intern("CR"),
+              pmt::from_long(d_CR));
+
+      d_info = pmt::dict_add(d_info, pmt::intern("packet_len_bits"),
+              pmt::from_long(n_bits_total));
+
+      d_info = pmt::dict_add(d_info, pmt::intern("pad_len"),
+              pmt::from_long(n_bits_pad));
+
+      d_info = pmt::dict_add(d_info, pmt::intern("packet_len_syms"),
+              pmt::from_long(n_bits_total / d_SF));
+
+      d_info = pmt::dict_add(d_info, pmt::intern("has_crc"),
+              (d_has_crc)?pmt::PMT_T:pmt::PMT_F);
+
+      if ((d_hdr_tot_len-d_hdr_len) > 0) {
+          d_info = pmt::dict_add(d_info, pmt::intern("rem_bits"),
+                  pmt::init_u8vector(d_hdr_tot_len-d_hdr_len, d_rem));
+      }
+
+      return n_bits;
+    }
+
+    bool
+    lora_header_format::format(int nbytes_in, const unsigned char* input,
+        pmt::pmt_t& output, pmt::pmt_t& info)
+    {
+      uint16_t buffer = 0;
+      uint8_t* unpacked_hdr = (uint8_t*)volk_malloc(header_nbits(),
+          volk_get_alignment());
+
+      //Extract payload length
+      d_payload_len = (unsigned char)nbytes_in;
+      //Extract CR (default is 4)
+      d_CR = (uint8_t)pmt::to_long(pmt::dict_ref(info,
+            pmt::intern("CR"), pmt::from_long(4)));
+      //Extract has_crc (true by default)
+      d_has_crc = (uint8_t)pmt::to_bool(pmt::dict_ref(info,
+            pmt::intern("has_crc"), pmt::PMT_T));
+
+      //Add these three fields to the buffer
+      buffer |= d_payload_len << 4;
+      buffer |= d_CR << 1;
+      buffer |= d_has_crc;
+
+      //Compute CRC
+      d_crc = compute_crc(buffer);
+
+      //Unpack buffer to unpacked_hdr
+      for(char i = 0 ; i < 12 ; ++i) {
+        unpacked_hdr[i] = (buffer>>(11-i))&0x01;
+      }
+      //Unpack crc to unpacked_hdr
+      for(char i = 0 ; i < 8 ; ++i) {
+        unpacked_hdr[i+12] = (d_crc>>i)&0x01;
+      }
+      //Put first bits of the payload at the end of the header
+      for(char i = 0 ; i < (d_hdr_tot_len-d_hdr_len) ; ++i) {
+        unpacked_hdr[i+12+8] = input[i];
+      }
+
+      // Package output data into a PMT vector
+      output = pmt::init_u8vector(header_nbits(), unpacked_hdr);
+
+      // Creating the output pmt copies data; free our own here.
+      volk_free(unpacked_hdr);
+
+      return true;
+    }
+
+    bool
+    lora_header_format::parse(int nbits_in, const unsigned char* input,
+        std::vector<pmt::pmt_t>& info, int& nbits_processed)
+    {
       //Abort if too few bits received
       if (nbits_in < d_hdr_tot_len) {
         nbits_processed = 0;
@@ -108,67 +197,25 @@ namespace gr {
       d_crc = d_hdr_reg.extract_field8(12, 8);
 
       if ((!d_has_crc) || (d_has_crc && header_ok())) {
-        
-
-        //Compute auxiliary variables
-        n_bits = (d_payload_len + 2*d_has_crc) * 8; // Integrating CRC length,
-                                                    // and before hamming coding
-        n_bits -= (d_SF-2)*4 - d_hdr_len; // Excluding payload bits included at
-                                          // the end of the header
-        n_bits /= 4;
-        n_bits *= (4+d_CR); //After hamming coding
-
-        bits_multiple = (d_CR + 4) * d_SF;
-
-        n_bits_total = (int)ceil(n_bits/(float)bits_multiple) * bits_multiple;
-
-        n_bits_pad = n_bits_total - n_bits;
-
-        //Make PMT message
-        d_info = pmt::make_dict();
-
-        d_info = pmt::dict_add(d_info, pmt::intern("payload_len"),
-                pmt::from_long(d_payload_len));
-
-        d_info = pmt::dict_add(d_info, pmt::intern("CR"),
-                pmt::from_long(d_CR));
-
-        d_info = pmt::dict_add(d_info, pmt::intern("has_crc"),
-                pmt::from_long(d_has_crc));
-
-        d_info = pmt::dict_add(d_info, pmt::intern("packet_len_bits"),
-                pmt::from_long(n_bits_total));
-
-        d_info = pmt::dict_add(d_info, pmt::intern("pad_len"),
-                pmt::from_long(n_bits_pad));
-
-        d_info = pmt::dict_add(d_info, pmt::intern("packet_len_syms"),
-                pmt::from_long(n_bits_total / d_SF));
-
-        d_info = pmt::dict_add(d_info, pmt::intern("has_crc"),
-                (d_has_crc)?pmt::PMT_T:pmt::PMT_F);
-
-        if ((d_hdr_tot_len-d_hdr_len) > 0) {
-            d_info = pmt::dict_add(d_info, pmt::intern("rem_bits"),
-                    pmt::init_u8vector(d_hdr_tot_len-d_hdr_len, d_rem));
-        }
+        //Populate d_info
+        header_payload();
 
         info.push_back(d_info);
 
+        //Clear header register and return success
         d_hdr_reg.clear();
-
         return true;
       }
 
+      //Clear header register and return success
       d_hdr_reg.clear();
-
       return false;
     }
 
     size_t
     lora_header_format::header_nbits() const
     {
-      return 0;
+      return d_hdr_tot_len;
     }
 
 

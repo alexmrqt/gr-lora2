@@ -68,6 +68,18 @@ blocks:
     coordinate: [176, 12.0]
     rotation: 0
     state: enabled
+- name: has_crc
+  id: variable
+  parameters:
+    comment: ''
+    value: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [248, 76.0]
+    rotation: 0
+    state: true
 - name: hdr_format
   id: lora2_lora_header_format
   parameters:
@@ -78,7 +90,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1200, 196.0]
+    coordinate: [1184, 212.0]
     rotation: 0
     state: enabled
 - name: analog_quadrature_demod_cf_0
@@ -97,6 +109,40 @@ blocks:
     coordinate: [680, 876.0]
     rotation: 0
     state: enabled
+- name: blocks_pdu_set_0
+  id: blocks_pdu_set
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: pmt.intern("has_crc")
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    v: pmt.PMT_T if has_crc else pmt.PMT_F
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [192, 164.0]
+    rotation: 0
+    state: true
+- name: blocks_pdu_set_0_0
+  id: blocks_pdu_set
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: pmt.intern("CR")
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    v: pmt.from_long(CR)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [336, 164.0]
+    rotation: 0
+    state: true
 - name: blocks_pdu_to_tagged_stream_0_0_0
   id: blocks_pdu_to_tagged_stream
   parameters:
@@ -111,7 +157,41 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [368, 172.0]
+    coordinate: [224, 284.0]
+    rotation: 0
+    state: true
+- name: blocks_pdu_to_tagged_stream_0_0_0_0
+  id: blocks_pdu_to_tagged_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [240, 412.0]
+    rotation: 0
+    state: true
+- name: blocks_pdu_to_tagged_stream_0_0_0_0_0
+  id: blocks_pdu_to_tagged_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [240, 540.0]
     rotation: 0
     state: true
 - name: blocks_repack_bits_bb_0
@@ -131,7 +211,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [768, 164.0]
+    coordinate: [576, 276.0]
     rotation: 0
     state: enabled
 - name: blocks_socket_pdu_0_0
@@ -140,7 +220,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    host: 127.0.0.1
+    host: ''
     maxoutbuf: '0'
     minoutbuf: '0'
     mtu: '10000'
@@ -174,21 +254,37 @@ blocks:
     coordinate: [304, 704.0]
     rotation: 0
     state: true
-- name: digital_protocol_formatter_bb_0
-  id: digital_protocol_formatter_bb
+- name: blocks_tagged_stream_to_pdu_0
+  id: blocks_tagged_stream_to_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [960, 284.0]
+    rotation: 0
+    state: true
+- name: digital_protocol_formatter_async_0
+  id: digital_protocol_formatter_async
   parameters:
     affinity: ''
     alias: ''
     comment: ''
     format: hdr_format
-    len_tag_key: '"packet_len"'
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1200, 260.0]
+    coordinate: [1184, 272.0]
     rotation: 0
     state: true
 - name: import_0
@@ -233,7 +329,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [600, 176.0]
+    coordinate: [432, 288.0]
     rotation: 0
     state: enabled
 - name: lora2_gray_decode_0
@@ -248,7 +344,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [744, 416.0]
+    coordinate: [912, 416.0]
     rotation: 0
     state: true
 - name: lora2_gray_decode_0_0
@@ -263,7 +359,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [808, 544.0]
+    coordinate: [1152, 544.0]
     rotation: 0
     state: true
 - name: lora2_lora_add_preamble_0
@@ -319,7 +415,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 172.0]
+    coordinate: [64, 284.0]
     rotation: 0
     state: true
 - name: lora2_lora_hamming_encode_0
@@ -336,7 +432,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [296, 404.0]
+    coordinate: [464, 404.0]
     rotation: 0
     state: true
 - name: lora2_lora_hamming_encode_0_0
@@ -353,7 +449,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [280, 532.0]
+    coordinate: [464, 532.0]
     rotation: 0
     state: true
 - name: lora2_lora_interleaver_0
@@ -371,7 +467,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [544, 396.0]
+    coordinate: [712, 396.0]
     rotation: 0
     state: true
 - name: lora2_lora_interleaver_1
@@ -389,7 +485,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [616, 524.0]
+    coordinate: [952, 524.0]
     rotation: 0
     state: true
 - name: lora2_lora_low_rate_opt_tx_0
@@ -404,7 +500,26 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [904, 416.0]
+    coordinate: [1072, 416.0]
+    rotation: 0
+    state: true
+- name: lora2_lora_pad_0
+  id: lora2_lora_pad
+  parameters:
+    CR: CR
+    SF: SF
+    affinity: ''
+    alias: ''
+    comment: ''
+    len_tag_key: '"packet_len"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    reduced_rate: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [712, 516.0]
     rotation: 0
     state: true
 - name: lora2_lora_whiten_0
@@ -420,22 +535,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [952, 172.0]
+    coordinate: [760, 284.0]
     rotation: 0
     state: enabled
-- name: note_0_0
-  id: note
-  parameters:
-    alias: ''
-    comment: ''
-    note: PAD
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [504, 540.0]
-    rotation: 0
-    state: true
 - name: qtgui_time_sink_x_0_0_1
   id: qtgui_time_sink_x
   parameters:
@@ -538,12 +640,12 @@ blocks:
   parameters:
     alias: ''
     comment: ''
-    stream_id: header_bits
+    stream_id: header
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1432, 268.0]
+    coordinate: [1480, 252.0]
     rotation: 0
     state: true
 - name: virtual_sink_0_1_0
@@ -551,12 +653,12 @@ blocks:
   parameters:
     alias: ''
     comment: ''
-    stream_id: payload_bits
+    stream_id: payload
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1432, 172.0]
+    coordinate: [1480, 316.0]
     rotation: 0
     state: true
 - name: virtual_sink_1
@@ -569,7 +671,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1160, 412.0]
+    coordinate: [1328, 412.0]
     rotation: 0
     state: true
 - name: virtual_sink_1_0
@@ -582,7 +684,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1160, 540.0]
+    coordinate: [1328, 540.0]
     rotation: 0
     state: true
 - name: virtual_sink_1_0_0
@@ -603,7 +705,7 @@ blocks:
   parameters:
     alias: ''
     comment: ''
-    stream_id: header_bits
+    stream_id: header
   states:
     bus_sink: false
     bus_source: false
@@ -616,7 +718,7 @@ blocks:
   parameters:
     alias: ''
     comment: ''
-    stream_id: payload_bits
+    stream_id: payload
   states:
     bus_sink: false
     bus_source: false
@@ -666,11 +768,17 @@ blocks:
 
 connections:
 - [analog_quadrature_demod_cf_0, '0', qtgui_time_sink_x_0_0_1, '0']
+- [blocks_pdu_set_0, pdus, blocks_pdu_set_0_0, pdus]
+- [blocks_pdu_set_0_0, pdus, lora2_lora_crc_0, pdus]
 - [blocks_pdu_to_tagged_stream_0_0_0, '0', lora2_flip_half_bytes_0, '0']
+- [blocks_pdu_to_tagged_stream_0_0_0_0, '0', lora2_lora_hamming_encode_0, '0']
+- [blocks_pdu_to_tagged_stream_0_0_0_0_0, '0', lora2_lora_hamming_encode_0_0, '0']
 - [blocks_repack_bits_bb_0, '0', lora2_lora_whiten_0, '0']
-- [blocks_socket_pdu_0_0, pdus, lora2_lora_crc_0, pdus]
+- [blocks_socket_pdu_0_0, pdus, blocks_pdu_set_0, pdus]
 - [blocks_tagged_stream_mux_0, '0', lora2_lora_add_preamble_0, '0']
-- [digital_protocol_formatter_bb_0, '0', virtual_sink_0_1, '0']
+- [blocks_tagged_stream_to_pdu_0, pdus, digital_protocol_formatter_async_0, in]
+- [digital_protocol_formatter_async_0, header, virtual_sink_0_1, '0']
+- [digital_protocol_formatter_async_0, payload, virtual_sink_0_1_0, '0']
 - [lora2_css_mod_0, '0', lora2_lora_add_reversed_chirps_0, '0']
 - [lora2_flip_half_bytes_0, '0', blocks_repack_bits_bb_0, '0']
 - [lora2_gray_decode_0, '0', lora2_lora_low_rate_opt_tx_0, '0']
@@ -679,14 +787,14 @@ connections:
 - [lora2_lora_add_reversed_chirps_0, '0', virtual_sink_1_0_0, '0']
 - [lora2_lora_crc_0, pdus, blocks_pdu_to_tagged_stream_0_0_0, pdus]
 - [lora2_lora_hamming_encode_0, '0', lora2_lora_interleaver_0, '0']
-- [lora2_lora_hamming_encode_0_0, '0', lora2_lora_interleaver_1, '0']
+- [lora2_lora_hamming_encode_0_0, '0', lora2_lora_pad_0, '0']
 - [lora2_lora_interleaver_0, '0', lora2_gray_decode_0, '0']
 - [lora2_lora_interleaver_1, '0', lora2_gray_decode_0_0, '0']
 - [lora2_lora_low_rate_opt_tx_0, '0', virtual_sink_1, '0']
-- [lora2_lora_whiten_0, '0', digital_protocol_formatter_bb_0, '0']
-- [lora2_lora_whiten_0, '0', virtual_sink_0_1_0, '0']
-- [virtual_source_0, '0', lora2_lora_hamming_encode_0, '0']
-- [virtual_source_0_0, '0', lora2_lora_hamming_encode_0_0, '0']
+- [lora2_lora_pad_0, '0', lora2_lora_interleaver_1, '0']
+- [lora2_lora_whiten_0, '0', blocks_tagged_stream_to_pdu_0, '0']
+- [virtual_source_0, '0', blocks_pdu_to_tagged_stream_0_0_0_0, pdus]
+- [virtual_source_0_0, '0', blocks_pdu_to_tagged_stream_0_0_0_0_0, pdus]
 - [virtual_source_0_0_0, '0', blocks_tagged_stream_mux_0, '1']
 - [virtual_source_0_0_0_0, '0', analog_quadrature_demod_cf_0, '0']
 - [virtual_source_0_1, '0', blocks_tagged_stream_mux_0, '0']
