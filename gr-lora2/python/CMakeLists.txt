@@ -60,7 +60,7 @@ GR_PYTHON_INSTALL(
     lora_soft_low_rate_opt_rx.py
     css_fine_delay_detector.py
     css_fine_delay_track.py
-    lora_crc_check.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    lora_crc.py DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################
@@ -102,5 +102,5 @@ GR_ADD_TEST(qa_lora_align_sof ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/q
 GR_ADD_TEST(qa_lora_soft_low_rate_opt_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_low_rate_opt_rx.py)
 GR_ADD_TEST(qa_css_fine_delay_detector ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_delay_detector.py)
 GR_ADD_TEST(qa_css_fine_delay_track ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_fine_delay_track.py)
-GR_ADD_TEST(qa_lora_crc_check ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_crc_check.py)
+GR_ADD_TEST(qa_lora_crc ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_crc.py)
 GR_ADD_TEST(qa_lora_soft_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_depad.py)

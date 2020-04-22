@@ -23,7 +23,7 @@ from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 from lora_crc_check import lora_crc_check
 
-class qa_lora_crc_check(gr_unittest.TestCase):
+class qa_lora_crc(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.top_block()
@@ -38,4 +38,4 @@ class qa_lora_crc_check(gr_unittest.TestCase):
 
 
 if __name__ == '__main__':
-    gr_unittest.run(qa_lora_crc_check)
+    gr_unittest.run(qa_lora_crc)

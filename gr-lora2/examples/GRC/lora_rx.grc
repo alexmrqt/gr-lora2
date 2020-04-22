@@ -368,7 +368,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
-    repeat: 'False'
+    repeat: 'True'
     type: complex
     vlen: '1'
   states:
@@ -661,11 +661,12 @@ blocks:
     coordinate: [216, 1248.0]
     rotation: 0
     state: enabled
-- name: lora2_lora_crc_check_0
-  id: lora2_lora_crc_check
+- name: lora2_lora_crc_0
+  id: lora2_lora_crc
   parameters:
     affinity: ''
     alias: ''
+    check: 'True'
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -673,9 +674,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [224, 1376.0]
+    coordinate: [224, 1372.0]
     rotation: 180
-    state: enabled
+    state: true
 - name: lora2_lora_deinterleaver_0
   id: lora2_lora_deinterleaver
   parameters:
@@ -1782,7 +1783,7 @@ connections:
 - [blocks_file_source_0, '0', blocks_throttle_0, '0']
 - [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0_0_0, '0']
 - [blocks_repack_bits_bb_0, '0', lora2_flip_half_bytes_0, '0']
-- [blocks_tagged_stream_to_pdu_0, pdus, lora2_lora_crc_check_0, pdus]
+- [blocks_tagged_stream_to_pdu_0, pdus, lora2_lora_crc_0, pdus]
 - [blocks_throttle_0, '0', virtual_sink_0, '0']
 - [blocks_vector_to_stream_0, '0', blocks_complex_to_mag_0, '0']
 - [digital_header_payload_demux_0, '0', virtual_sink_1, '0']
@@ -1797,7 +1798,7 @@ connections:
 - [lora2_flip_half_bytes_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [lora2_gray_encode_0, '0', lora2_lora_deinterleaver_0, '0']
 - [lora2_gray_encode_0_0, '0', lora2_lora_deinterleaver_0_0, '0']
-- [lora2_lora_crc_check_0, pdus, blocks_socket_pdu_0, pdus]
+- [lora2_lora_crc_0, pdus, blocks_socket_pdu_0, pdus]
 - [lora2_lora_deinterleaver_0, '0', lora2_lora_hamming_decode_0, '0']
 - [lora2_lora_deinterleaver_0_0, '0', lora2_lora_depad_0, '0']
 - [lora2_lora_depad_0, '0', lora2_lora_hamming_decode_0_0, '0']

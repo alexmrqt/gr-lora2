@@ -20,21 +20,25 @@
 #
 
 
+import numpy
 import pmt
 from gnuradio import gr
 
-class lora_crc_check(gr.sync_block):
+class lora_crc(gr.sync_block):
     """
-    docstring for block lora_crc_check
+    docstring for block lora_crc
     """
-    def __init__(self,  ):
+    def __init__(self, mode=True):
         gr.sync_block.__init__(self,
-                name="lora_crc_check", in_sig=[], out_sig=[])
+                name="lora_crc", in_sig=[], out_sig=[])
 
         self.message_port_register_in(pmt.intern('pdus'))
         self.message_port_register_out(pmt.intern('pdus'))
 
-        self.set_msg_handler(pmt.intern("pdus"), self.handle_msg)
+        if mode:
+            self.set_msg_handler(pmt.intern("pdus"), self.handle_check)
+        else:
+            self.set_msg_handler(pmt.intern("pdus"), self.handle_generate)
 
     def crc16(self, crc, data, poly):
         for i in range(0,8):
@@ -65,7 +69,7 @@ class lora_crc_check(gr.sync_block):
         
         return crc
 
-    def handle_msg(self, msg):
+    def handle_check(self, msg):
         hdr = pmt.car(msg)
         payload = pmt.to_python(pmt.cdr(msg))
 
@@ -82,6 +86,15 @@ class lora_crc_check(gr.sync_block):
                 print('CRC NOK: ' + hex(crc) + ' != ' + hex(comp_crc))
         else:
             self.message_port_pub(pmt.intern('pdus'), msg)
+
+    def handle_generate(self, msg):
+        hdr = pmt.car(msg)
+        payload = pmt.to_python(pmt.cdr(msg))
+
+        crc = self.lora_payload_crc(payload)
+        payload = numpy.concatenate((payload, numpy.array([crc&0xFF, crc>>8], dtype=numpy.uint8)))
+
+        self.message_port_pub(pmt.intern('pdus'), pmt.cons(hdr, pmt.to_pmt(payload)))
 
     def work(self, input_items, output_items):
         return len(output_items[0])
