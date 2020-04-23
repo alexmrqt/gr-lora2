@@ -53,5 +53,6 @@ install(FILES
     lora2_lora_crc.block.yml
     lora2_lora_soft_depad.block.yml
     lora2_lora_header_format.block.yml
-    lora2_lora_pad.block.yml DESTINATION share/gnuradio/grc/blocks
+    lora2_lora_pad.block.yml
+    lora2_lora_drop_rem.block.yml DESTINATION share/gnuradio/grc/blocks
 )

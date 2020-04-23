@@ -36,7 +36,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '3'
+    value: '4'
   states:
     bus_sink: false
     bus_source: false
@@ -56,16 +56,88 @@ blocks:
     coordinate: [256, 12.0]
     rotation: 0
     state: enabled
+- name: RF_samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: 8e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [448, 76.0]
+    rotation: 0
+    state: enabled
 - name: SF
   id: variable
   parameters:
     comment: ''
-    value: '8'
+    value: '9'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [176, 12.0]
+    rotation: 0
+    state: enabled
+- name: chan_bw
+  id: variable
+  parameters:
+    comment: ''
+    value: '125000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [456, 12.0]
+    rotation: 0
+    state: enabled
+- name: chan_freq
+  id: variable
+  parameters:
+    comment: ''
+    value: 868e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [784, 76.0]
+    rotation: 0
+    state: enabled
+- name: chan_margin
+  id: variable
+  parameters:
+    comment: ''
+    value: '75000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [568, 84.0]
+    rotation: 0
+    state: enabled
+- name: frac_interp
+  id: variable
+  parameters:
+    comment: ''
+    value: RF_samp_rate/((RF_samp_rate//(interp*chan_bw))*(interp*chan_bw))
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [688, 12.0]
+    rotation: 0
+    state: enabled
+- name: freq_offset
+  id: variable
+  parameters:
+    comment: ''
+    value: 4e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [576, 12.0]
     rotation: 0
     state: enabled
 - name: has_crc
@@ -91,6 +163,54 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1184, 212.0]
+    rotation: 0
+    state: enabled
+- name: interp
+  id: variable
+  parameters:
+    comment: ''
+    value: '2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [784, 12.0]
+    rotation: 0
+    state: enabled
+- name: interp2
+  id: variable
+  parameters:
+    comment: ''
+    value: int(RF_samp_rate//(interp*chan_bw))
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [688, 76.0]
+    rotation: 0
+    state: enabled
+- name: ppm
+  id: variable
+  parameters:
+    comment: ''
+    value: '10.7'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [896, 20.0]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: chan_bw
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [352, 76.0]
     rotation: 0
     state: enabled
 - name: analog_quadrature_demod_cf_0
@@ -123,7 +243,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 164.0]
+    coordinate: [200, 164.0]
     rotation: 0
     state: true
 - name: blocks_pdu_set_0_0
@@ -140,7 +260,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [336, 164.0]
+    coordinate: [344, 164.0]
     rotation: 0
     state: true
 - name: blocks_pdu_to_tagged_stream_0_0_0
@@ -174,9 +294,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 412.0]
+    coordinate: [200, 412.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: blocks_pdu_to_tagged_stream_0_0_0_0_0
   id: blocks_pdu_to_tagged_stream
   parameters:
@@ -191,9 +311,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 540.0]
+    coordinate: [192, 540.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: blocks_repack_bits_bb_0
   id: blocks_repack_bits_bb
   parameters:
@@ -253,7 +373,7 @@ blocks:
     bus_structure: null
     coordinate: [304, 704.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: blocks_tagged_stream_to_pdu_0
   id: blocks_tagged_stream_to_pdu
   parameters:
@@ -287,6 +407,45 @@ blocks:
     coordinate: [1184, 272.0]
     rotation: 0
     state: true
+- name: fir_filter_xxx_0
+  id: fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '2'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_delay: '0'
+    taps: '[1.0]'
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [456, 868.0]
+    rotation: 0
+    state: enabled
+- name: freq_xlating_fir_filter_xxx_0
+  id: freq_xlating_fir_filter_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    center_freq: freq_offset
+    comment: ''
+    decim: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: RF_samp_rate
+    taps: '1'
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [864, 1084.0]
+    rotation: 0
+    state: enabled
 - name: import_0
   id: import
   parameters:
@@ -316,7 +475,7 @@ blocks:
     bus_structure: null
     coordinate: [848, 708.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora2_flip_half_bytes_0
   id: lora2_flip_half_bytes
   parameters:
@@ -344,9 +503,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [912, 416.0]
+    coordinate: [984, 416.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora2_gray_decode_0_0
   id: lora2_gray_decode
   parameters:
@@ -359,9 +518,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1152, 544.0]
+    coordinate: [1272, 544.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora2_lora_add_preamble_0
   id: lora2_lora_add_preamble
   parameters:
@@ -381,15 +540,15 @@ blocks:
     bus_structure: null
     coordinate: [576, 684.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora2_lora_add_reversed_chirps_0
   id: lora2_lora_add_reversed_chirps
   parameters:
-    SF: M
+    SF: SF
     affinity: ''
     alias: ''
     comment: ''
-    interp: '2'
+    interp: interp
     len_tag_key: '"packet_len"'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -401,7 +560,7 @@ blocks:
     bus_structure: null
     coordinate: [1040, 684.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora2_lora_crc_0
   id: lora2_lora_crc
   parameters:
@@ -418,6 +577,23 @@ blocks:
     coordinate: [64, 284.0]
     rotation: 0
     state: true
+- name: lora2_lora_drop_rem_0
+  id: lora2_lora_drop_rem
+  parameters:
+    SF: SF
+    affinity: ''
+    alias: ''
+    comment: ''
+    len_tag_key: packet_len
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [440, 532.0]
+    rotation: 0
+    state: enabled
 - name: lora2_lora_hamming_encode_0
   id: lora2_lora_hamming_encode
   parameters:
@@ -432,9 +608,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [464, 404.0]
+    coordinate: [472, 404.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora2_lora_hamming_encode_0_0
   id: lora2_lora_hamming_encode
   parameters:
@@ -449,9 +625,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [464, 532.0]
+    coordinate: [656, 532.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora2_lora_interleaver_0
   id: lora2_lora_interleaver
   parameters:
@@ -460,6 +636,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
+    len_tag_key: packet_len
     maxoutbuf: '0'
     minoutbuf: '0'
     reduced_rate: 'True'
@@ -467,9 +644,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [712, 396.0]
+    coordinate: [760, 388.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora2_lora_interleaver_1
   id: lora2_lora_interleaver
   parameters:
@@ -478,6 +655,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
+    len_tag_key: packet_len
     maxoutbuf: '0'
     minoutbuf: '0'
     reduced_rate: 'False'
@@ -485,9 +663,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [952, 524.0]
+    coordinate: [1064, 516.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora2_lora_low_rate_opt_tx_0
   id: lora2_lora_low_rate_opt_tx
   parameters:
@@ -500,9 +678,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1072, 416.0]
+    coordinate: [1160, 416.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora2_lora_pad_0
   id: lora2_lora_pad
   parameters:
@@ -519,9 +697,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [712, 516.0]
+    coordinate: [864, 516.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: lora2_lora_whiten_0
   id: lora2_lora_whiten
   parameters:
@@ -538,7 +716,339 @@ blocks:
     coordinate: [760, 284.0]
     rotation: 0
     state: enabled
-- name: qtgui_time_sink_x_0_0_1
+- name: low_pass_filter_1
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
+    cutoff_freq: (chan_bw + chan_margin)/2
+    decim: '1'
+    gain: interp2*0.9
+    interp: interp2
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: RF_samp_rate
+    type: interp_fir_filter_ccf
+    width: (chan_bw + chan_margin)/8
+    win: firdes.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [384, 1012.0]
+    rotation: 0
+    state: enabled
+- name: mmse_resampler_xx_0
+  id: mmse_resampler_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    phase_shift: '0.0'
+    resamp_ratio: 1.0/frac_interp
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [648, 1064.0]
+    rotation: 0
+    state: enabled
+- name: osmosdr_sink_0
+  id: osmosdr_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    ant0: ''
+    ant1: ''
+    ant10: ''
+    ant11: ''
+    ant12: ''
+    ant13: ''
+    ant14: ''
+    ant15: ''
+    ant16: ''
+    ant17: ''
+    ant18: ''
+    ant19: ''
+    ant2: ''
+    ant20: ''
+    ant21: ''
+    ant22: ''
+    ant23: ''
+    ant24: ''
+    ant25: ''
+    ant26: ''
+    ant27: ''
+    ant28: ''
+    ant29: ''
+    ant3: ''
+    ant30: ''
+    ant31: ''
+    ant4: ''
+    ant5: ''
+    ant6: ''
+    ant7: ''
+    ant8: ''
+    ant9: ''
+    args: '"hackrf"'
+    bb_gain0: '30'
+    bb_gain1: '20'
+    bb_gain10: '20'
+    bb_gain11: '20'
+    bb_gain12: '20'
+    bb_gain13: '20'
+    bb_gain14: '20'
+    bb_gain15: '20'
+    bb_gain16: '20'
+    bb_gain17: '20'
+    bb_gain18: '20'
+    bb_gain19: '20'
+    bb_gain2: '20'
+    bb_gain20: '20'
+    bb_gain21: '20'
+    bb_gain22: '20'
+    bb_gain23: '20'
+    bb_gain24: '20'
+    bb_gain25: '20'
+    bb_gain26: '20'
+    bb_gain27: '20'
+    bb_gain28: '20'
+    bb_gain29: '20'
+    bb_gain3: '20'
+    bb_gain30: '20'
+    bb_gain31: '20'
+    bb_gain4: '20'
+    bb_gain5: '20'
+    bb_gain6: '20'
+    bb_gain7: '20'
+    bb_gain8: '20'
+    bb_gain9: '20'
+    bw0: '0'
+    bw1: '0'
+    bw10: '0'
+    bw11: '0'
+    bw12: '0'
+    bw13: '0'
+    bw14: '0'
+    bw15: '0'
+    bw16: '0'
+    bw17: '0'
+    bw18: '0'
+    bw19: '0'
+    bw2: '0'
+    bw20: '0'
+    bw21: '0'
+    bw22: '0'
+    bw23: '0'
+    bw24: '0'
+    bw25: '0'
+    bw26: '0'
+    bw27: '0'
+    bw28: '0'
+    bw29: '0'
+    bw3: '0'
+    bw30: '0'
+    bw31: '0'
+    bw4: '0'
+    bw5: '0'
+    bw6: '0'
+    bw7: '0'
+    bw8: '0'
+    bw9: '0'
+    clock_source0: ''
+    clock_source1: ''
+    clock_source2: ''
+    clock_source3: ''
+    clock_source4: ''
+    clock_source5: ''
+    clock_source6: ''
+    clock_source7: ''
+    comment: ''
+    corr0: ppm
+    corr1: '0'
+    corr10: '0'
+    corr11: '0'
+    corr12: '0'
+    corr13: '0'
+    corr14: '0'
+    corr15: '0'
+    corr16: '0'
+    corr17: '0'
+    corr18: '0'
+    corr19: '0'
+    corr2: '0'
+    corr20: '0'
+    corr21: '0'
+    corr22: '0'
+    corr23: '0'
+    corr24: '0'
+    corr25: '0'
+    corr26: '0'
+    corr27: '0'
+    corr28: '0'
+    corr29: '0'
+    corr3: '0'
+    corr30: '0'
+    corr31: '0'
+    corr4: '0'
+    corr5: '0'
+    corr6: '0'
+    corr7: '0'
+    corr8: '0'
+    corr9: '0'
+    freq0: chan_freq-freq_offset
+    freq1: 100e6
+    freq10: 100e6
+    freq11: 100e6
+    freq12: 100e6
+    freq13: 100e6
+    freq14: 100e6
+    freq15: 100e6
+    freq16: 100e6
+    freq17: 100e6
+    freq18: 100e6
+    freq19: 100e6
+    freq2: 100e6
+    freq20: 100e6
+    freq21: 100e6
+    freq22: 100e6
+    freq23: 100e6
+    freq24: 100e6
+    freq25: 100e6
+    freq26: 100e6
+    freq27: 100e6
+    freq28: 100e6
+    freq29: 100e6
+    freq3: 100e6
+    freq30: 100e6
+    freq31: 100e6
+    freq4: 100e6
+    freq5: 100e6
+    freq6: 100e6
+    freq7: 100e6
+    freq8: 100e6
+    freq9: 100e6
+    gain0: '10'
+    gain1: '10'
+    gain10: '10'
+    gain11: '10'
+    gain12: '10'
+    gain13: '10'
+    gain14: '10'
+    gain15: '10'
+    gain16: '10'
+    gain17: '10'
+    gain18: '10'
+    gain19: '10'
+    gain2: '10'
+    gain20: '10'
+    gain21: '10'
+    gain22: '10'
+    gain23: '10'
+    gain24: '10'
+    gain25: '10'
+    gain26: '10'
+    gain27: '10'
+    gain28: '10'
+    gain29: '10'
+    gain3: '10'
+    gain30: '10'
+    gain31: '10'
+    gain4: '10'
+    gain5: '10'
+    gain6: '10'
+    gain7: '10'
+    gain8: '10'
+    gain9: '10'
+    if_gain0: '30'
+    if_gain1: '20'
+    if_gain10: '20'
+    if_gain11: '20'
+    if_gain12: '20'
+    if_gain13: '20'
+    if_gain14: '20'
+    if_gain15: '20'
+    if_gain16: '20'
+    if_gain17: '20'
+    if_gain18: '20'
+    if_gain19: '20'
+    if_gain2: '20'
+    if_gain20: '20'
+    if_gain21: '20'
+    if_gain22: '20'
+    if_gain23: '20'
+    if_gain24: '20'
+    if_gain25: '20'
+    if_gain26: '20'
+    if_gain27: '20'
+    if_gain28: '20'
+    if_gain29: '20'
+    if_gain3: '20'
+    if_gain30: '20'
+    if_gain31: '20'
+    if_gain4: '20'
+    if_gain5: '20'
+    if_gain6: '20'
+    if_gain7: '20'
+    if_gain8: '20'
+    if_gain9: '20'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '1'
+    num_mboards: '1'
+    sample_rate: RF_samp_rate
+    sync: none
+    time_source0: ''
+    time_source1: ''
+    time_source2: ''
+    time_source3: ''
+    time_source4: ''
+    time_source5: ''
+    time_source6: ''
+    time_source7: ''
+    type: fc32
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1224, 1028.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_sink_x_0
+  id: qtgui_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    bw: samp_rate
+    comment: ''
+    fc: '0'
+    fftsize: '1024'
+    gui_hint: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    plotconst: 'True'
+    plotfreq: 'True'
+    plottime: 'True'
+    plotwaterfall: 'True'
+    rate: '10'
+    showports: 'False'
+    showrf: 'False'
+    type: complex
+    wintype: firdes.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1224, 892.0]
+    rotation: 0
+    state: true
+- name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
     affinity: ''
@@ -570,16 +1080,16 @@ blocks:
     entags: 'True'
     grid: 'False'
     gui_hint: ''
-    label1: ''
-    label10: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    label5: ''
-    label6: ''
-    label7: ''
-    label8: ''
-    label9: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
     legend: 'True'
     marker1: '-1'
     marker10: '-1'
@@ -591,11 +1101,11 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: ''
+    name: '""'
     nconnections: '1'
-    size: 20*M
+    size: M*100
     srate: '1.0'
-    stemplot: 'False'
+    stemplot: 'True'
     style1: '1'
     style10: '1'
     style2: '1'
@@ -607,11 +1117,11 @@ blocks:
     style8: '1'
     style9: '1'
     tr_chan: '0'
-    tr_delay: 20*M
+    tr_delay: '0'
     tr_level: '0.0'
-    tr_mode: qtgui.TRIG_MODE_TAG
+    tr_mode: qtgui.TRIG_MODE_FREE
     tr_slope: qtgui.TRIG_SLOPE_POS
-    tr_tag: '"time_offset"'
+    tr_tag: '""'
     type: float
     update_time: '0.10'
     width1: '1'
@@ -632,7 +1142,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [904, 860.0]
+    coordinate: [960, 860.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_0_1
@@ -671,9 +1181,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1328, 412.0]
+    coordinate: [1424, 412.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: virtual_sink_1_0
   id: virtual_sink
   parameters:
@@ -684,9 +1194,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1328, 540.0]
+    coordinate: [1424, 540.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: virtual_sink_1_0_0
   id: virtual_sink
   parameters:
@@ -699,7 +1209,7 @@ blocks:
     bus_structure: null
     coordinate: [1280, 716.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: virtual_source_0
   id: virtual_source
   parameters:
@@ -710,9 +1220,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [56, 412.0]
+    coordinate: [16, 412.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: virtual_source_0_0
   id: virtual_source
   parameters:
@@ -723,9 +1233,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [56, 540.0]
+    coordinate: [16, 540.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: virtual_source_0_0_0
   id: virtual_source
   parameters:
@@ -738,7 +1248,7 @@ blocks:
     bus_structure: null
     coordinate: [48, 748.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: virtual_source_0_0_0_0
   id: virtual_source
   parameters:
@@ -749,9 +1259,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [464, 876.0]
+    coordinate: [192, 876.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: virtual_source_0_1
   id: virtual_source
   parameters:
@@ -764,21 +1274,24 @@ blocks:
     bus_structure: null
     coordinate: [48, 684.0]
     rotation: 0
-    state: true
+    state: enabled
 
 connections:
-- [analog_quadrature_demod_cf_0, '0', qtgui_time_sink_x_0_0_1, '0']
+- [analog_quadrature_demod_cf_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_pdu_set_0, pdus, blocks_pdu_set_0_0, pdus]
 - [blocks_pdu_set_0_0, pdus, lora2_lora_crc_0, pdus]
 - [blocks_pdu_to_tagged_stream_0_0_0, '0', lora2_flip_half_bytes_0, '0']
 - [blocks_pdu_to_tagged_stream_0_0_0_0, '0', lora2_lora_hamming_encode_0, '0']
-- [blocks_pdu_to_tagged_stream_0_0_0_0_0, '0', lora2_lora_hamming_encode_0_0, '0']
+- [blocks_pdu_to_tagged_stream_0_0_0_0_0, '0', lora2_lora_drop_rem_0, '0']
 - [blocks_repack_bits_bb_0, '0', lora2_lora_whiten_0, '0']
 - [blocks_socket_pdu_0_0, pdus, blocks_pdu_set_0, pdus]
 - [blocks_tagged_stream_mux_0, '0', lora2_lora_add_preamble_0, '0']
 - [blocks_tagged_stream_to_pdu_0, pdus, digital_protocol_formatter_async_0, in]
 - [digital_protocol_formatter_async_0, header, virtual_sink_0_1, '0']
 - [digital_protocol_formatter_async_0, payload, virtual_sink_0_1_0, '0']
+- [fir_filter_xxx_0, '0', analog_quadrature_demod_cf_0, '0']
+- [freq_xlating_fir_filter_xxx_0, '0', osmosdr_sink_0, '0']
+- [freq_xlating_fir_filter_xxx_0, '0', qtgui_sink_x_0, '0']
 - [lora2_css_mod_0, '0', lora2_lora_add_reversed_chirps_0, '0']
 - [lora2_flip_half_bytes_0, '0', blocks_repack_bits_bb_0, '0']
 - [lora2_gray_decode_0, '0', lora2_lora_low_rate_opt_tx_0, '0']
@@ -786,6 +1299,7 @@ connections:
 - [lora2_lora_add_preamble_0, '0', lora2_css_mod_0, '0']
 - [lora2_lora_add_reversed_chirps_0, '0', virtual_sink_1_0_0, '0']
 - [lora2_lora_crc_0, pdus, blocks_pdu_to_tagged_stream_0_0_0, pdus]
+- [lora2_lora_drop_rem_0, '0', lora2_lora_hamming_encode_0_0, '0']
 - [lora2_lora_hamming_encode_0, '0', lora2_lora_interleaver_0, '0']
 - [lora2_lora_hamming_encode_0_0, '0', lora2_lora_pad_0, '0']
 - [lora2_lora_interleaver_0, '0', lora2_gray_decode_0, '0']
@@ -793,10 +1307,13 @@ connections:
 - [lora2_lora_low_rate_opt_tx_0, '0', virtual_sink_1, '0']
 - [lora2_lora_pad_0, '0', lora2_lora_interleaver_1, '0']
 - [lora2_lora_whiten_0, '0', blocks_tagged_stream_to_pdu_0, '0']
+- [low_pass_filter_1, '0', mmse_resampler_xx_0, '0']
+- [mmse_resampler_xx_0, '0', freq_xlating_fir_filter_xxx_0, '0']
 - [virtual_source_0, '0', blocks_pdu_to_tagged_stream_0_0_0_0, pdus]
 - [virtual_source_0_0, '0', blocks_pdu_to_tagged_stream_0_0_0_0_0, pdus]
 - [virtual_source_0_0_0, '0', blocks_tagged_stream_mux_0, '1']
-- [virtual_source_0_0_0_0, '0', analog_quadrature_demod_cf_0, '0']
+- [virtual_source_0_0_0_0, '0', fir_filter_xxx_0, '0']
+- [virtual_source_0_0_0_0, '0', low_pass_filter_1, '0']
 - [virtual_source_0_1, '0', blocks_tagged_stream_mux_0, '0']
 
 metadata:

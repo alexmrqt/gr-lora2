@@ -361,7 +361,7 @@ blocks:
     bus_structure: null
     coordinate: [912, 348.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_message_debug_0
   id: blocks_message_debug
   parameters:
@@ -502,7 +502,7 @@ blocks:
     bus_structure: null
     coordinate: [1080, 380.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_vector_to_stream_1
   id: blocks_vector_to_stream
   parameters:
@@ -582,7 +582,7 @@ blocks:
     bus_structure: null
     coordinate: [368, 308.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: import_0
   id: import
   parameters:
@@ -680,7 +680,7 @@ blocks:
     bus_structure: null
     coordinate: [240, 1452.0]
     rotation: 180
-    state: true
+    state: bypassed
 - name: lora2_lora_merge_rem_0
   id: lora2_lora_merge_rem
   parameters:
@@ -843,7 +843,7 @@ blocks:
     beta: '6.76'
     comment: ''
     cutoff_freq: (chan_bw + chan_margin)/2
-    decim: decim
+    decim: int(decim)
     gain: '1'
     interp: '1'
     maxoutbuf: '0'
@@ -858,7 +858,7 @@ blocks:
     bus_structure: null
     coordinate: [712, 172.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: mmse_resampler_xx_0
   id: mmse_resampler_xx
   parameters:
@@ -876,7 +876,7 @@ blocks:
     bus_structure: null
     coordinate: [896, 224.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: osmosdr_source_0
   id: osmosdr_source
   parameters:
@@ -1233,7 +1233,7 @@ blocks:
     bus_structure: null
     coordinate: [16, 228.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_sink_x_0
   id: qtgui_sink_x
   parameters:
@@ -1262,7 +1262,7 @@ blocks:
     bus_structure: null
     coordinate: [696, 316.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: qtgui_time_sink_x_0_0_0
   id: qtgui_time_sink_x
   parameters:
@@ -1621,6 +1621,7 @@ connections:
 - [lora2_lora_whiten_0, '0', blocks_repack_bits_bb_0, '0']
 - [low_pass_filter_0, '0', mmse_resampler_xx_0, '0']
 - [mmse_resampler_xx_0, '0', blocks_file_sink_1, '0']
+- [mmse_resampler_xx_0, '0', virtual_sink_0_0, '0']
 - [osmosdr_source_0, '0', freq_xlating_fir_filter_xxx_0, '0']
 - [virtual_source_0, '0', lora2_lora_preamble_detect_0_0, '0']
 - [virtual_source_1, '0', lora2_lora_soft_low_rate_opt_rx_0, '0']

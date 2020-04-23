@@ -11,6 +11,9 @@ parameters:
 -   id: CR
     label: CR
     dtype: int
+-   id: len_tag_key
+    label: Length Tag Key
+    dtype: string
 -   id: reduced_rate
     label: Reduced rate
     dtype: bool
@@ -26,6 +29,6 @@ outputs:
 
 templates:
     imports: import lora2
-    make: lora2.lora_interleaver(${SF}, ${CR}, ${reduced_rate})
+    make: lora2.lora_interleaver(${SF}, ${CR}, ${len_tag_key}, ${reduced_rate})
 
 file_format: 1

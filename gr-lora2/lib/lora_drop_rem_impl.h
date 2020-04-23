@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2019 Alexandre Marquet..
+ * Copyright 2020 Alexandre Marquet.
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +18,28 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_LORA2_LORA_WHITEN_IMPL_H
-#define INCLUDED_LORA2_LORA_WHITEN_IMPL_H
+#ifndef INCLUDED_LORA2_LORA_DROP_REM_IMPL_H
+#define INCLUDED_LORA2_LORA_DROP_REM_IMPL_H
 
-#include <pmt/pmt.h>
-#include <lora2/lora_whiten.h>
-
+#include <lora2/lora_drop_rem.h>
 
 namespace gr {
   namespace lora2 {
 
-    class lora_whiten_impl : public lora_whiten
+    class lora_drop_rem_impl : public lora_drop_rem
     {
       private:
-        const uint64_t d_seed;
-        pmt::pmt_t d_has_crc_key;
+        const unsigned char d_nitems_drop;
 
       protected:
         int calculate_output_stream_length(const gr_vector_int &ninput_items);
-        void lfsr(const uint8_t *in, uint8_t *out, const size_t bufferSize);
 
       public:
-        lora_whiten_impl(const std::string &len_tag_key);
+        lora_drop_rem_impl(unsigned char SF, const std::string &len_tag_key);
 
         // Where all the action really happens
-        int work(int noutput_items,
+        int work(
+            int noutput_items,
             gr_vector_int &ninput_items,
             gr_vector_const_void_star &input_items,
             gr_vector_void_star &output_items);
@@ -51,4 +48,5 @@ namespace gr {
   } // namespace lora2
 } // namespace gr
 
-#endif /* INCLUDED_LORA2_LORA_WHITEN_IMPL_H */
+#endif /* INCLUDED_LORA2_LORA_DROP_REM_IMPL_H */
+

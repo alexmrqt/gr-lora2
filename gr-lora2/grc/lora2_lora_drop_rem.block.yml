@@ -1,0 +1,27 @@
+id: lora2_lora_drop_rem
+label: LoRa Drop Rem.
+category: '[lora2]'
+
+templates:
+  imports: import lora2
+  make: lora2.lora_drop_rem(${SF}, ${len_tag_key})
+
+parameters:
+-   id: SF
+    label: SF
+    dtype: int
+-   id: len_tag_key
+    label: Length Tag Key
+    dtype: string
+
+inputs:
+-   domain: stream
+    dtype: byte
+
+outputs:
+-   domain: stream
+    dtype: byte
+
+#  'file_format' specifies the version of the GRC yml format used in the file
+#  and should usually not be changed.
+file_format: 1

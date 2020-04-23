@@ -18,40 +18,38 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_LORA2_LORA_PAD_IMPL_H
-#define INCLUDED_LORA2_LORA_PAD_IMPL_H
+#ifndef INCLUDED_LORA2_LORA_DROP_REM_H
+#define INCLUDED_LORA2_LORA_DROP_REM_H
 
-#include <lora2/lora_pad.h>
+#include <lora2/api.h>
+#include <gnuradio/tagged_stream_block.h>
 
 namespace gr {
   namespace lora2 {
 
-    class lora_pad_impl : public lora_pad
+    /*!
+     * \brief <+description of block+>
+     * \ingroup lora2
+     *
+     */
+    class LORA2_API lora_drop_rem : virtual public gr::tagged_stream_block
     {
-      private:
-        const unsigned char d_SF;
-        const unsigned char d_CR;
-        const bool d_reduced_rate;
-        unsigned char d_pad_len=0;
+     public:
+      typedef boost::shared_ptr<lora_drop_rem> sptr;
 
-
-      protected:
-        int calculate_output_stream_length(const gr_vector_int &ninput_items);
-
-      public:
-        lora_pad_impl(const std::string &len_tag_key, unsigned char SF,
-            unsigned char CR, bool reduced_rate);
-
-        // Where all the action really happens
-        int work(
-            int noutput_items,
-            gr_vector_int &ninput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items);
+      /*!
+       * \brief Return a shared_ptr to a new instance of lora2::lora_drop_rem.
+       *
+       * To avoid accidental use of raw pointers, lora2::lora_drop_rem's
+       * constructor is in a private implementation
+       * class. lora2::lora_drop_rem::make is the public interface for
+       * creating new instances.
+       */
+      static sptr make(unsigned char SF, const std::string &len_tag_key);
     };
 
   } // namespace lora2
 } // namespace gr
 
-#endif /* INCLUDED_LORA2_LORA_PAD_IMPL_H */
+#endif /* INCLUDED_LORA2_LORA_DROP_REM_H */
 

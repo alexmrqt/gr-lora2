@@ -133,13 +133,15 @@ namespace gr {
           volk_get_alignment());
 
       //Extract payload length
-      d_payload_len = (unsigned char)nbytes_in;
+      d_payload_len = (unsigned char)nbytes_in/8;
       //Extract CR (default is 4)
       d_CR = (uint8_t)pmt::to_long(pmt::dict_ref(info,
             pmt::intern("CR"), pmt::from_long(4)));
       //Extract has_crc (true by default)
       d_has_crc = (uint8_t)pmt::to_bool(pmt::dict_ref(info,
             pmt::intern("has_crc"), pmt::PMT_T));
+      //Remove the 2 bytes of the CRC from payload length
+      d_payload_len -= 2*d_has_crc;
 
       //Add these three fields to the buffer
       buffer |= d_payload_len << 4;
@@ -155,7 +157,7 @@ namespace gr {
       }
       //Unpack crc to unpacked_hdr
       for(char i = 0 ; i < 8 ; ++i) {
-        unpacked_hdr[i+12] = (d_crc>>i)&0x01;
+        unpacked_hdr[i+12] = (d_crc>>(7-i))&0x01;
       }
       //Put first bits of the payload at the end of the header
       for(char i = 0 ; i < (d_hdr_tot_len-d_hdr_len) ; ++i) {
@@ -185,8 +187,8 @@ namespace gr {
       for (int i = 0 ; i < d_hdr_len ; ++i) {
         d_hdr_reg.insert_bit(input[i]);
       }
-      for (int i=d_hdr_len ; i < (d_hdr_tot_len-d_hdr_len) ; ++i) {
-        d_rem[i] = input[i];
+      for (int i=0 ; i < (d_hdr_tot_len-d_hdr_len) ; ++i) {
+        d_rem[i] = input[i+d_hdr_len];
       }
       nbits_processed = d_hdr_tot_len;
 

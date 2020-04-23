@@ -52,20 +52,11 @@ class lora_crc(gr.sync_block):
 
         return crc ^ data
 
-    def lfsr(self, state):
-        return (((state>>7)^(state>>5)^(state>>4)^(state>>3))&0x01 | (state << 1))&0xFF
-
     def lora_payload_crc(self, data):
         crc = 0
-        lfsr_state = 0xFF
 
         for ele in data:
             crc = self.crc16(crc, ele, 0x1021)
-            lfsr_state = self.lfsr(lfsr_state)
-
-        crc ^= lfsr_state
-        lfsr_state = self.lfsr(lfsr_state)
-        crc ^= (lfsr_state<<8)
 
         return crc
 

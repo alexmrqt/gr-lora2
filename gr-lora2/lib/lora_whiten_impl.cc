@@ -44,6 +44,7 @@ namespace gr {
           gr::io_signature::make(1, 1, sizeof(uint8_t)), len_tag_key),
       d_seed(0x1a3478f0f1f3f7ff)
     {
+      d_has_crc_key = pmt::intern("has_crc");
     }
 
     int
@@ -61,11 +62,23 @@ namespace gr {
       const uint8_t *in = (const uint8_t *) input_items[0];
       uint8_t *out = (uint8_t *) output_items[0];
       uint64_t r = d_seed; //Shift register
+      bool has_crc = false; //CRC should not be whitened.
+
+      // Recover tags (expected to be on the first item)
+      std::vector<tag_t> tags;
+      get_tags_in_window(tags, 0, 0, 1, d_has_crc_key);
+
+      if (tags.size() > 0) {
+        has_crc = pmt::to_bool(tags[0].value);
+      }
 
       //Whitening
-      for (size_t i = 0 ; i < ninput_items[0] ; ++i) {
+      for (size_t i = 0 ; i < (ninput_items[0] - 16*has_crc) ; ++i) {
         out[i] = in[i]^(r&0x01);
         r = (r >> 1) | (((r >> 32) ^ (r >> 24) ^ (r >> 16) ^ r) << 63);
+      }
+      for (size_t i = ninput_items[0] - 16*has_crc ; i < ninput_items[0] ; ++i) {
+        out[i] = in[i];
       }
 
       // Tell runtime system how many output items we produced.

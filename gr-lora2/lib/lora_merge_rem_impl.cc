@@ -46,9 +46,6 @@ namespace gr {
     {
       //Number of payload bits remaining in header
       d_rem_key = pmt::intern("rem_bits");
-
-      //Set tag propagation to custom
-      set_tag_propagation_policy(TPP_CUSTOM);
     }
 
     int
@@ -86,19 +83,6 @@ namespace gr {
 
       //Copy the rest of the payload
       memcpy(out+rem_bits.size(), in, ninput_items[0]);
-
-      //Handle tag propagation (taken from gr-digital's crc_32_bb)
-      tags.clear();
-      get_tags_in_range(tags, 0, nitems_read(0), nitems_read(0) + ninput_items[0]);
-
-      for (size_t i = 0; i < tags.size(); i++) {
-        //Compute relative index
-        tags[i].offset -= nitems_read(0);
-
-        add_item_tag(0, nitems_written(0) + tags[i].offset,
-            tags[i].key,
-            tags[i].value);
-      }
 
       // Tell runtime system how many output items we produced.
       return ninput_items[0] + rem_bits.size();

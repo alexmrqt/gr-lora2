@@ -19,6 +19,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
+import pmt
 import numpy
 from gnuradio import gr
 
@@ -26,25 +27,22 @@ class lora_interleaver(gr.basic_block):
     """
     docstring for block lora_interleaver
     """
-    def __init__(self, SF, CR, reduced_rate = False):
+    def __init__(self, SF, CR, len_tag_key, reduced_rate = False):
         gr.basic_block.__init__(self,
             name="lora_interleaver",
             in_sig=[numpy.uint8],
             out_sig=[numpy.uint16])
 
         #Storing arguments as attributes
-        self.SF = SF
+        self.SF = SF if not reduced_rate else SF-2
         self.CR = CR
-        self.reduced_rate = reduced_rate
+        self.len_tag_key = len_tag_key
 
         #For binary to short conversion
-        self.base2 = [2**i  for i in range(SF-1, -1, -1)]
+        self.base2 = [2**i  for i in range(self.SF-1, -1, -1)]
 
         #Length of one block of data
         self.len_block_in = self.SF * (self.CR+4)
-        #In reduced rate mode, we need two codeword less
-        if self.reduced_rate:
-            self.len_block_in = (self.SF-2) * (self.CR+4)
 
         self.len_block_out = self.CR+4
 
@@ -62,7 +60,11 @@ class lora_interleaver(gr.basic_block):
         out_tag_offset = out_idx + self.nitems_written(0)
 
         for tag in tags:
-            self.add_item_tag(0, out_tag_offset, tag.key, tag.value)
+            if pmt.to_python(tag.key) == self.len_tag_key:
+                new_len = pmt.to_python(tag.value) // self.SF
+                self.add_item_tag(0, out_tag_offset, tag.key, pmt.to_pmt(new_len))
+            else:
+                self.add_item_tag(0, out_tag_offset, tag.key, tag.value)
 
     def general_work(self, input_items, output_items):
         in0 = input_items[0]
@@ -90,7 +92,7 @@ class lora_interleaver(gr.basic_block):
                 tmp = numpy.zeros(self.SF, dtype=numpy.uint16)
 
                 #Shuffle
-                for j in range(0, self.SF if not self.reduced_rate else self.SF-2):
+                for j in range(0, self.SF):
                     idx = (self.SF-1 - ((j-i)%self.SF))*(self.CR+4) \
                             + self.CR+4-1 - i
                     tmp[j] = vect_bin[idx]
