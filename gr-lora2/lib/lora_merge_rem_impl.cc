@@ -46,6 +46,9 @@ namespace gr {
     {
       //Number of payload bits remaining in header
       d_rem_key = pmt::intern("rem_bits");
+
+      //Set tag propagation to custom
+      set_tag_propagation_policy(TPP_CUSTOM);
     }
 
     int
@@ -53,6 +56,23 @@ namespace gr {
     {
       //Allocate for worst case (CR+4 == 8)
       return ninput_items[0] + (d_SF-7)*8;
+    }
+
+    void
+    lora_merge_rem_impl::handle_tag_propagation(int ninput_items)
+    {
+      // Recover tags
+      std::vector<tag_t> tags;
+      get_tags_in_window(tags, 0, 0, ninput_items);
+
+      for (std::vector<tag_t>::iterator tag = tags.begin() ;
+            tag != tags.end() ; ++tag) {
+
+        if ((*tag).key != d_rem_key) {
+          add_item_tag(0, (*tag).offset - nitems_read(0) + nitems_written(0),
+              (*tag).key, (*tag).value);
+        }
+      }
     }
 
     int
@@ -83,6 +103,9 @@ namespace gr {
 
       //Copy the rest of the payload
       memcpy(out+rem_bits.size(), in, ninput_items[0]);
+
+      //Handle tag propagation
+      handle_tag_propagation(ninput_items[0]);
 
       // Tell runtime system how many output items we produced.
       return ninput_items[0] + rem_bits.size();

@@ -53,10 +53,8 @@ namespace gr {
       d_sync_word_tag_key = pmt::intern(sync_word_tag_key);
       d_payload_tag_key = pmt::intern(payload_tag_key);
 
-      //d_sync_word[0] = (sync_word&0xF)*8;
-      //d_sync_word[1] = ((sync_word>>4)&0xF)*8;
-      d_sync_word[0] = sync_word&0xFF;
-      d_sync_word[1] = sync_word&0xFF;
+      d_sync_word[0] = ((sync_word>>4)&0xF)*8;
+      d_sync_word[1] = (sync_word&0xF)*8;
     }
 
     int

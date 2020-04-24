@@ -109,6 +109,19 @@ blocks:
     coordinate: [632, 1180.0]
     rotation: 0
     state: enabled
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1296, 1408.0]
+    rotation: 0
+    state: true
 - name: blocks_null_sink_0
   id: blocks_null_sink
   parameters:
@@ -325,7 +338,7 @@ blocks:
     coordinate: [32, 132.0]
     rotation: 0
     state: enabled
-- name: blocks_tag_debug_0
+- name: blocks_tag_debug_0_0
   id: blocks_tag_debug
   parameters:
     affinity: ''
@@ -333,17 +346,17 @@ blocks:
     comment: ''
     display: 'True'
     filter: '""'
-    name: ''
+    name: Preamble detect
     num_inputs: '1'
-    type: byte
+    type: complex
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1424, 1964.0]
+    coordinate: [632, 924.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: blocks_tag_gate_0
   id: blocks_tag_gate
   parameters:
@@ -1052,7 +1065,7 @@ blocks:
     marker9: '-1'
     name: ''
     nconnections: '1'
-    size: M*13
+    size: M*20*2
     srate: '1.0'
     stemplot: 'False'
     style1: '1'
@@ -1066,11 +1079,11 @@ blocks:
     style8: '1'
     style9: '1'
     tr_chan: '0'
-    tr_delay: 20*M
+    tr_delay: '0'
     tr_level: '0.0'
     tr_mode: qtgui.TRIG_MODE_FREE
     tr_slope: qtgui.TRIG_SLOPE_POS
-    tr_tag: '"time_offset"'
+    tr_tag: '0'
     type: float
     update_time: '0.10'
     width1: '1'
@@ -1365,6 +1378,7 @@ connections:
 - [blocks_repack_bits_bb_0, '0', lora2_lora_whiten_0, '0']
 - [blocks_repack_bits_bb_0_0, '0', lora2_flip_half_bytes_0_0, '0']
 - [blocks_socket_pdu_0_0, pdus, blocks_pdu_set_0, pdus]
+- [blocks_tag_gate_0, '0', analog_quadrature_demod_cf_0, '0']
 - [blocks_tag_gate_0, '0', fir_filter_xxx_0, '0']
 - [blocks_tagged_stream_mux_0, '0', lora2_lora_add_preamble_0, '0']
 - [blocks_tagged_stream_to_pdu_0, pdus, digital_protocol_formatter_async_0, in]
@@ -1373,6 +1387,7 @@ connections:
 - [digital_header_payload_demux_0, '1', virtual_sink_4, '0']
 - [digital_protocol_formatter_async_0, header, virtual_sink_0_1, '0']
 - [digital_protocol_formatter_async_0, payload, virtual_sink_0_1_0, '0']
+- [digital_protocol_parser_b_0, info, blocks_message_debug_0, print]
 - [digital_protocol_parser_b_0, info, virtual_sink_2, '0']
 - [fir_filter_xxx_0, '0', virtual_sink_1_0_0_0, '0']
 - [lora2_css_demod_0, '0', virtual_sink_3, '0']
@@ -1395,7 +1410,6 @@ connections:
 - [lora2_lora_depad_0, '0', lora2_lora_hamming_decode_0_0, '0']
 - [lora2_lora_drop_rem_0, '0', lora2_lora_hamming_encode_0_0, '0']
 - [lora2_lora_hamming_decode_0, '0', digital_protocol_parser_b_0, '0']
-- [lora2_lora_hamming_decode_0_0, '0', blocks_tag_debug_0, '0']
 - [lora2_lora_hamming_decode_0_0, '0', lora2_lora_merge_rem_0, '0']
 - [lora2_lora_hamming_encode_0, '0', lora2_lora_interleaver_0, '0']
 - [lora2_lora_hamming_encode_0_0, '0', lora2_lora_pad_0, '0']
@@ -1405,7 +1419,7 @@ connections:
 - [lora2_lora_low_rate_opt_tx_0, '0', virtual_sink_1, '0']
 - [lora2_lora_merge_rem_0, '0', lora2_lora_whiten_0_0, '0']
 - [lora2_lora_pad_0, '0', lora2_lora_interleaver_1, '0']
-- [lora2_lora_preamble_detect_0_0, '0', analog_quadrature_demod_cf_0, '0']
+- [lora2_lora_preamble_detect_0_0, '0', blocks_tag_debug_0_0, '0']
 - [lora2_lora_preamble_detect_0_0, '0', lora2_css_demod_0, '0']
 - [lora2_lora_whiten_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [lora2_lora_whiten_0_0, '0', blocks_repack_bits_bb_0_0, '0']

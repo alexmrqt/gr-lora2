@@ -92,27 +92,6 @@ blocks:
     coordinate: [576, 20.0]
     rotation: 0
     state: enabled
-- name: attenuation
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: ''
-    label: Attenuation
-    min_len: '200'
-    orient: Qt.Horizontal
-    rangeType: float
-    start: '0.0'
-    step: '0.25'
-    stop: '89.75'
-    value: '20'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1136, 20.0]
-    rotation: 0
-    state: enabled
 - name: chan_bw
   id: variable
   parameters:

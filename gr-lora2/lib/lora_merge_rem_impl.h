@@ -37,6 +37,8 @@ namespace gr {
       protected:
         int calculate_output_stream_length(const gr_vector_int &ninput_items);
 
+        void handle_tag_propagation(int ninput_items);
+
       public:
         lora_merge_rem_impl(int SF, const std::string &len_tag_key);
 

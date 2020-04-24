@@ -167,10 +167,9 @@ class state_sync:
         else:
             (self.sync_idx[1], self.sync_conf[1]) = self.demod.soft_demodulate(samples)
 
-            if self.sync_conf[0] > self.sync_conf[1]:
-                self.sync_val = numpy.uint16( 3*numpy.round(((self.sync_idx[0]-sym_up)%self.M)/3) )
-            else:
-                self.sync_val = numpy.uint16( 3*numpy.round(((self.sync_idx[1]-sym_up)%self.M)/3) )
+            self.sync_val = 0
+            self.sync_val |= numpy.uint16( numpy.round(((self.sync_idx[0]-sym_up)%self.M)/8) ) << 4
+            self.sync_val |= numpy.uint16( numpy.round(((self.sync_idx[1]-sym_up)%self.M)/8) )
 
             self.sync_cnt = 0
             return _STATE_DOWN

@@ -80,6 +80,27 @@ blocks:
     coordinate: [176, 12.0]
     rotation: 0
     state: enabled
+- name: bb_gain
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: BB Gain
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '6'
+    stop: '62'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1280, 12.0]
+    rotation: 0
+    state: true
 - name: chan_bw
   id: variable
   parameters:
@@ -165,6 +186,27 @@ blocks:
     coordinate: [1184, 212.0]
     rotation: 0
     state: enabled
+- name: if_gain
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: IF Gain
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '8'
+    stop: '40'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1128, 12.0]
+    rotation: 0
+    state: true
 - name: interp
   id: variable
   parameters:
@@ -201,6 +243,27 @@ blocks:
     coordinate: [896, 20.0]
     rotation: 0
     state: enabled
+- name: rf_gain
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: RF Gain
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '14'
+    stop: '14'
+    value: '14'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [976, 12.0]
+    rotation: 0
+    state: true
 - name: samp_rate
   id: variable
   parameters:
@@ -344,7 +407,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     mtu: '10000'
-    port: '52001'
+    port: '52002'
     tcp_no_delay: 'False'
     type: UDP_SERVER
   states:
@@ -352,6 +415,25 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [32, 148.0]
+    rotation: 0
+    state: enabled
+- name: blocks_tag_gate_0
+  id: blocks_tag_gate
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    propagate_tags: 'False'
+    single_key: '""'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1048, 1100.0]
     rotation: 0
     state: enabled
 - name: blocks_tagged_stream_mux_0
@@ -443,7 +525,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [864, 1084.0]
+    coordinate: [792, 1084.0]
     rotation: 0
     state: enabled
 - name: import_0
@@ -737,7 +819,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [384, 1012.0]
+    coordinate: [312, 1012.0]
     rotation: 0
     state: enabled
 - name: mmse_resampler_xx_0
@@ -755,7 +837,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [648, 1064.0]
+    coordinate: [576, 1064.0]
     rotation: 0
     state: enabled
 - name: osmosdr_sink_0
@@ -796,7 +878,7 @@ blocks:
     ant8: ''
     ant9: ''
     args: '"hackrf"'
-    bb_gain0: '30'
+    bb_gain0: bb_gain
     bb_gain1: '20'
     bb_gain10: '20'
     bb_gain11: '20'
@@ -933,7 +1015,7 @@ blocks:
     freq7: 100e6
     freq8: 100e6
     freq9: 100e6
-    gain0: '10'
+    gain0: rf_gain
     gain1: '10'
     gain10: '10'
     gain11: '10'
@@ -965,7 +1047,7 @@ blocks:
     gain7: '10'
     gain8: '10'
     gain9: '10'
-    if_gain0: '30'
+    if_gain0: if_gain
     if_gain1: '20'
     if_gain10: '20'
     if_gain11: '20'
@@ -1259,7 +1341,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 876.0]
+    coordinate: [120, 876.0]
     rotation: 0
     state: enabled
 - name: virtual_source_0_1
@@ -1285,12 +1367,13 @@ connections:
 - [blocks_pdu_to_tagged_stream_0_0_0_0_0, '0', lora2_lora_drop_rem_0, '0']
 - [blocks_repack_bits_bb_0, '0', lora2_lora_whiten_0, '0']
 - [blocks_socket_pdu_0_0, pdus, blocks_pdu_set_0, pdus]
+- [blocks_tag_gate_0, '0', osmosdr_sink_0, '0']
 - [blocks_tagged_stream_mux_0, '0', lora2_lora_add_preamble_0, '0']
 - [blocks_tagged_stream_to_pdu_0, pdus, digital_protocol_formatter_async_0, in]
 - [digital_protocol_formatter_async_0, header, virtual_sink_0_1, '0']
 - [digital_protocol_formatter_async_0, payload, virtual_sink_0_1_0, '0']
 - [fir_filter_xxx_0, '0', analog_quadrature_demod_cf_0, '0']
-- [freq_xlating_fir_filter_xxx_0, '0', osmosdr_sink_0, '0']
+- [freq_xlating_fir_filter_xxx_0, '0', blocks_tag_gate_0, '0']
 - [freq_xlating_fir_filter_xxx_0, '0', qtgui_sink_x_0, '0']
 - [lora2_css_mod_0, '0', lora2_lora_add_reversed_chirps_0, '0']
 - [lora2_flip_half_bytes_0, '0', blocks_repack_bits_bb_0, '0']

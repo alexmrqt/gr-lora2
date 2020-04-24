@@ -198,7 +198,7 @@ namespace gr {
       d_has_crc = d_hdr_reg.extract_field8(11, 1);
       d_crc = d_hdr_reg.extract_field8(12, 8);
 
-      if ((!d_has_crc) || (d_has_crc && header_ok())) {
+      if (header_ok()) {
         //Populate d_info
         header_payload();
 
