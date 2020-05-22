@@ -35,7 +35,6 @@ GR_PYTHON_INSTALL(
     css_demod.py
     css_demod_algo.py
     flip_half_bytes.py
-    gray_deindexer.py
     lora_add_reversed_chirps.py
     lora_deinterleaver.py
     lora_hamming_decode.py
@@ -60,7 +59,6 @@ set(GR_TEST_TARGET_DEPS gnuradio-lora2)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
 GR_ADD_TEST(qa_css_demod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_demod.py)
 GR_ADD_TEST(qa_flip_half_bytes ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_flip_half_bytes.py)
-GR_ADD_TEST(qa_gray_deindexer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_deindexer.py)
 GR_ADD_TEST(qa_lora_add_reversed_chirps ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_add_reversed_chirps.py)
 GR_ADD_TEST(qa_lora_deinterleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_deinterleaver.py)
 GR_ADD_TEST(qa_lora_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_decode.py)
@@ -86,3 +84,4 @@ GR_ADD_TEST(qa_lora_pad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora
 GR_ADD_TEST(qa_lora_drop_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_drop_rem.py)
 GR_ADD_TEST(qa_gray_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_encode.py)
 GR_ADD_TEST(qa_gray_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_decode.py)
+GR_ADD_TEST(qa_gray_deindexer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_deindexer.py)
