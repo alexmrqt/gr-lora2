@@ -18,6 +18,7 @@
 #include "lora2/lora_header_format.h"
 #include "lora2/lora_pad.h"
 #include "lora2/lora_drop_rem.h"
+#include "lora2/gray_encode.h"
 %}
 
 %include "lora2/css_llr_converter.h"
@@ -47,3 +48,5 @@ lora_header_format = lora_header_format.make;
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_pad);
 %include "lora2/lora_drop_rem.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_drop_rem);
+%include "lora2/gray_encode.h"
+GR_SWIG_BLOCK_MAGIC2(lora2, gray_encode);

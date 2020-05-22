@@ -32,5 +32,6 @@ install(FILES
     lora_soft_depad.h
     lora_header_format.h
     lora_pad.h
-    lora_drop_rem.h DESTINATION include/lora2
+    lora_drop_rem.h
+    gray_encode.h DESTINATION include/lora2
 )

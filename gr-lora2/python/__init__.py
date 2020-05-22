@@ -39,7 +39,7 @@ from .css_demod_algo import css_demod_algo
 from .flip_half_bytes import flip_half_bytes
 from .gray_decode import gray_decode
 from .gray_deindexer import gray_deindexer
-from .gray_encode import gray_encode
+
 from .lora_add_reversed_chirps import lora_add_reversed_chirps
 from .lora_deinterleaver import lora_deinterleaver
 

@@ -32,7 +32,8 @@ list(APPEND lora2_sources
     lora_soft_depad_impl.cc
     lora_header_format.cc
     lora_pad_impl.cc
-    lora_drop_rem_impl.cc )
+    lora_drop_rem_impl.cc
+    gray_encode_impl.cc )
 
 set(lora2_sources "${lora2_sources}" PARENT_SCOPE)
 if(NOT lora2_sources)

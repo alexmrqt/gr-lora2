@@ -22,7 +22,6 @@ install(FILES
     lora2_flip_half_bytes.block.yml
     lora2_gray_decode.block.yml
     lora2_gray_deindexer.block.yml
-    lora2_gray_encode.block.yml
     lora2_lora_add_reversed_chirps.block.yml
     lora2_lora_deinterleaver.block.yml
     lora2_lora_hamming_decode.block.yml
@@ -44,5 +43,6 @@ install(FILES
     lora2_lora_soft_depad.block.yml
     lora2_lora_header_format.block.yml
     lora2_lora_pad.block.yml
-    lora2_lora_drop_rem.block.yml DESTINATION share/gnuradio/grc/blocks
+    lora2_lora_drop_rem.block.yml
+    lora2_gray_encode.block.yml DESTINATION share/gnuradio/grc/blocks
 )
