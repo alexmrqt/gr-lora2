@@ -28,7 +28,7 @@ class css_mod_algo():
         self.MQ = float(self.M * self.Q)
         self.MQ_int = int(self.M * self.Q)
 
-        self.k = numpy.linspace(0.0, self.MQ-1.0, self.MQ)
+        self.k = numpy.linspace(0.0, int(self.MQ-1.0), int(self.MQ))
 
     def modulate(self, input_items):
         ninput_items = len(input_items)

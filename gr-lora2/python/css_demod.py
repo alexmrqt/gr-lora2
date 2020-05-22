@@ -23,6 +23,7 @@ import math
 import pmt
 import numpy
 import scipy
+import scipy.signal
 from gnuradio import gr
 
 from lora2 import css_mod_algo
