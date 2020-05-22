@@ -19,8 +19,6 @@
 # Boston, MA 02110-1301, USA.
 install(FILES
     lora2_css_demod.block.yml
-    lora2_css_fine_cfo_detector.block.yml
-    lora2_css_fine_cfo_track.block.yml
     lora2_flip_half_bytes.block.yml
     lora2_gray_decode.block.yml
     lora2_gray_deindexer.block.yml
@@ -29,27 +27,19 @@ install(FILES
     lora2_lora_deinterleaver.block.yml
     lora2_lora_hamming_decode.block.yml
     lora2_lora_hamming_encode.block.yml
-    lora2_lora_implicit_get_payload.block.yml
     lora2_lora_interleaver.block.yml
     lora2_lora_low_rate_opt_rx.block.yml
     lora2_lora_low_rate_opt_tx.block.yml
     lora2_lora_preamble_detect.block.yml
     lora2_lora_soft_deinterleaver.block.yml
     lora2_lora_soft_hamming_decode.block.yml
-    lora2_css_genie_phase_est.block.yml
-    lora2_mfsk_genie_phase_est.block.yml
-    lora2_store_tags.block.yml
-    lora2_tag_delay.block.yml
     lora2_css_llr_converter.block.yml
     lora2_css_mod.block.yml
     lora2_lora_add_preamble.block.yml
     lora2_lora_depad.block.yml
     lora2_lora_merge_rem.block.yml
     lora2_lora_whiten.block.yml
-    lora2_lora_align_sof.block.yml
     lora2_lora_soft_low_rate_opt_rx.block.yml
-    lora2_css_fine_delay_detector.block.yml
-    lora2_css_fine_delay_track.block.yml
     lora2_lora_crc.block.yml
     lora2_lora_soft_depad.block.yml
     lora2_lora_header_format.block.yml
