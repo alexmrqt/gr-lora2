@@ -19,6 +19,7 @@
 #include "lora2/lora_pad.h"
 #include "lora2/lora_drop_rem.h"
 #include "lora2/gray_encode.h"
+#include "lora2/gray_decode.h"
 %}
 
 %include "lora2/css_llr_converter.h"
@@ -50,3 +51,5 @@ GR_SWIG_BLOCK_MAGIC2(lora2, lora_pad);
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_drop_rem);
 %include "lora2/gray_encode.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, gray_encode);
+%include "lora2/gray_decode.h"
+GR_SWIG_BLOCK_MAGIC2(lora2, gray_decode);

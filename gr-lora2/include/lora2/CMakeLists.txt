@@ -33,5 +33,6 @@ install(FILES
     lora_header_format.h
     lora_pad.h
     lora_drop_rem.h
-    gray_encode.h DESTINATION include/lora2
+    gray_encode.h
+    gray_decode.h DESTINATION include/lora2
 )
