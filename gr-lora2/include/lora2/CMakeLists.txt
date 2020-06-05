@@ -35,5 +35,6 @@ install(FILES
     lora_drop_rem.h
     gray_encode.h
     gray_decode.h
-    gray_deindexer.h DESTINATION include/lora2
+    gray_deindexer.h
+    lora_low_rate_opt_tx.h DESTINATION include/lora2
 )

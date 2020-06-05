@@ -41,7 +41,6 @@ GR_PYTHON_INSTALL(
     lora_hamming_encode.py
     lora_interleaver.py
     lora_low_rate_opt_rx.py
-    lora_low_rate_opt_tx.py
     lora_preamble_detect.py
     lora_soft_deinterleaver.py
     lora_soft_hamming_decode.py
@@ -65,7 +64,6 @@ GR_ADD_TEST(qa_lora_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_D
 GR_ADD_TEST(qa_lora_hamming_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_encode.py)
 GR_ADD_TEST(qa_lora_interleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_interleaver.py)
 GR_ADD_TEST(qa_lora_low_rate_opt_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_rx.py)
-GR_ADD_TEST(qa_lora_low_rate_opt_tx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_tx.py)
 GR_ADD_TEST(qa_lora_preamble_detect ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_preamble_detect.py)
 GR_ADD_TEST(qa_lora_soft_deinterleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_deinterleaver.py)
 GR_ADD_TEST(qa_lora_soft_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_hamming_decode.py)
@@ -85,3 +83,4 @@ GR_ADD_TEST(qa_lora_drop_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa
 GR_ADD_TEST(qa_gray_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_encode.py)
 GR_ADD_TEST(qa_gray_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_decode.py)
 GR_ADD_TEST(qa_gray_deindexer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_gray_deindexer.py)
+GR_ADD_TEST(qa_lora_low_rate_opt_tx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_tx.py)
