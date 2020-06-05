@@ -36,7 +36,8 @@ list(APPEND lora2_sources
     gray_encode_impl.cc
     gray_decode_impl.cc
     gray_deindexer_impl.cc
-    lora_low_rate_opt_tx_impl.cc )
+    lora_low_rate_opt_tx_impl.cc
+    lora_low_rate_opt_rx_impl.cc )
 
 set(lora2_sources "${lora2_sources}" PARENT_SCOPE)
 if(NOT lora2_sources)
