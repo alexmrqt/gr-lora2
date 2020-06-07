@@ -19,7 +19,6 @@
 # Boston, MA 02110-1301, USA.
 install(FILES
     lora2_css_demod.block.yml
-    lora2_flip_half_bytes.block.yml
     lora2_lora_add_reversed_chirps.block.yml
     lora2_lora_deinterleaver.block.yml
     lora2_lora_hamming_decode.block.yml
@@ -44,5 +43,6 @@ install(FILES
     lora2_gray_decode.block.yml
     lora2_gray_deindexer.block.yml
     lora2_lora_low_rate_opt_tx.block.yml
-    lora2_lora_low_rate_opt_rx.block.yml DESTINATION share/gnuradio/grc/blocks
+    lora2_lora_low_rate_opt_rx.block.yml
+    lora2_flip_half_bytes.block.yml DESTINATION share/gnuradio/grc/blocks
 )

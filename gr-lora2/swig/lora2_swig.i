@@ -23,6 +23,7 @@
 #include "lora2/gray_deindexer.h"
 #include "lora2/lora_low_rate_opt_tx.h"
 #include "lora2/lora_low_rate_opt_rx.h"
+#include "lora2/flip_half_bytes.h"
 %}
 
 %include "lora2/css_llr_converter.h"
@@ -62,3 +63,5 @@ GR_SWIG_BLOCK_MAGIC2(lora2, gray_deindexer);
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_low_rate_opt_tx);
 %include "lora2/lora_low_rate_opt_rx.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_low_rate_opt_rx);
+%include "lora2/flip_half_bytes.h"
+GR_SWIG_BLOCK_MAGIC2(lora2, flip_half_bytes);
