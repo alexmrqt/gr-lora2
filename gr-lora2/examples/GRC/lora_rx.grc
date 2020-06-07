@@ -368,7 +368,7 @@ blocks:
     bus_structure: null
     coordinate: [912, 324.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_message_debug_0
   id: blocks_message_debug
   parameters:
@@ -513,7 +513,7 @@ blocks:
     bus_structure: null
     coordinate: [1120, 356.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_vector_to_stream_0
   id: blocks_vector_to_stream
   parameters:
@@ -593,7 +593,7 @@ blocks:
     bus_structure: null
     coordinate: [368, 284.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: import_0
   id: import
   parameters:
@@ -863,7 +863,7 @@ blocks:
     bus_structure: null
     coordinate: [712, 148.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: mmse_resampler_xx_0
   id: mmse_resampler_xx
   parameters:
@@ -881,7 +881,7 @@ blocks:
     bus_structure: null
     coordinate: [896, 200.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: osmosdr_source_0
   id: osmosdr_source
   parameters:
@@ -1238,7 +1238,7 @@ blocks:
     bus_structure: null
     coordinate: [16, 204.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_sink_x_0
   id: qtgui_sink_x
   parameters:
@@ -1267,7 +1267,7 @@ blocks:
     bus_structure: null
     coordinate: [696, 292.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_time_sink_x_0_0
   id: qtgui_time_sink_x
   parameters:

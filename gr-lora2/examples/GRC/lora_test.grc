@@ -119,7 +119,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1296, 1408.0]
+    coordinate: [408, 1840.0]
     rotation: 0
     state: true
 - name: blocks_null_sink_0
@@ -1382,12 +1382,12 @@ connections:
 - [blocks_tag_gate_0, '0', fir_filter_xxx_0, '0']
 - [blocks_tagged_stream_mux_0, '0', lora2_lora_add_preamble_0, '0']
 - [blocks_tagged_stream_to_pdu_0, pdus, digital_protocol_formatter_async_0, in]
+- [blocks_tagged_stream_to_pdu_0_0, pdus, blocks_message_debug_0, print_pdu]
 - [blocks_tagged_stream_to_pdu_0_0, pdus, lora2_lora_crc_0_0, pdus]
 - [digital_header_payload_demux_0, '0', virtual_sink_1_1, '0']
 - [digital_header_payload_demux_0, '1', virtual_sink_4, '0']
 - [digital_protocol_formatter_async_0, header, virtual_sink_0_1, '0']
 - [digital_protocol_formatter_async_0, payload, virtual_sink_0_1_0, '0']
-- [digital_protocol_parser_b_0, info, blocks_message_debug_0, print]
 - [digital_protocol_parser_b_0, info, virtual_sink_2, '0']
 - [fir_filter_xxx_0, '0', virtual_sink_1_0_0_0, '0']
 - [lora2_css_demod_0, '0', virtual_sink_3, '0']

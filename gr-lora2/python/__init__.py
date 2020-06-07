@@ -63,5 +63,5 @@ from .lora_soft_low_rate_opt_rx import lora_soft_low_rate_opt_rx
 
 
 
-from .lora_crc import lora_crc
+
 #

@@ -38,5 +38,6 @@ install(FILES
     gray_deindexer.h
     lora_low_rate_opt_tx.h
     lora_low_rate_opt_rx.h
-    flip_half_bytes.h DESTINATION include/lora2
+    flip_half_bytes.h
+    lora_crc.h DESTINATION include/lora2
 )

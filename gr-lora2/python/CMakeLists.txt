@@ -44,7 +44,7 @@ GR_PYTHON_INSTALL(
     lora_soft_hamming_decode.py
     css_mod_algo.py
     lora_soft_low_rate_opt_rx.py
-    lora_crc.py DESTINATION ${GR_PYTHON_DIR}/lora2
+    DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
 ########################################################################
@@ -72,7 +72,6 @@ GR_ADD_TEST(qa_lora_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lo
 GR_ADD_TEST(qa_lora_merge_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_merge_rem.py)
 GR_ADD_TEST(qa_lora_whiten ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_whiten.py)
 GR_ADD_TEST(qa_lora_soft_low_rate_opt_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_low_rate_opt_rx.py)
-GR_ADD_TEST(qa_lora_crc ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_crc.py)
 GR_ADD_TEST(qa_lora_soft_depad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_depad.py)
 GR_ADD_TEST(qa_lora_pad ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_pad.py)
 GR_ADD_TEST(qa_lora_drop_rem ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_drop_rem.py)
@@ -82,3 +81,4 @@ GR_ADD_TEST(qa_gray_deindexer ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/q
 GR_ADD_TEST(qa_lora_low_rate_opt_tx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_tx.py)
 GR_ADD_TEST(qa_lora_low_rate_opt_rx ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_low_rate_opt_rx.py)
 GR_ADD_TEST(qa_flip_half_bytes ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_flip_half_bytes.py)
+GR_ADD_TEST(qa_lora_crc ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_crc.py)
