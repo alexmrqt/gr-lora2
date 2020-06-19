@@ -33,7 +33,6 @@ install(FILES
     lora2_lora_depad.block.yml
     lora2_lora_merge_rem.block.yml
     lora2_lora_whiten.block.yml
-    lora2_lora_soft_low_rate_opt_rx.block.yml
     lora2_lora_soft_depad.block.yml
     lora2_lora_header_format.block.yml
     lora2_lora_pad.block.yml
@@ -44,5 +43,6 @@ install(FILES
     lora2_lora_low_rate_opt_tx.block.yml
     lora2_lora_low_rate_opt_rx.block.yml
     lora2_flip_half_bytes.block.yml
-    lora2_lora_crc.block.yml DESTINATION share/gnuradio/grc/blocks
+    lora2_lora_crc.block.yml
+    lora2_lora_soft_low_rate_opt_rx.block.yml DESTINATION share/gnuradio/grc/blocks
 )

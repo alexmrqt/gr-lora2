@@ -39,5 +39,6 @@ install(FILES
     lora_low_rate_opt_tx.h
     lora_low_rate_opt_rx.h
     flip_half_bytes.h
-    lora_crc.h DESTINATION include/lora2
+    lora_crc.h
+    lora_soft_low_rate_opt_rx.h DESTINATION include/lora2
 )
