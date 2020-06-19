@@ -40,7 +40,8 @@ list(APPEND lora2_sources
     lora_low_rate_opt_rx_impl.cc
     flip_half_bytes_impl.cc
     lora_crc_impl.cc
-    lora_soft_low_rate_opt_rx_impl.cc )
+    lora_soft_low_rate_opt_rx_impl.cc
+    lora_interleaver_impl.cc )
 
 set(lora2_sources "${lora2_sources}" PARENT_SCOPE)
 if(NOT lora2_sources)
