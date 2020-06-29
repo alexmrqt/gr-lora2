@@ -27,6 +27,7 @@
 #include "lora2/lora_crc.h"
 #include "lora2/lora_soft_low_rate_opt_rx.h"
 #include "lora2/lora_interleaver.h"
+#include "lora2/lora_deinterleaver.h"
 %}
 
 %include "lora2/css_llr_converter.h"
@@ -74,3 +75,5 @@ GR_SWIG_BLOCK_MAGIC2(lora2, lora_crc);
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_soft_low_rate_opt_rx);
 %include "lora2/lora_interleaver.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_interleaver);
+%include "lora2/lora_deinterleaver.h"
+GR_SWIG_BLOCK_MAGIC2(lora2, lora_deinterleaver);

@@ -20,7 +20,6 @@
 install(FILES
     lora2_css_demod.block.yml
     lora2_lora_add_reversed_chirps.block.yml
-    lora2_lora_deinterleaver.block.yml
     lora2_lora_hamming_decode.block.yml
     lora2_lora_hamming_encode.block.yml
     lora2_lora_preamble_detect.block.yml
@@ -44,5 +43,6 @@ install(FILES
     lora2_flip_half_bytes.block.yml
     lora2_lora_crc.block.yml
     lora2_lora_soft_low_rate_opt_rx.block.yml
-    lora2_lora_interleaver.block.yml DESTINATION share/gnuradio/grc/blocks
+    lora2_lora_interleaver.block.yml
+    lora2_lora_deinterleaver.block.yml DESTINATION share/gnuradio/grc/blocks
 )
