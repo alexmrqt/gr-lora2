@@ -51,7 +51,7 @@ from .lora_hamming_encode import lora_hamming_encode
 
 
 from .lora_preamble_detect import lora_preamble_detect
-from .lora_soft_deinterleaver import lora_soft_deinterleaver
+
 from .lora_soft_hamming_decode import lora_soft_hamming_decode
 
 

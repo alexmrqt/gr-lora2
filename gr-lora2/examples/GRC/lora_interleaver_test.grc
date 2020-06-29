@@ -74,7 +74,7 @@ blocks:
     bus_structure: null
     coordinate: [48, 252]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_char_to_float_0
   id: blocks_char_to_float
   parameters:
@@ -89,7 +89,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [520, 484]
+    coordinate: [520, 580.0]
     rotation: 0
     state: enabled
 - name: blocks_char_to_float_0_0
@@ -106,7 +106,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [520, 532]
+    coordinate: [520, 628.0]
     rotation: 0
     state: enabled
 - name: blocks_unpack_k_bits_bb_0
@@ -144,7 +144,7 @@ blocks:
     bus_structure: null
     coordinate: [48, 356]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: lora2_lora_deinterleaver_0
   id: lora2_lora_deinterleaver
   parameters:
@@ -160,7 +160,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [640, 252]
+    coordinate: [640, 260.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_interleaver_0
@@ -276,7 +276,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [688, 492]
+    coordinate: [688, 596.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_0
@@ -289,7 +289,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [864, 268]
+    coordinate: [840, 276.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_0_0
@@ -315,7 +315,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [344, 484]
+    coordinate: [344, 580.0]
     rotation: 0
     state: enabled
 - name: virtual_source_0_0
@@ -328,7 +328,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [336, 532]
+    coordinate: [336, 628.0]
     rotation: 0
     state: enabled
 

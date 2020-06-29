@@ -42,5 +42,6 @@ install(FILES
     lora_crc.h
     lora_soft_low_rate_opt_rx.h
     lora_interleaver.h
-    lora_deinterleaver.h DESTINATION include/lora2
+    lora_deinterleaver.h
+    lora_soft_deinterleaver.h DESTINATION include/lora2
 )

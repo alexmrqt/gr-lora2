@@ -18,39 +18,38 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_LORA2_LORA_DEINTERLEAVER_IMPL_H
-#define INCLUDED_LORA2_LORA_DEINTERLEAVER_IMPL_H
+#ifndef INCLUDED_LORA2_LORA_SOFT_DEINTERLEAVER_H
+#define INCLUDED_LORA2_LORA_SOFT_DEINTERLEAVER_H
 
-#include <lora2/lora_deinterleaver.h>
+#include <lora2/api.h>
+#include <gnuradio/block.h>
 
 namespace gr {
   namespace lora2 {
 
-    class lora_deinterleaver_impl : public lora_deinterleaver
+    /*!
+     * \brief <+description of block+>
+     * \ingroup lora2
+     *
+     */
+    class LORA2_API lora_soft_deinterleaver : virtual public gr::block
     {
-      private:
-        int d_SF;
-        int d_CR;
-
-        int d_len_block_in;
-        int d_len_block_out;
-
-        void handle_tag_propagation(int in_idx, int out_idx);
-
       public:
-        lora_deinterleaver_impl(int SF, int CR, bool reduced_rate);
+        typedef boost::shared_ptr<lora_soft_deinterleaver> sptr;
 
-        void forecast (int noutput_items, gr_vector_int &ninput_items_required);
-
-        int general_work(int noutput_items,
-            gr_vector_int &ninput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items);
-
+        /*!
+         * \brief Return a shared_ptr to a new instance of lora2::lora_soft_deinterleaver.
+         *
+         * To avoid accidental use of raw pointers, lora2::lora_soft_deinterleaver's
+         * constructor is in a private implementation
+         * class. lora2::lora_soft_deinterleaver::make is the public interface for
+         * creating new instances.
+         */
+        static sptr make(int SF, int CR, bool reduced_rate=false);
     };
 
   } // namespace lora2
 } // namespace gr
 
-#endif /* INCLUDED_LORA2_LORA_DEINTERLEAVER_IMPL_H */
+#endif /* INCLUDED_LORA2_LORA_SOFT_DEINTERLEAVER_H */
 

@@ -18,15 +18,15 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_LORA2_LORA_DEINTERLEAVER_IMPL_H
-#define INCLUDED_LORA2_LORA_DEINTERLEAVER_IMPL_H
+#ifndef INCLUDED_LORA2_LORA_SOFT_DEINTERLEAVER_IMPL_H
+#define INCLUDED_LORA2_LORA_SOFT_DEINTERLEAVER_IMPL_H
 
-#include <lora2/lora_deinterleaver.h>
+#include <lora2/lora_soft_deinterleaver.h>
 
 namespace gr {
   namespace lora2 {
 
-    class lora_deinterleaver_impl : public lora_deinterleaver
+    class lora_soft_deinterleaver_impl : public lora_soft_deinterleaver
     {
       private:
         int d_SF;
@@ -38,7 +38,7 @@ namespace gr {
         void handle_tag_propagation(int in_idx, int out_idx);
 
       public:
-        lora_deinterleaver_impl(int SF, int CR, bool reduced_rate);
+        lora_soft_deinterleaver_impl(int SF, int CR, bool reduced_rate);
 
         void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
@@ -52,5 +52,5 @@ namespace gr {
   } // namespace lora2
 } // namespace gr
 
-#endif /* INCLUDED_LORA2_LORA_DEINTERLEAVER_IMPL_H */
+#endif /* INCLUDED_LORA2_LORA_SOFT_DEINTERLEAVER_IMPL_H */
 
