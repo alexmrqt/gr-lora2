@@ -30,6 +30,7 @@
 #include "lora2/lora_deinterleaver.h"
 #include "lora2/lora_soft_deinterleaver.h"
 #include "lora2/lora_hamming_encode.h"
+#include "lora2/lora_hamming_decode.h"
 %}
 
 %include "lora2/css_llr_converter.h"
@@ -83,3 +84,5 @@ GR_SWIG_BLOCK_MAGIC2(lora2, lora_deinterleaver);
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_soft_deinterleaver);
 %include "lora2/lora_hamming_encode.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_hamming_encode);
+%include "lora2/lora_hamming_decode.h"
+GR_SWIG_BLOCK_MAGIC2(lora2, lora_hamming_decode);
