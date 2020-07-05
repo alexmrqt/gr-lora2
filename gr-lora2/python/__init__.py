@@ -52,7 +52,7 @@ from .lora_add_reversed_chirps import lora_add_reversed_chirps
 
 from .lora_preamble_detect import lora_preamble_detect
 
-from .lora_soft_hamming_decode import lora_soft_hamming_decode
+
 
 
 

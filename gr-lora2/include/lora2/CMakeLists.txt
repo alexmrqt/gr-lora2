@@ -45,5 +45,6 @@ install(FILES
     lora_deinterleaver.h
     lora_soft_deinterleaver.h
     lora_hamming_encode.h
-    lora_hamming_decode.h DESTINATION include/lora2
+    lora_hamming_decode.h
+    lora_soft_hamming_decode.h DESTINATION include/lora2
 )

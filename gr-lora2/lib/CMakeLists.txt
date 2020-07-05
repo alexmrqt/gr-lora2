@@ -45,7 +45,8 @@ list(APPEND lora2_sources
     lora_deinterleaver_impl.cc
     lora_soft_deinterleaver_impl.cc
     lora_hamming_encode_impl.cc
-    lora_hamming_decode_impl.cc )
+    lora_hamming_decode_impl.cc
+    lora_soft_hamming_decode_impl.cc )
 
 set(lora2_sources "${lora2_sources}" PARENT_SCOPE)
 if(NOT lora2_sources)
