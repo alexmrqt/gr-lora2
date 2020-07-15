@@ -1,52 +1,38 @@
 /* -*- c++ -*- */
-/* 
- * Copyright 2019 Alexandre Marquet.
- * 
+/*
+ * Copyright 2020 Alexandre Marquet.
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_LORA2_CSS_MOD_IMPL_H
-#define INCLUDED_LORA2_CSS_MOD_IMPL_H
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-#include <gnuradio/expj.h>
-#include <gnuradio/math.h>
-#include <lora2/css_mod.h>
 #include <lora2/css_mod_algo.h>
+#include <gnuradio/attributes.h>
+#include <boost/test/unit_test.hpp>
 
 namespace gr {
   namespace lora2 {
 
-    class css_mod_impl : public css_mod
+    BOOST_AUTO_TEST_CASE(test_css_mod_algo_t1)
     {
-      private:
-        int d_M;
-        int d_Q;
-        css_mod_algo d_css_mod;
+      // Put test here
+    }
 
-      public:
-        css_mod_impl(int M, int interp);
-
-        // Where all the action really happens
-        int work(int noutput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items);
-    };
-
-  } // namespace lora2
-} // namespace gr
-
-#endif /* INCLUDED_LORA2_CSS_MOD_IMPL_H */
-
+  } /* namespace lora2 */
+} /* namespace gr */

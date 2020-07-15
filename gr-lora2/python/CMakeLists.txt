@@ -36,7 +36,6 @@ GR_PYTHON_INSTALL(
     css_demod_algo.py
     lora_add_reversed_chirps.py
     lora_preamble_detect.py
-    css_mod_algo.py
     DESTINATION ${GR_PYTHON_DIR}/lora2
 )
 
