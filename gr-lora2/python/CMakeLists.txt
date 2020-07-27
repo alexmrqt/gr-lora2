@@ -34,7 +34,6 @@ GR_PYTHON_INSTALL(
     __init__.py
     css_demod.py
     css_demod_algo.py
-    lora_add_reversed_chirps.py
     lora_preamble_detect.py
     DESTINATION ${GR_PYTHON_DIR}/lora2
 )
@@ -47,7 +46,6 @@ include(GrTest)
 set(GR_TEST_TARGET_DEPS gnuradio-lora2)
 set(GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR}/swig)
 GR_ADD_TEST(qa_css_demod ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_css_demod.py)
-GR_ADD_TEST(qa_lora_add_reversed_chirps ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_add_reversed_chirps.py)
 GR_ADD_TEST(qa_lora_preamble_detect ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_preamble_detect.py)
 GR_ADD_TEST(qa_store_tags ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_store_tags.py)
 GR_ADD_TEST(qa_tag_delay ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_tag_delay.py)
@@ -74,3 +72,4 @@ GR_ADD_TEST(qa_lora_soft_deinterleaver ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOUR
 GR_ADD_TEST(qa_lora_hamming_encode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_encode.py)
 GR_ADD_TEST(qa_lora_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_hamming_decode.py)
 GR_ADD_TEST(qa_lora_soft_hamming_decode ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_soft_hamming_decode.py)
+GR_ADD_TEST(qa_lora_add_reversed_chirps ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qa_lora_add_reversed_chirps.py)

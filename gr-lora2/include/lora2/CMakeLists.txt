@@ -47,5 +47,6 @@ install(FILES
     lora_hamming_encode.h
     lora_hamming_decode.h
     lora_soft_hamming_decode.h
-    css_mod_algo.h DESTINATION include/lora2
+    css_mod_algo.h
+    lora_add_reversed_chirps.h DESTINATION include/lora2
 )

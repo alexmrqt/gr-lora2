@@ -32,6 +32,7 @@
 #include "lora2/lora_hamming_encode.h"
 #include "lora2/lora_hamming_decode.h"
 #include "lora2/lora_soft_hamming_decode.h"
+#include "lora2/lora_add_reversed_chirps.h"
 %}
 
 %include "lora2/css_llr_converter.h"
@@ -89,3 +90,5 @@ GR_SWIG_BLOCK_MAGIC2(lora2, lora_hamming_encode);
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_hamming_decode);
 %include "lora2/lora_soft_hamming_decode.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_soft_hamming_decode);
+%include "lora2/lora_add_reversed_chirps.h"
+GR_SWIG_BLOCK_MAGIC2(lora2, lora_add_reversed_chirps);
