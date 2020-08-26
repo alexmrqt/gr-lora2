@@ -55,7 +55,7 @@ namespace gr {
       d_rev_chirps_tag_key(pmt::intern(rev_chirp_tag_key))
     {
       // Symbols to be modulated
-      const short syms[] = {0, 0, 0};
+      const unsigned short syms[] = {0, 0, 0};
       // Create a downchirp modulator
       css_mod_algo modulator = css_mod_algo(d_M, d_interp, false);
 

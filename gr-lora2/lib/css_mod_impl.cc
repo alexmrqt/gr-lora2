@@ -40,7 +40,7 @@ namespace gr {
      */
     css_mod_impl::css_mod_impl(int M, int interp)
       : gr::sync_interpolator("css_mod",
-          gr::io_signature::make(1, 1, sizeof(short)),
+          gr::io_signature::make(1, 1, sizeof(unsigned short)),
           gr::io_signature::make(1, 1, sizeof(gr_complex)), M*interp),
       d_M(M), d_Q(interp), d_css_mod(css_mod_algo(M, interp))
     {
@@ -51,7 +51,7 @@ namespace gr {
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
     {
-      const short *in = (const short *) input_items[0];
+      const unsigned short *in = (const unsigned short *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
 
       int n_syms = noutput_items / (d_M * d_Q);

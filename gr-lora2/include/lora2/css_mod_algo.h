@@ -40,7 +40,7 @@ namespace gr {
 
       public:
         css_mod_algo(int M, int interp=1, bool upchirp=true);
-        void modulate(const short *in, gr_complex *out, size_t n_syms);
+        void modulate(const unsigned short *in, gr_complex *out, size_t n_syms);
     };
 
   } // namespace lora2

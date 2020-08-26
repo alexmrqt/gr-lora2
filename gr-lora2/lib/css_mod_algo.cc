@@ -34,7 +34,7 @@ namespace gr {
     }
 
     void
-    css_mod_algo::modulate(const short *in, gr_complex *out, size_t n_syms)
+    css_mod_algo::modulate(const unsigned short *in, gr_complex *out, size_t n_syms)
     {
       float out_freq = 0.0;
       float out_phase = 0.0;
