@@ -28,8 +28,7 @@
 namespace gr {
 namespace lora2 {
 
-lora_crc::sptr
-lora_crc::make(bool mode)
+lora_crc::sptr lora_crc::make(bool mode)
 {
 	return gnuradio::get_initial_sptr
 		(new lora_crc_impl(mode));
