@@ -26,50 +26,47 @@
 #include "lora_drop_rem_impl.h"
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    lora_drop_rem::sptr
-    lora_drop_rem::make(unsigned char SF, const std::string &len_tag_key)
-    {
-      return gnuradio::get_initial_sptr
-        (new lora_drop_rem_impl(SF, len_tag_key));
-    }
+lora_drop_rem::sptr lora_drop_rem::make(unsigned char SF, const std::string &len_tag_key)
+{
+	return gnuradio::get_initial_sptr
+		(new lora_drop_rem_impl(SF, len_tag_key));
+}
 
 
-    /*
-     * The private constructor
-     */
-    lora_drop_rem_impl::lora_drop_rem_impl(unsigned char SF, const std::string &len_tag_key)
-      : gr::tagged_stream_block("lora_drop_rem",
-          gr::io_signature::make(1, 1, sizeof(char)),
-          gr::io_signature::make(1, 1, sizeof(char)), len_tag_key),
-      d_nitems_drop((SF-2)*4 - 20)
-    {
-    }
+/*
+ * The private constructor
+ */
+lora_drop_rem_impl::lora_drop_rem_impl(unsigned char SF, const std::string &len_tag_key)
+	: gr::tagged_stream_block("lora_drop_rem",
+			gr::io_signature::make(1, 1, sizeof(char)),
+			gr::io_signature::make(1, 1, sizeof(char)), len_tag_key),
+	d_nitems_drop((SF-2)*4 - 20)
+{
+}
 
-    int
-    lora_drop_rem_impl::calculate_output_stream_length(const gr_vector_int &ninput_items)
-    {
-      int noutput_items = ninput_items[0] - d_nitems_drop;
+int lora_drop_rem_impl::calculate_output_stream_length(const gr_vector_int &ninput_items)
+{
+	int noutput_items = ninput_items[0] - d_nitems_drop;
 
-      return noutput_items ;
-    }
+	return noutput_items ;
+}
 
-    int
-    lora_drop_rem_impl::work (int noutput_items,
-        gr_vector_int &ninput_items,
-        gr_vector_const_void_star &input_items,
-        gr_vector_void_star &output_items)
-    {
-      const char *in = (const char *) input_items[0];
-      char *out = (char *) output_items[0];
+int lora_drop_rem_impl::work (int noutput_items,
+		gr_vector_int &ninput_items,
+		gr_vector_const_void_star &input_items,
+		gr_vector_void_star &output_items)
+{
+	const char *in = (const char *) input_items[0];
+	char *out = (char *) output_items[0];
 
-      memcpy(out, in+d_nitems_drop, noutput_items);
+	memcpy(out, in+d_nitems_drop, noutput_items);
 
-      // Tell runtime system how many output items we produced.
-      return ninput_items[0] - d_nitems_drop;
-    }
+	// Tell runtime system how many output items we produced.
+	return ninput_items[0] - d_nitems_drop;
+}
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */
 

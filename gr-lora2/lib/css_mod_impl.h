@@ -27,25 +27,25 @@
 #include <lora2/css_mod_algo.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class css_mod_impl : public css_mod
-    {
-      private:
-        int d_M;
-        int d_Q;
-        css_mod_algo d_css_mod;
+class css_mod_impl : public css_mod
+{
+	private:
+		int d_M;
+		int d_Q;
+		css_mod_algo d_css_mod;
 
-      public:
-        css_mod_impl(int M, int interp);
+	public:
+		css_mod_impl(int M, int interp);
 
-        // Where all the action really happens
-        int work(int noutput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items);
-    };
+		// Where all the action really happens
+		int work(int noutput_items,
+				gr_vector_const_void_star &input_items,
+				gr_vector_void_star &output_items);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_CSS_MOD_IMPL_H */

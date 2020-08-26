@@ -26,30 +26,30 @@
 #include <gnuradio/sync_block.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    /*!
-     * \brief <+description of block+>
-     * \ingroup lora2
-     *
-     */
-    class LORA2_API css_llr_converter : virtual public gr::sync_block
-    {
-     public:
-      typedef boost::shared_ptr<css_llr_converter> sptr;
+/*!
+ * \brief <+description of block+>
+ * \ingroup lora2
+ *
+ */
+class LORA2_API css_llr_converter : virtual public gr::sync_block
+{
+	public:
+		typedef boost::shared_ptr<css_llr_converter> sptr;
 
-      /*!
-       * \brief Return a shared_ptr to a new instance of lora2::css_llr_converter.
-       *
-       * To avoid accidental use of raw pointers, lora2::css_llr_converter's
-       * constructor is in a private implementation
-       * class. lora2::css_llr_converter::make is the public interface for
-       * creating new instances.
-       */
-      static sptr make(int M, bool true_llr = false, float sigma_b = 0.0);
-    };
+		/*!
+		 * \brief Return a shared_ptr to a new instance of lora2::css_llr_converter.
+		 *
+		 * To avoid accidental use of raw pointers, lora2::css_llr_converter's
+		 * constructor is in a private implementation
+		 * class. lora2::css_llr_converter::make is the public interface for
+		 * creating new instances.
+		 */
+		static sptr make(int M, bool true_llr = false, float sigma_b = 0.0);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_CSS_LLR_CONVERTER_H */

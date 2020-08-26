@@ -24,24 +24,24 @@
 #include <lora2/gray_encode.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class gray_encode_impl : public gray_encode
-    {
-      private:
+class gray_encode_impl : public gray_encode
+{
+	private:
 
-      public:
-        gray_encode_impl();
+	public:
+		gray_encode_impl();
 
-        // Where all the action really happens
-        int work(
-            int noutput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items
-            );
-    };
+		// Where all the action really happens
+		int work(
+				int noutput_items,
+				gr_vector_const_void_star &input_items,
+				gr_vector_void_star &output_items
+				);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_GRAY_ENCODE_IMPL_H */

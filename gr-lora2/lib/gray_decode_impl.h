@@ -24,25 +24,25 @@
 #include <lora2/gray_decode.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class gray_decode_impl : public gray_decode
-    {
-      private:
-        // Nothing to declare in this block.
+	class gray_decode_impl : public gray_decode
+	{
+		private:
+			// Nothing to declare in this block.
 
-      public:
-        gray_decode_impl();
+		public:
+			gray_decode_impl();
 
-        // Where all the action really happens
-        int work(
-            int noutput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items
-            );
-    };
+			// Where all the action really happens
+			int work(
+					int noutput_items,
+					gr_vector_const_void_star &input_items,
+					gr_vector_void_star &output_items
+					);
+	};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_GRAY_DECODE_IMPL_H */

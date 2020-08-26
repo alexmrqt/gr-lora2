@@ -25,33 +25,33 @@
 #include <gnuradio/block.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    /*!
-     * \brief <+description of block+>
-     * \ingroup lora2
-     *
-     */
-    class LORA2_API lora_add_reversed_chirps : virtual public gr::block
-    {
-      public:
-        typedef boost::shared_ptr<lora_add_reversed_chirps> sptr;
+/*!
+ * \brief <+description of block+>
+ * \ingroup lora2
+ *
+ */
+class LORA2_API lora_add_reversed_chirps : virtual public gr::block
+{
+	public:
+		typedef boost::shared_ptr<lora_add_reversed_chirps> sptr;
 
-        /*!
-         * \brief Return a shared_ptr to a new instance of lora2::lora_add_reversed_chirps.
-         *
-         * To avoid accidental use of raw pointers, lora2::lora_add_reversed_chirps's
-         * constructor is in a private implementation
-         * class. lora2::lora_add_reversed_chirps::make is the public interface for
-         * creating new instances.
-         */
-        static sptr make(int SF, int interp,
-            const std::string &len_tag_key,
-            const std::string &payload_tag_key,
-            const std::string &rev_chirp_tag_key);
-    };
+		/*!
+		 * \brief Return a shared_ptr to a new instance of lora2::lora_add_reversed_chirps.
+		 *
+		 * To avoid accidental use of raw pointers, lora2::lora_add_reversed_chirps's
+		 * constructor is in a private implementation
+		 * class. lora2::lora_add_reversed_chirps::make is the public interface for
+		 * creating new instances.
+		 */
+		static sptr make(int SF, int interp,
+				const std::string &len_tag_key,
+				const std::string &payload_tag_key,
+				const std::string &rev_chirp_tag_key);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_LORA_ADD_REVERSED_CHIRPS_H */

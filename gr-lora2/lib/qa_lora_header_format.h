@@ -25,20 +25,20 @@
 #include <cppunit/TestCase.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class qa_lora_header_format : public CppUnit::TestCase
-    {
-    public:
-      CPPUNIT_TEST_SUITE(qa_lora_header_format);
-      CPPUNIT_TEST(t1);
-      CPPUNIT_TEST_SUITE_END();
+class qa_lora_header_format : public CppUnit::TestCase
+{
+	public:
+		CPPUNIT_TEST_SUITE(qa_lora_header_format);
+		CPPUNIT_TEST(t1);
+		CPPUNIT_TEST_SUITE_END();
 
-    private:
-      void t1();
-    };
+	private:
+		void t1();
+};
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */
 
 #endif /* _QA_LORA_HEADER_FORMAT_H_ */

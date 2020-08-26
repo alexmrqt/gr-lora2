@@ -27,39 +27,39 @@
 #include <volk/volk.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    /*!
-     * \brief <+description+>
-     *
-     */
-    class LORA2_API css_demod_algo
-    {
-      private:
-        int d_M;
-        gr_complex *chirp;
-        fft::fft_complex d_fft;
+/*!
+ * \brief <+description+>
+ *
+ */
+class LORA2_API css_demod_algo
+{
+	private:
+		int d_M;
+		gr_complex *chirp;
+		fft::fft_complex d_fft;
 
-      public:
-        css_demod_algo(int M, bool upchirp=true);
-        ~css_demod_algo();
+	public:
+		css_demod_algo(int M, bool upchirp=true);
+		~css_demod_algo();
 
-        void demodulate(const gr_complex *in,
-			unsigned short *out,
-			size_t n_syms);
+		void demodulate(const gr_complex *in,
+				unsigned short *out,
+				size_t n_syms);
 
 		void soft_demodulate(const gr_complex *in,
-			unsigned short *out_syms,
-			float *out_soft,
-			size_t n_syms);
+				unsigned short *out_syms,
+				float *out_soft,
+				size_t n_syms);
 
 		void demodulate_with_spectrum(const gr_complex *in,
-			unsigned short *out_syms,
-			gr_complex *out_spectrum,
-			size_t n_syms);
-    };
+				unsigned short *out_syms,
+				gr_complex *out_spectrum,
+				size_t n_syms);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_CSS_DEMOD_ALGO_H */

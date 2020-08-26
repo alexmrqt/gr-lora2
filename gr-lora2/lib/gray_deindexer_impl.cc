@@ -26,51 +26,49 @@
 #include "gray_deindexer_impl.h"
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    gray_deindexer::sptr
-    gray_deindexer::make(unsigned int M)
-    {
-      return gnuradio::get_initial_sptr
-        (new gray_deindexer_impl(M));
-    }
+gray_deindexer::sptr gray_deindexer::make(unsigned int M)
+{
+	return gnuradio::get_initial_sptr
+		(new gray_deindexer_impl(M));
+}
 
 
-    /*
-     * The private constructor
-     */
-    gray_deindexer_impl::gray_deindexer_impl(unsigned int M)
-    : gr::sync_block("gray_deindexer",
-        gr::io_signature::make(1, 1, M*sizeof(float)),
-        gr::io_signature::make(1, 1, M*sizeof(float))), d_M(M)
-    {
-    }
+/*
+ * The private constructor
+ */
+gray_deindexer_impl::gray_deindexer_impl(unsigned int M)
+	: gr::sync_block("gray_deindexer",
+			gr::io_signature::make(1, 1, M*sizeof(float)),
+			gr::io_signature::make(1, 1, M*sizeof(float))), d_M(M)
+{
+}
 
-    int
-    gray_deindexer_impl::work(int noutput_items,
-        gr_vector_const_void_star &input_items,
-        gr_vector_void_star &output_items)
-    {
-      const float *in = (const float*) input_items[0];
-      float *out = (float*) output_items[0];
+int gray_deindexer_impl::work(int noutput_items,
+		gr_vector_const_void_star &input_items,
+		gr_vector_void_star &output_items)
+{
+	const float *in = (const float*) input_items[0];
+	float *out = (float*) output_items[0];
 
-      // For each vector item (of d_M elements)
-      for (int i=0 ; i < noutput_items ; ++i) {
+	// For each vector item (of d_M elements)
+	for (int i=0 ; i < noutput_items ; ++i) {
 
-        // Shuffle vector
-        for (unsigned int j=0 ; j < d_M ; ++j) {
-          // out[gray[j]] = in[j]
-          out[j^(j>>1)] = *(in++);
-        }
+		// Shuffle vector
+		for (unsigned int j=0 ; j < d_M ; ++j) {
+			// out[gray[j]] = in[j]
+			out[j^(j>>1)] = *(in++);
+		}
 
-        // Go to next vector
-        out += d_M;
-      }
+		// Go to next vector
+		out += d_M;
+	}
 
-      // Tell runtime system how many output items we produced.
-      return noutput_items;
-    }
+	// Tell runtime system how many output items we produced.
+	return noutput_items;
+}
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */
 

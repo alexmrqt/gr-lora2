@@ -26,30 +26,30 @@
 #include <gnuradio/sync_interpolator.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    /*!
-     * \brief <+description of block+>
-     * \ingroup lora2
-     *
-     */
-    class LORA2_API css_mod : virtual public gr::sync_interpolator
-    {
-     public:
-      typedef boost::shared_ptr<css_mod> sptr;
+/*!
+ * \brief <+description of block+>
+ * \ingroup lora2
+ *
+ */
+class LORA2_API css_mod : virtual public gr::sync_interpolator
+{
+	public:
+		typedef boost::shared_ptr<css_mod> sptr;
 
-      /*!
-       * \brief Return a shared_ptr to a new instance of lora2::css_mod.
-       *
-       * To avoid accidental use of raw pointers, lora2::css_mod's
-       * constructor is in a private implementation
-       * class. lora2::css_mod::make is the public interface for
-       * creating new instances.
-       */
-      static sptr make(int M, int interp = 1);
-    };
+		/*!
+		 * \brief Return a shared_ptr to a new instance of lora2::css_mod.
+		 *
+		 * To avoid accidental use of raw pointers, lora2::css_mod's
+		 * constructor is in a private implementation
+		 * class. lora2::css_mod::make is the public interface for
+		 * creating new instances.
+		 */
+		static sptr make(int M, int interp = 1);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_CSS_MOD_H */

@@ -24,14 +24,13 @@
 #include <lora2/css_demod_algo.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    void
-    qa_css_demod_algo::t1()
-    {
-      // Put test here
-    }
+void qa_css_demod_algo::t1()
+{
+	// Put test here
+}
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */
 

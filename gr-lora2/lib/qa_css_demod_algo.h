@@ -25,20 +25,20 @@
 #include <cppunit/TestCase.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class qa_css_demod_algo : public CppUnit::TestCase
-    {
-    public:
-      CPPUNIT_TEST_SUITE(qa_css_demod_algo);
-      CPPUNIT_TEST(t1);
-      CPPUNIT_TEST_SUITE_END();
+class qa_css_demod_algo : public CppUnit::TestCase
+{
+	public:
+		CPPUNIT_TEST_SUITE(qa_css_demod_algo);
+		CPPUNIT_TEST(t1);
+		CPPUNIT_TEST_SUITE_END();
 
-    private:
-      void t1();
-    };
+	private:
+		void t1();
+};
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */
 
 #endif /* _QA_CSS_DEMOD_ALGO_H_ */

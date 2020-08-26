@@ -24,32 +24,32 @@
 #include <lora2/lora_soft_deinterleaver.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class lora_soft_deinterleaver_impl : public lora_soft_deinterleaver
-    {
-      private:
-        int d_SF;
-        int d_CR;
+class lora_soft_deinterleaver_impl : public lora_soft_deinterleaver
+{
+	private:
+		int d_SF;
+		int d_CR;
 
-        int d_len_block_in;
-        int d_len_block_out;
+		int d_len_block_in;
+		int d_len_block_out;
 
-        void handle_tag_propagation(int in_idx, int out_idx);
+		void handle_tag_propagation(int in_idx, int out_idx);
 
-      public:
-        lora_soft_deinterleaver_impl(int SF, int CR, bool reduced_rate);
+	public:
+		lora_soft_deinterleaver_impl(int SF, int CR, bool reduced_rate);
 
-        void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+		void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
-        int general_work(int noutput_items,
-            gr_vector_int &ninput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items);
+		int general_work(int noutput_items,
+				gr_vector_int &ninput_items,
+				gr_vector_const_void_star &input_items,
+				gr_vector_void_star &output_items);
 
-    };
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_LORA_SOFT_DEINTERLEAVER_IMPL_H */

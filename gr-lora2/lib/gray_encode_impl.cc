@@ -26,42 +26,40 @@
 #include "gray_encode_impl.h"
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    gray_encode::sptr
-    gray_encode::make()
-    {
-      return gnuradio::get_initial_sptr
-        (new gray_encode_impl());
-    }
+gray_encode::sptr gray_encode::make()
+{
+	return gnuradio::get_initial_sptr
+		(new gray_encode_impl());
+}
 
 
-    /*
-     * The private constructor
-     */
-    gray_encode_impl::gray_encode_impl()
-    : gr::sync_block("gray_encode",
-        gr::io_signature::make(1, 1, sizeof(uint16_t)),
-        gr::io_signature::make(1, 1, sizeof(uint16_t)))
-    {
-    }
+/*
+ * The private constructor
+ */
+gray_encode_impl::gray_encode_impl()
+	: gr::sync_block("gray_encode",
+			gr::io_signature::make(1, 1, sizeof(uint16_t)),
+			gr::io_signature::make(1, 1, sizeof(uint16_t)))
+{
+}
 
-    int
-    gray_encode_impl::work(int noutput_items,
-        gr_vector_const_void_star &input_items,
-        gr_vector_void_star &output_items)
-    {
-      const uint16_t *in = (const uint16_t*) input_items[0];
-      uint16_t *out = (uint16_t*) output_items[0];
+int gray_encode_impl::work(int noutput_items,
+		gr_vector_const_void_star &input_items,
+		gr_vector_void_star &output_items)
+{
+	const uint16_t *in = (const uint16_t*) input_items[0];
+	uint16_t *out = (uint16_t*) output_items[0];
 
-      for(int i=0 ; i < noutput_items ; ++i) {
-        out[i] = in[i] ^ (in[i]>>1);
-      }
+	for(int i=0 ; i < noutput_items ; ++i) {
+		out[i] = in[i] ^ (in[i]>>1);
+	}
 
-      // Tell runtime system how many output items we produced.
-      return noutput_items;
-    }
+	// Tell runtime system how many output items we produced.
+	return noutput_items;
+}
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */
 

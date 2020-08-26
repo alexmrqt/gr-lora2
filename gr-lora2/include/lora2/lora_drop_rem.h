@@ -25,30 +25,30 @@
 #include <gnuradio/tagged_stream_block.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    /*!
-     * \brief <+description of block+>
-     * \ingroup lora2
-     *
-     */
-    class LORA2_API lora_drop_rem : virtual public gr::tagged_stream_block
-    {
-     public:
-      typedef boost::shared_ptr<lora_drop_rem> sptr;
+/*!
+ * \brief <+description of block+>
+ * \ingroup lora2
+ *
+ */
+class LORA2_API lora_drop_rem : virtual public gr::tagged_stream_block
+{
+	public:
+		typedef boost::shared_ptr<lora_drop_rem> sptr;
 
-      /*!
-       * \brief Return a shared_ptr to a new instance of lora2::lora_drop_rem.
-       *
-       * To avoid accidental use of raw pointers, lora2::lora_drop_rem's
-       * constructor is in a private implementation
-       * class. lora2::lora_drop_rem::make is the public interface for
-       * creating new instances.
-       */
-      static sptr make(unsigned char SF, const std::string &len_tag_key);
-    };
+		/*!
+		 * \brief Return a shared_ptr to a new instance of lora2::lora_drop_rem.
+		 *
+		 * To avoid accidental use of raw pointers, lora2::lora_drop_rem's
+		 * constructor is in a private implementation
+		 * class. lora2::lora_drop_rem::make is the public interface for
+		 * creating new instances.
+		 */
+		static sptr make(unsigned char SF, const std::string &len_tag_key);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_LORA_DROP_REM_H */

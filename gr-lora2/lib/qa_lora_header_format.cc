@@ -24,14 +24,13 @@
 #include <lora2/lora_header_format.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    void
-    qa_lora_header_format::t1()
-    {
-      // Put test here
-    }
+void qa_lora_header_format::t1()
+{
+	// Put test here
+}
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */
 

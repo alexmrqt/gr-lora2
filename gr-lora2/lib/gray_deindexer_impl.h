@@ -24,25 +24,25 @@
 #include <lora2/gray_deindexer.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class gray_deindexer_impl : public gray_deindexer
-    {
-      private:
-        unsigned int d_M;
+class gray_deindexer_impl : public gray_deindexer
+{
+	private:
+		unsigned int d_M;
 
-      public:
-        gray_deindexer_impl(unsigned int M);
+	public:
+		gray_deindexer_impl(unsigned int M);
 
-        // Where all the action really happens
-        int work(
-            int noutput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items
-            );
-    };
+		// Where all the action really happens
+		int work(
+				int noutput_items,
+				gr_vector_const_void_star &input_items,
+				gr_vector_void_star &output_items
+				);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_GRAY_DEINDEXER_IMPL_H */

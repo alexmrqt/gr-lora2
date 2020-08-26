@@ -26,42 +26,41 @@
 #include "lora_low_rate_opt_tx_impl.h"
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    lora_low_rate_opt_tx::sptr
-    lora_low_rate_opt_tx::make()
-    {
-      return gnuradio::get_initial_sptr
-        (new lora_low_rate_opt_tx_impl());
-    }
+lora_low_rate_opt_tx::sptr
+	lora_low_rate_opt_tx::make()
+	{
+		return gnuradio::get_initial_sptr
+			(new lora_low_rate_opt_tx_impl());
+	}
 
 
-    /*
-     * The private constructor
-     */
-    lora_low_rate_opt_tx_impl::lora_low_rate_opt_tx_impl()
-      : gr::sync_block("lora_low_rate_opt_tx",
-          gr::io_signature::make(1, 1, sizeof(short)),
-          gr::io_signature::make(1, 1, sizeof(short)))
-    {
-    }
+/*
+ * The private constructor
+ */
+lora_low_rate_opt_tx_impl::lora_low_rate_opt_tx_impl()
+	: gr::sync_block("lora_low_rate_opt_tx",
+			gr::io_signature::make(1, 1, sizeof(short)),
+			gr::io_signature::make(1, 1, sizeof(short)))
+{
+}
 
-    int
-    lora_low_rate_opt_tx_impl::work(int noutput_items,
-        gr_vector_const_void_star &input_items,
-        gr_vector_void_star &output_items)
-    {
-      const short *in = (const short *) input_items[0];
-      short *out = (short *) output_items[0];
+int lora_low_rate_opt_tx_impl::work(int noutput_items,
+		gr_vector_const_void_star &input_items,
+		gr_vector_void_star &output_items)
+{
+	const short *in = (const short *) input_items[0];
+	short *out = (short *) output_items[0];
 
-      for (int i=0 ; i < noutput_items ; ++i) {
-        *(out++) = *(in++) << 2;
-      }
+	for (int i=0 ; i < noutput_items ; ++i) {
+		*(out++) = *(in++) << 2;
+	}
 
-      // Tell runtime system how many output items we produced.
-      return noutput_items;
-    }
+	// Tell runtime system how many output items we produced.
+	return noutput_items;
+}
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */
 

@@ -26,43 +26,41 @@
 #include "lora_soft_low_rate_opt_rx_impl.h"
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    lora_soft_low_rate_opt_rx::sptr
-    lora_soft_low_rate_opt_rx::make(int SF)
-    {
-      return gnuradio::get_initial_sptr
-        (new lora_soft_low_rate_opt_rx_impl(SF));
-    }
+lora_soft_low_rate_opt_rx::sptr lora_soft_low_rate_opt_rx::make(int SF)
+{
+	return gnuradio::get_initial_sptr
+		(new lora_soft_low_rate_opt_rx_impl(SF));
+}
 
 
-    lora_soft_low_rate_opt_rx_impl::lora_soft_low_rate_opt_rx_impl(int SF)
-      : gr::sync_block("lora_soft_low_rate_opt_rx",
-          gr::io_signature::make(1, 1, SF*sizeof(float)),
-          gr::io_signature::make(1, 1, (SF-2)*sizeof(float))), d_SF(SF)
-    {
-    }
+lora_soft_low_rate_opt_rx_impl::lora_soft_low_rate_opt_rx_impl(int SF)
+	: gr::sync_block("lora_soft_low_rate_opt_rx",
+			gr::io_signature::make(1, 1, SF*sizeof(float)),
+			gr::io_signature::make(1, 1, (SF-2)*sizeof(float))), d_SF(SF)
+{
+}
 
-    int
-    lora_soft_low_rate_opt_rx_impl::work(int noutput_items,
-        gr_vector_const_void_star &input_items,
-        gr_vector_void_star &output_items)
-    {
-      const float *in = (const float*) input_items[0];
-      float *out = (float*) output_items[0];
+int lora_soft_low_rate_opt_rx_impl::work(int noutput_items,
+		gr_vector_const_void_star &input_items,
+		gr_vector_void_star &output_items)
+{
+	const float *in = (const float*) input_items[0];
+	float *out = (float*) output_items[0];
 
-      for (int i=0 ; i < noutput_items ; ++i) {
-        //Copy d_SF-2 elements of input vector to output vector
-        memcpy(out, in, (d_SF-2)*sizeof(float));
+	for (int i=0 ; i < noutput_items ; ++i) {
+		//Copy d_SF-2 elements of input vector to output vector
+		memcpy(out, in, (d_SF-2)*sizeof(float));
 
-        in += d_SF;
-        out += d_SF-2;
-      }
+		in += d_SF;
+		out += d_SF-2;
+	}
 
-      // Tell runtime system how many output items we produced.
-      return noutput_items;
-    }
+	// Tell runtime system how many output items we produced.
+	return noutput_items;
+}
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */
 

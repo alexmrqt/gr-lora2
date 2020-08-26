@@ -24,22 +24,22 @@
 #include <lora2/lora_low_rate_opt_rx.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class lora_low_rate_opt_rx_impl : public lora_low_rate_opt_rx
-    {
-      public:
-        lora_low_rate_opt_rx_impl();
+class lora_low_rate_opt_rx_impl : public lora_low_rate_opt_rx
+{
+	public:
+		lora_low_rate_opt_rx_impl();
 
-        // Where all the action really happens
-        int work(
-            int noutput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items
-            );
-    };
+		// Where all the action really happens
+		int work(
+				int noutput_items,
+				gr_vector_const_void_star &input_items,
+				gr_vector_void_star &output_items
+				);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_LORA_LOW_RATE_OPT_RX_IMPL_H */

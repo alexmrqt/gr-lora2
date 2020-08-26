@@ -24,25 +24,25 @@
 #include <lora2/flip_half_bytes.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class flip_half_bytes_impl : public flip_half_bytes
-    {
-      private:
-        // Nothing to declare in this block.
+class flip_half_bytes_impl : public flip_half_bytes
+{
+	private:
+		// Nothing to declare in this block.
 
-      public:
-        flip_half_bytes_impl();
+	public:
+		flip_half_bytes_impl();
 
-        // Where all the action really happens
-        int work(
-            int noutput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items
-            );
-    };
+		// Where all the action really happens
+		int work(
+				int noutput_items,
+				gr_vector_const_void_star &input_items,
+				gr_vector_void_star &output_items
+				);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_FLIP_HALF_BYTES_IMPL_H */

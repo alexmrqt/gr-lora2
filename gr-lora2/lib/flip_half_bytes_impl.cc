@@ -26,43 +26,41 @@
 #include "flip_half_bytes_impl.h"
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    flip_half_bytes::sptr
-    flip_half_bytes::make()
-    {
-      return gnuradio::get_initial_sptr
-        (new flip_half_bytes_impl());
-    }
-
-
-    /*
-     * The private constructor
-     */
-    flip_half_bytes_impl::flip_half_bytes_impl()
-      : gr::sync_block("flip_half_bytes",
-          gr::io_signature::make(1, 1, sizeof(char)),
-          gr::io_signature::make(1, 1, sizeof(char)))
-    {
-    }
-
-    int
-    flip_half_bytes_impl::work(int noutput_items,
-        gr_vector_const_void_star &input_items,
-        gr_vector_void_star &output_items)
-    {
-      const unsigned char *in = (const unsigned char *) input_items[0];
-      unsigned char *out = (unsigned char *) output_items[0];
+flip_half_bytes::sptr flip_half_bytes::make()
+{
+	return gnuradio::get_initial_sptr
+		(new flip_half_bytes_impl());
+}
 
 
-      for (int i=0 ; i < noutput_items ; ++i) {
-        out[i] = ((in[i] << 4) | (in[i] >> 4))&0xFF;
-      }
+/*
+ * The private constructor
+ */
+flip_half_bytes_impl::flip_half_bytes_impl()
+	: gr::sync_block("flip_half_bytes",
+			gr::io_signature::make(1, 1, sizeof(char)),
+			gr::io_signature::make(1, 1, sizeof(char)))
+{
+}
 
-      // Tell runtime system how many output items we produced.
-      return noutput_items;
-    }
+int flip_half_bytes_impl::work(int noutput_items,
+		gr_vector_const_void_star &input_items,
+		gr_vector_void_star &output_items)
+{
+	const unsigned char *in = (const unsigned char *) input_items[0];
+	unsigned char *out = (unsigned char *) output_items[0];
 
-  } /* namespace lora2 */
+
+	for (int i=0 ; i < noutput_items ; ++i) {
+		out[i] = ((in[i] << 4) | (in[i] >> 4))&0xFF;
+	}
+
+	// Tell runtime system how many output items we produced.
+	return noutput_items;
+}
+
+} /* namespace lora2 */
 } /* namespace gr */
 

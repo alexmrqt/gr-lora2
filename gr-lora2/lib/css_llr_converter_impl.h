@@ -26,31 +26,31 @@
 #include <lora2/css_llr_converter.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class css_llr_converter_impl : public css_llr_converter
-    {
-      private:
-        int d_M;
-        int d_SF;
-        bool d_true_llr;
-        float d_sigma_b2;
+class css_llr_converter_impl : public css_llr_converter
+{
+	private:
+		int d_M;
+		int d_SF;
+		bool d_true_llr;
+		float d_sigma_b2;
 
-        float max_star(float A, float B);
+		float max_star(float A, float B);
 
-        void compute_block_true_llr(const float* in_block, float* out_block);
-        void compute_block_llr(const float* in_block, float* out_block);
+		void compute_block_true_llr(const float* in_block, float* out_block);
+		void compute_block_llr(const float* in_block, float* out_block);
 
-      public:
-        css_llr_converter_impl(int M, bool true_llr, float sigma_b);
+	public:
+		css_llr_converter_impl(int M, bool true_llr, float sigma_b);
 
-        // Where all the action really happens
-        int work(int noutput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items);
-    };
+		// Where all the action really happens
+		int work(int noutput_items,
+				gr_vector_const_void_star &input_items,
+				gr_vector_void_star &output_items);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_CSS_LLR_CONVERTER_IMPL_H */

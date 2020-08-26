@@ -24,25 +24,25 @@
 #include <lora2/lora_low_rate_opt_tx.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class lora_low_rate_opt_tx_impl : public lora_low_rate_opt_tx
-    {
-      private:
-        // Nothing to declare in this block.
+class lora_low_rate_opt_tx_impl : public lora_low_rate_opt_tx
+{
+	private:
+		// Nothing to declare in this block.
 
-      public:
-        lora_low_rate_opt_tx_impl();
+	public:
+		lora_low_rate_opt_tx_impl();
 
-        // Where all the action really happens
-        int work(
-            int noutput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items
-            );
-    };
+		// Where all the action really happens
+		int work(
+				int noutput_items,
+				gr_vector_const_void_star &input_items,
+				gr_vector_void_star &output_items
+				);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_LORA_LOW_RATE_OPT_TX_IMPL_H */

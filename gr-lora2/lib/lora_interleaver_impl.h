@@ -25,35 +25,35 @@
 #include <lora2/lora_interleaver.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class lora_interleaver_impl : public lora_interleaver
-    {
-      private:
-        int d_SF;
-        int d_CR;
-        pmt::pmt_t d_len_tag_key;
+class lora_interleaver_impl : public lora_interleaver
+{
+	private:
+		int d_SF;
+		int d_CR;
+		pmt::pmt_t d_len_tag_key;
 
-        int d_len_block_in;
-        int d_len_block_out;
+		int d_len_block_in;
+		int d_len_block_out;
 
-        void handle_tag_propagation(int in_idx, int out_idx);
+		void handle_tag_propagation(int in_idx, int out_idx);
 
-      public:
-        lora_interleaver_impl(int SF, int CR, const std::string &len_tag_key,
-            bool reduced_rate);
+	public:
+		lora_interleaver_impl(int SF, int CR, const std::string &len_tag_key,
+				bool reduced_rate);
 
-        // Where all the action really happens
-        void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+		// Where all the action really happens
+		void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
-        int general_work(int noutput_items,
-            gr_vector_int &ninput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items);
+		int general_work(int noutput_items,
+				gr_vector_int &ninput_items,
+				gr_vector_const_void_star &input_items,
+				gr_vector_void_star &output_items);
 
-    };
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_LORA_INTERLEAVER_IMPL_H */

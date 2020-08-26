@@ -26,42 +26,40 @@
 #include "css_mod_impl.h"
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    css_mod::sptr
-    css_mod::make(int M, int interp)
-    {
-      return gnuradio::get_initial_sptr
-        (new css_mod_impl(M, interp));
-    }
+css_mod::sptr css_mod::make(int M, int interp)
+{
+	return gnuradio::get_initial_sptr
+		(new css_mod_impl(M, interp));
+}
 
-    /*
-     * The private constructor
-     */
-    css_mod_impl::css_mod_impl(int M, int interp)
-      : gr::sync_interpolator("css_mod",
-          gr::io_signature::make(1, 1, sizeof(unsigned short)),
-          gr::io_signature::make(1, 1, sizeof(gr_complex)), M*interp),
-      d_M(M), d_Q(interp), d_css_mod(css_mod_algo(M, interp))
-    {
-    }
+/*
+ * The private constructor
+ */
+css_mod_impl::css_mod_impl(int M, int interp)
+	: gr::sync_interpolator("css_mod",
+			gr::io_signature::make(1, 1, sizeof(unsigned short)),
+			gr::io_signature::make(1, 1, sizeof(gr_complex)), M*interp),
+	d_M(M), d_Q(interp), d_css_mod(css_mod_algo(M, interp))
+{
+}
 
-    int
-    css_mod_impl::work(int noutput_items,
-        gr_vector_const_void_star &input_items,
-        gr_vector_void_star &output_items)
-    {
-      const unsigned short *in = (const unsigned short *) input_items[0];
-      gr_complex *out = (gr_complex *) output_items[0];
+int css_mod_impl::work(int noutput_items,
+		gr_vector_const_void_star &input_items,
+		gr_vector_void_star &output_items)
+{
+	const unsigned short *in = (const unsigned short *) input_items[0];
+	gr_complex *out = (gr_complex *) output_items[0];
 
-      int n_syms = noutput_items / (d_M * d_Q);
+	int n_syms = noutput_items / (d_M * d_Q);
 
-      d_css_mod.modulate(in, out, n_syms);
+	d_css_mod.modulate(in, out, n_syms);
 
-      // Tell runtime system how many output items we produced.
-      return noutput_items;
-    }
+	// Tell runtime system how many output items we produced.
+	return noutput_items;
+}
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */
 

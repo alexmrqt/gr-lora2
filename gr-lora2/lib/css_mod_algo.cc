@@ -26,36 +26,35 @@
 #include <lora2/css_mod_algo.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    css_mod_algo::css_mod_algo(int M, int interp, bool upchirp)
-      : d_M(M), d_Q(interp), d_upchirp(upchirp)
-    {
-    }
+css_mod_algo::css_mod_algo(int M, int interp, bool upchirp)
+	: d_M(M), d_Q(interp), d_upchirp(upchirp)
+{
+}
 
-    void
-    css_mod_algo::modulate(const unsigned short *in, gr_complex *out, size_t n_syms)
-    {
-      float out_freq = 0.0;
-      float out_phase = 0.0;
+void css_mod_algo::modulate(const unsigned short *in, gr_complex *out, size_t n_syms)
+{
+	float out_freq = 0.0;
+	float out_phase = 0.0;
 
-      for (int i=0 ; i < n_syms ; ++i) {
-        for (int k = 0 ; k < d_M*d_Q ; ++k) {
-          if (d_upchirp) {
-            out_freq = k/(2.0*d_Q) - d_M/2.0 + in[i] \
-                       - d_M * round((float)k/(d_M*d_Q) - 0.5 + (float)in[i]/d_M);
-          }
-          else {
-            out_freq = -k/(2.0*d_Q) - d_M/2.0 + in[i] \
-                       - d_M * round((float)-k/(d_M*d_Q) - 0.5 + (float)in[i]/d_M);
-          }
-          out_phase = 2.0 * M_PI * out_freq / (d_M*d_Q) * k;
+	for (int i=0 ; i < n_syms ; ++i) {
+		for (int k = 0 ; k < d_M*d_Q ; ++k) {
+			if (d_upchirp) {
+				out_freq = k/(2.0*d_Q) - d_M/2.0 + in[i] \
+						   - d_M * round((float)k/(d_M*d_Q) - 0.5 + (float)in[i]/d_M);
+			}
+			else {
+				out_freq = -k/(2.0*d_Q) - d_M/2.0 + in[i] \
+						   - d_M * round((float)-k/(d_M*d_Q) - 0.5 + (float)in[i]/d_M);
+			}
+			out_phase = 2.0 * M_PI * out_freq / (d_M*d_Q) * k;
 
-          *(out++) = gr_expj(out_phase);
-        }
-      }
-    }
+			*(out++) = gr_expj(out_phase);
+		}
+	}
+}
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */
 

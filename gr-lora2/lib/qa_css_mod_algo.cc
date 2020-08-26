@@ -27,12 +27,12 @@
 #include <boost/test/unit_test.hpp>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    BOOST_AUTO_TEST_CASE(test_css_mod_algo_t1)
-    {
-      // Put test here
-    }
+BOOST_AUTO_TEST_CASE(test_css_mod_algo_t1)
+{
+	// Put test here
+}
 
-  } /* namespace lora2 */
+} /* namespace lora2 */
 } /* namespace gr */

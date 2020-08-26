@@ -25,25 +25,25 @@
 #include <gnuradio/expj.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    /*!
-     * \brief <+description+>
-     *
-     */
-    class LORA2_API css_mod_algo
-    {
-      private:
-        int d_M;
-        int d_Q;
-        bool d_upchirp;
+/*!
+ * \brief <+description+>
+ *
+ */
+class LORA2_API css_mod_algo
+{
+	private:
+		int d_M;
+		int d_Q;
+		bool d_upchirp;
 
-      public:
-        css_mod_algo(int M, int interp=1, bool upchirp=true);
-        void modulate(const unsigned short *in, gr_complex *out, size_t n_syms);
-    };
+	public:
+		css_mod_algo(int M, int interp=1, bool upchirp=true);
+		void modulate(const unsigned short *in, gr_complex *out, size_t n_syms);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_CSS_MOD_ALGO_H */

@@ -26,64 +26,61 @@
 #include "lora_pad_impl.h"
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    lora_pad::sptr
-    lora_pad::make(const std::string &len_tag_key, unsigned char SF,
-        unsigned char CR, bool reduced_rate)
-    {
-      return gnuradio::get_initial_sptr
-        (new lora_pad_impl(len_tag_key, SF, CR, reduced_rate));
-    }
+lora_pad::sptr lora_pad::make(const std::string &len_tag_key, unsigned char SF,
+		unsigned char CR, bool reduced_rate)
+{
+	return gnuradio::get_initial_sptr
+		(new lora_pad_impl(len_tag_key, SF, CR, reduced_rate));
+}
 
 
-    /*
-     * The private constructor
-     */
-    lora_pad_impl::lora_pad_impl(const std::string &len_tag_key, unsigned char SF,
-        unsigned char CR, bool reduced_rate)
-      : gr::tagged_stream_block("lora_pad",
-          gr::io_signature::make(1, 1, sizeof(char)),
-          gr::io_signature::make(1, 1, sizeof(char)), len_tag_key),
-      d_SF(SF), d_CR(CR), d_reduced_rate(reduced_rate)
-    {
-    }
+/*
+ * The private constructor
+ */
+lora_pad_impl::lora_pad_impl(const std::string &len_tag_key, unsigned char SF,
+		unsigned char CR, bool reduced_rate)
+	: gr::tagged_stream_block("lora_pad",
+			gr::io_signature::make(1, 1, sizeof(char)),
+			gr::io_signature::make(1, 1, sizeof(char)), len_tag_key),
+	d_SF(SF), d_CR(CR), d_reduced_rate(reduced_rate)
+{
+}
 
-    int
-    lora_pad_impl::calculate_output_stream_length(const gr_vector_int &ninput_items)
-    {
-      //Compute padding length
-      if ((ninput_items[0] % ((d_SF - 2*d_reduced_rate)*(4+d_CR))) != 0) {
-        d_pad_len = (d_SF - 2*d_reduced_rate)*(4+d_CR) \
-                  - (ninput_items[0] % ((d_SF - 2*d_reduced_rate)*(4+d_CR)));
-      }
-      else {
-        d_pad_len = 0;
-      }
+int lora_pad_impl::calculate_output_stream_length(const gr_vector_int &ninput_items)
+{
+	//Compute padding length
+	if ((ninput_items[0] % ((d_SF - 2*d_reduced_rate)*(4+d_CR))) != 0) {
+		d_pad_len = (d_SF - 2*d_reduced_rate)*(4+d_CR) \
+					- (ninput_items[0] % ((d_SF - 2*d_reduced_rate)*(4+d_CR)));
+	}
+	else {
+		d_pad_len = 0;
+	}
 
-      int noutput_items = ninput_items[0] + d_pad_len;
-      return noutput_items;
-    }
+	int noutput_items = ninput_items[0] + d_pad_len;
+	return noutput_items;
+}
 
-    int
-    lora_pad_impl::work (int noutput_items,
-        gr_vector_int &ninput_items,
-        gr_vector_const_void_star &input_items,
-        gr_vector_void_star &output_items)
-    {
-      const char *in = (const char *) input_items[0];
-      char *out = (char *) output_items[0];
-        
-      //Copy input to output
-      memcpy(out, in, ninput_items[0]*sizeof(char));
+int lora_pad_impl::work (int noutput_items,
+		gr_vector_int &ninput_items,
+		gr_vector_const_void_star &input_items,
+		gr_vector_void_star &output_items)
+{
+	const char *in = (const char *) input_items[0];
+	char *out = (char *) output_items[0];
 
-      //Add padding
-      memset(out+ninput_items[0], 0, d_pad_len);
+	//Copy input to output
+	memcpy(out, in, ninput_items[0]*sizeof(char));
 
-      // Tell runtime system how many output items we produced.
-      return ninput_items[0] + d_pad_len;
-    }
+	//Add padding
+	memset(out+ninput_items[0], 0, d_pad_len);
 
-  } /* namespace lora2 */
+	// Tell runtime system how many output items we produced.
+	return ninput_items[0] + d_pad_len;
+}
+
+} /* namespace lora2 */
 } /* namespace gr */
 

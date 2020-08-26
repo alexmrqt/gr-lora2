@@ -25,30 +25,30 @@
 #include <gnuradio/sync_block.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    /*!
-     * \brief <+description of block+>
-     * \ingroup lora2
-     *
-     */
-    class LORA2_API gray_deindexer : virtual public gr::sync_block
-    {
-      public:
-        typedef boost::shared_ptr<gray_deindexer> sptr;
+/*!
+ * \brief <+description of block+>
+ * \ingroup lora2
+ *
+ */
+class LORA2_API gray_deindexer : virtual public gr::sync_block
+{
+	public:
+		typedef boost::shared_ptr<gray_deindexer> sptr;
 
-        /*!
-         * \brief Return a shared_ptr to a new instance of lora2::gray_deindexer.
-         *
-         * To avoid accidental use of raw pointers, lora2::gray_deindexer's
-         * constructor is in a private implementation
-         * class. lora2::gray_deindexer::make is the public interface for
-         * creating new instances.
-         */
-        static sptr make(unsigned int M);
-    };
+		/*!
+		 * \brief Return a shared_ptr to a new instance of lora2::gray_deindexer.
+		 *
+		 * To avoid accidental use of raw pointers, lora2::gray_deindexer's
+		 * constructor is in a private implementation
+		 * class. lora2::gray_deindexer::make is the public interface for
+		 * creating new instances.
+		 */
+		static sptr make(unsigned int M);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_GRAY_DEINDEXER_H */

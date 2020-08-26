@@ -25,31 +25,31 @@
 #include <lora2/lora_hamming_encode.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class lora_hamming_encode_impl : public lora_hamming_encode
-    {
-      private:
-        int d_CR;
-        int d_cw_len;
-        pmt::pmt_t d_len_tag_key;
+class lora_hamming_encode_impl : public lora_hamming_encode
+{
+	private:
+		int d_CR;
+		int d_cw_len;
+		pmt::pmt_t d_len_tag_key;
 
-      public:
-        lora_hamming_encode_impl(int CR, const std::string &len_tag_key);
+	public:
+		lora_hamming_encode_impl(int CR, const std::string &len_tag_key);
 
-        void encode_one_block(const unsigned char *in_block, unsigned char *out_block);
-        void handle_tag_propagation(int in_idx, int out_idx);
+		void encode_one_block(const unsigned char *in_block, unsigned char *out_block);
+		void handle_tag_propagation(int in_idx, int out_idx);
 
-        void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+		void forecast (int noutput_items, gr_vector_int &ninput_items_required);
 
-        int general_work(int noutput_items,
-            gr_vector_int &ninput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items);
+		int general_work(int noutput_items,
+				gr_vector_int &ninput_items,
+				gr_vector_const_void_star &input_items,
+				gr_vector_void_star &output_items);
 
-    };
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_LORA_HAMMING_ENCODE_IMPL_H */

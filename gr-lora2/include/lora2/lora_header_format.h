@@ -31,78 +31,78 @@
 #include <boost/enable_shared_from_this.hpp>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    /*!
-     * \brief Construct or parse a LoRa header.
-     *
-     * LoRa Header have the following structure:
-     *
-     * | Payload length |   CR    | Has CRC | CRC (opt.) | 1st bits of payload |
-     * <-----8 bits----><-3 bits-><-1 bit--><---8 bits-->
-     * <--------------------------(SF-2) * 4 bits----------------------------->
-     *
-     * The reason why there is some payload bits in the header is explained
-     * hereafter.
-     * The header must fill an interleaving matrix, that is SF*(CR+4) bits before
-     * decoding and deinterleaving.
-     * The header is sent in reduced rate mode, thus there are only
-     * (SF-2)*(CR+4) bits after deinterleaving.
-     * Finally, the header is coded with CR = 4, which gives (SF-2)*4 bits
-     * after decoding.
-     * Of these (SF-2)*4 bits, only 20 bits are used by header fields.
-     *
-     */
-    class LORA2_API lora_header_format : public gr::digital::header_format_base
-    {
-      private:
-        const unsigned char d_SF;
-        const unsigned char d_hdr_len = 20;
-        const unsigned char d_hdr_tot_len;
+/*!
+ * \brief Construct or parse a LoRa header.
+ *
+ * LoRa Header have the following structure:
+ *
+ * | Payload length |   CR    | Has CRC | CRC (opt.) | 1st bits of payload |
+ * <-----8 bits----><-3 bits-><-1 bit--><---8 bits-->
+ * <--------------------------(SF-2) * 4 bits----------------------------->
+ *
+ * The reason why there is some payload bits in the header is explained
+ * hereafter.
+ * The header must fill an interleaving matrix, that is SF*(CR+4) bits before
+ * decoding and deinterleaving.
+ * The header is sent in reduced rate mode, thus there are only
+ * (SF-2)*(CR+4) bits after deinterleaving.
+ * Finally, the header is coded with CR = 4, which gives (SF-2)*4 bits
+ * after decoding.
+ * Of these (SF-2)*4 bits, only 20 bits are used by header fields.
+ *
+ */
+class LORA2_API lora_header_format : public gr::digital::header_format_base
+{
+	private:
+		const unsigned char d_SF;
+		const unsigned char d_hdr_len = 20;
+		const unsigned char d_hdr_tot_len;
 
-        uint8_t d_payload_len = 0;
-        uint8_t d_CR = 0;
-        uint8_t d_has_crc = 0;
-        uint8_t d_crc = 0;
-        unsigned char d_rem[20] = {0};
+		uint8_t d_payload_len = 0;
+		uint8_t d_CR = 0;
+		uint8_t d_has_crc = 0;
+		uint8_t d_crc = 0;
+		unsigned char d_rem[20] = {0};
 
-      protected:
-        //! Compute a LoRa Header CRC from header data
-        uint8_t compute_crc(uint16_t data);
+	protected:
+		//! Compute a LoRa Header CRC from header data
+		uint8_t compute_crc(uint16_t data);
 
-        //! Verify that the header is valid
-        virtual bool header_ok();
+		//! Verify that the header is valid
+		virtual bool header_ok();
 
-        /*! Get info from the header; return payload length and package
-         *  rest of data in d_info dictionary.
-         */
-        virtual int header_payload();
+		/*! Get info from the header; return payload length and package
+		 *  rest of data in d_info dictionary.
+		 */
+		virtual int header_payload();
 
-      public:
-        //typedef boost::shared_ptr<lora_header_format> sptr;
-        typedef boost::shared_ptr<gr::digital::header_format_base> sptr;
+	public:
+		//typedef boost::shared_ptr<lora_header_format> sptr;
+		typedef boost::shared_ptr<gr::digital::header_format_base> sptr;
 
-        lora_header_format(unsigned char SF);
-        virtual ~lora_header_format()
-        {
-        }
+		lora_header_format(unsigned char SF);
+		virtual ~lora_header_format()
+		{
+		}
 
-        virtual bool format(int nbytes_in,
-                            const unsigned char* input,
-                            pmt::pmt_t& output,
-                            pmt::pmt_t& info);
+		virtual bool format(int nbytes_in,
+				const unsigned char* input,
+				pmt::pmt_t& output,
+				pmt::pmt_t& info);
 
-        virtual bool parse(int nbits_in,
-                           const unsigned char* input,
-                           std::vector<pmt::pmt_t>& info,
-                           int& nbits_processed);
+		virtual bool parse(int nbits_in,
+				const unsigned char* input,
+				std::vector<pmt::pmt_t>& info,
+				int& nbits_processed);
 
-        virtual size_t header_nbits() const;
+		virtual size_t header_nbits() const;
 
-        static sptr make(unsigned char SF);
-    };
+		static sptr make(unsigned char SF);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_LORA_HEADER_FORMAT_H */

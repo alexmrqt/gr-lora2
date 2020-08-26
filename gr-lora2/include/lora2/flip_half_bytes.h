@@ -25,30 +25,30 @@
 #include <gnuradio/sync_block.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    /*!
-     * \brief <+description of block+>
-     * \ingroup lora2
-     *
-     */
-    class LORA2_API flip_half_bytes : virtual public gr::sync_block
-    {
-      public:
-        typedef boost::shared_ptr<flip_half_bytes> sptr;
+/*!
+ * \brief <+description of block+>
+ * \ingroup lora2
+ *
+ */
+class LORA2_API flip_half_bytes : virtual public gr::sync_block
+{
+	public:
+		typedef boost::shared_ptr<flip_half_bytes> sptr;
 
-        /*!
-         * \brief Return a shared_ptr to a new instance of lora2::flip_half_bytes.
-         *
-         * To avoid accidental use of raw pointers, lora2::flip_half_bytes's
-         * constructor is in a private implementation
-         * class. lora2::flip_half_bytes::make is the public interface for
-         * creating new instances.
-         */
-        static sptr make();
-    };
+		/*!
+		 * \brief Return a shared_ptr to a new instance of lora2::flip_half_bytes.
+		 *
+		 * To avoid accidental use of raw pointers, lora2::flip_half_bytes's
+		 * constructor is in a private implementation
+		 * class. lora2::flip_half_bytes::make is the public interface for
+		 * creating new instances.
+		 */
+		static sptr make();
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_FLIP_HALF_BYTES_H */

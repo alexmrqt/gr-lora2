@@ -25,31 +25,31 @@
 #include <gnuradio/block.h>
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    /*!
-     * \brief <+description of block+>
-     * \ingroup lora2
-     *
-     */
-    class LORA2_API lora_interleaver : virtual public gr::block
-    {
-      public:
-        typedef boost::shared_ptr<lora_interleaver> sptr;
+/*!
+ * \brief <+description of block+>
+ * \ingroup lora2
+ *
+ */
+class LORA2_API lora_interleaver : virtual public gr::block
+{
+	public:
+		typedef boost::shared_ptr<lora_interleaver> sptr;
 
-        /*!
-         * \brief Return a shared_ptr to a new instance of lora2::lora_interleaver.
-         *
-         * To avoid accidental use of raw pointers, lora2::lora_interleaver's
-         * constructor is in a private implementation
-         * class. lora2::lora_interleaver::make is the public interface for
-         * creating new instances.
-         */
-        static sptr make(int SF, int CR, const std::string &len_tag_key,
-            bool reduced_rate=false);
-    };
+		/*!
+		 * \brief Return a shared_ptr to a new instance of lora2::lora_interleaver.
+		 *
+		 * To avoid accidental use of raw pointers, lora2::lora_interleaver's
+		 * constructor is in a private implementation
+		 * class. lora2::lora_interleaver::make is the public interface for
+		 * creating new instances.
+		 */
+		static sptr make(int SF, int CR, const std::string &len_tag_key,
+				bool reduced_rate=false);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_LORA_INTERLEAVER_H */

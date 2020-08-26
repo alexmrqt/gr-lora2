@@ -26,29 +26,29 @@
 
 
 namespace gr {
-  namespace lora2 {
+namespace lora2 {
 
-    class lora_whiten_impl : public lora_whiten
-    {
-      private:
-        const uint64_t d_seed;
-        pmt::pmt_t d_has_crc_key;
+class lora_whiten_impl : public lora_whiten
+{
+	private:
+		const uint64_t d_seed;
+		pmt::pmt_t d_has_crc_key;
 
-      protected:
-        int calculate_output_stream_length(const gr_vector_int &ninput_items);
-        void lfsr(const uint8_t *in, uint8_t *out, const size_t bufferSize);
+	protected:
+		int calculate_output_stream_length(const gr_vector_int &ninput_items);
+		void lfsr(const uint8_t *in, uint8_t *out, const size_t bufferSize);
 
-      public:
-        lora_whiten_impl(const std::string &len_tag_key);
+	public:
+		lora_whiten_impl(const std::string &len_tag_key);
 
-        // Where all the action really happens
-        int work(int noutput_items,
-            gr_vector_int &ninput_items,
-            gr_vector_const_void_star &input_items,
-            gr_vector_void_star &output_items);
-    };
+		// Where all the action really happens
+		int work(int noutput_items,
+				gr_vector_int &ninput_items,
+				gr_vector_const_void_star &input_items,
+				gr_vector_void_star &output_items);
+};
 
-  } // namespace lora2
+} // namespace lora2
 } // namespace gr
 
 #endif /* INCLUDED_LORA2_LORA_WHITEN_IMPL_H */
