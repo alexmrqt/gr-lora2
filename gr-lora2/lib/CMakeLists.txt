@@ -48,7 +48,8 @@ list(APPEND lora2_sources
     lora_hamming_decode_impl.cc
     lora_soft_hamming_decode_impl.cc
     css_mod_algo.cc
-    lora_add_reversed_chirps_impl.cc )
+    lora_add_reversed_chirps_impl.cc
+    css_demod_algo.cc )
 
 set(lora2_sources "${lora2_sources}" PARENT_SCOPE)
 if(NOT lora2_sources)
