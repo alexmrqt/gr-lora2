@@ -23,4 +23,5 @@ from __future__ import absolute_import
 
 from .lora2_swig import *
 from .lora2_css_mod_algo_swig import *
+from .lora2_css_demod_algo_swig import *
 

@@ -42,14 +42,10 @@ set(GR_SWIG_TARGET_DEPS gnuradio::runtime_swig)
 
 set(GR_SWIG_LIBRARIES gnuradio-lora2)
 
-#configure_file(
-#  ${CMAKE_CURRENT_SOURCE_DIR}/lora2_swig.py.in
-#  ${CMAKE_CURRENT_BINARY_DIR}/lora2_swig.py
-#@ONLY)
-
 set(GR_SWIG_LORA2_IFILES
   lora2_swig
   lora2_css_mod_algo_swig
+  lora2_css_demod_algo_swig
 )
 
 foreach(swigfile ${GR_SWIG_LORA2_IFILES})

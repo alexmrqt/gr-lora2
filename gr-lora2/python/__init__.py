@@ -29,11 +29,11 @@ try:
     # this might fail if the module is python-only
     from .lora2_swig import *
     from .lora2_css_mod_algo_swig import *
+    from .lora2_css_demod_algo_swig import *
 except ImportError:
     pass
 
 # import any pure python here
 from .css_demod import css_demod
-from .css_demod_algo import css_demod_algo
 from .lora_preamble_detect import lora_preamble_detect
 #

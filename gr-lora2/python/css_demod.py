@@ -43,8 +43,8 @@ class css_demod(gr.basic_block):
         self.M = M
         self.Q_det = Q_det
         self.Q_res = Q_res
-        self.demodulator = css_demod_algo.css_demod_algo(self.M)
-        self.modulator = css_mod_algo.css_mod_algo(self.M, self.Q_det)
+        self.demodulator = css_demod_algo(self.M)
+        self.modulator = css_mod_algo(self.M, self.Q_det)
         self.global_sym_count = 0
 
         ##CFO-related attributes

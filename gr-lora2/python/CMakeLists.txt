@@ -33,7 +33,6 @@ GR_PYTHON_INSTALL(
     FILES
     __init__.py
     css_demod.py
-    css_demod_algo.py
     lora_preamble_detect.py
     DESTINATION ${GR_PYTHON_DIR}/lora2
 )

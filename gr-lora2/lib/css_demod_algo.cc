@@ -29,7 +29,8 @@ namespace gr {
 namespace lora2 {
 
 css_demod_algo::css_demod_algo(int M, bool upchirp):
-	d_M(M), d_fft(fft::fft_complex(M))
+	d_M(M), d_fft(fft::fft_complex(M)),
+        d_fft_shift(fft::fft_shift<gr_complex>(M))
 {
 	// Allocate memory for chirp
 	chirp = (gr_complex*)volk_malloc(M*sizeof(gr_complex), volk_get_alignment());
@@ -69,6 +70,9 @@ void css_demod_algo::demodulate(const gr_complex *in,
 		// Find index of max(|d_fft|)
 		volk_32fc_index_max_16u(out, fft_out, d_M);
 
+                // Post-FFT FFT-shift
+                *out = (*out + d_M/2)%d_M;
+
 		// Update pointers
 		in += d_M;
 		++out;
@@ -96,7 +100,10 @@ void css_demod_algo::soft_demodulate(const gr_complex *in,
 		volk_32f_index_max_16u(out_syms, fft_abs, d_M);
 
 		// Store FFT-magnitude value of demodulated symbol
-		*fft_abs = fft_abs[*out_syms];
+		*out_soft = fft_abs[*out_syms];
+
+                // Post-FFT FFT-shift
+                *out_syms = (*out_syms + d_M/2)%d_M;
 
 		// Update pointers
 		in += d_M;
@@ -120,6 +127,9 @@ void css_demod_algo::demodulate_with_spectrum(const gr_complex *in,
 
 		// Compute FFT
 		d_fft.execute();
+
+                // FFT-shift
+                d_fft_shift.shift(fft_out, d_M);
 
 		// Find index of max(|d_fft|)
 		volk_32fc_index_max_16u(out_syms, fft_out, d_M);

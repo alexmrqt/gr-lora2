@@ -24,6 +24,7 @@
 #include <lora2/api.h>
 #include <gnuradio/expj.h>
 #include <gnuradio/fft/fft.h>
+#include <gnuradio/fft/fft_shift.h>
 #include <volk/volk.h>
 
 namespace gr {
@@ -39,6 +40,7 @@ class LORA2_API css_demod_algo
 		int d_M;
 		gr_complex *chirp;
 		fft::fft_complex d_fft;
+		fft::fft_shift<gr_complex> d_fft_shift;
 
 	public:
 		css_demod_algo(int M, bool upchirp=true);
@@ -57,6 +59,8 @@ class LORA2_API css_demod_algo
 				unsigned short *out_syms,
 				gr_complex *out_spectrum,
 				size_t n_syms);
+
+                int get_M() const { return d_M; }
 };
 
 } // namespace lora2
