@@ -41,6 +41,9 @@ class LORA2_API css_mod_algo
 	public:
 		css_mod_algo(int M, int interp=1, bool upchirp=true);
 		void modulate(const unsigned short *in, gr_complex *out, size_t n_syms);
+
+        int get_M() const { return d_M; };
+        int get_interp() const { return d_Q; };
 };
 
 } // namespace lora2

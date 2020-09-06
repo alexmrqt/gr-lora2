@@ -80,19 +80,6 @@ class state_wait:
             self.init_buffers()
             return _STATE_UP
 
-        #if self.buffer[-2] != -1:
-        #    pre_detected = True
-        #    for i in range(1, self.N_up//2):
-        #        if abs((self.buffer[0] - self.buffer[i])%self.M) > 1:
-        #            pre_detected = False
-        #            break
-
-        #    if pre_detected:
-        #        self.phi = numpy.mean(self.buffer_phi) / self.M
-
-        #        self.init_buffers()
-        #        return _STATE_UP
-
         self.cmplx_val_pre = cmplx_val
 
         return _STATE_WAIT

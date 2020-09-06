@@ -32,6 +32,7 @@ class css_demod_algo():
         else:
             self.conj_chirp = numpy.exp(-1j*numpy.pi*k/self.M*k)
 
+    #KEEP
     def demodulate(self, input_items):
         ninput_items = len(input_items)
         noutput_items = ninput_items // self.M
@@ -50,6 +51,7 @@ class css_demod_algo():
 
         return output_items
 
+    #KEEP
     def soft_demodulate(self, input_items):
         ninput_items = len(input_items)
         noutput_items = ninput_items // self.M
@@ -90,6 +92,7 @@ class css_demod_algo():
 
         return (hard_output, complex_value)
 
+    #KEEP
     def demodulate_with_spectrum(self, input_items):
         ninput_items = len(input_items)
         noutput_items = ninput_items // self.M

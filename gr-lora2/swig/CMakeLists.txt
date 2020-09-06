@@ -37,30 +37,36 @@ endif()
 include(GrSwig)
 include(GrPython)
 
-########################################################################
-# Setup swig generation
-########################################################################
 set(GR_SWIG_INCLUDE_DIRS $<TARGET_PROPERTY:gnuradio::runtime_swig,INTERFACE_INCLUDE_DIRECTORIES>)
 set(GR_SWIG_TARGET_DEPS gnuradio::runtime_swig)
 
 set(GR_SWIG_LIBRARIES gnuradio-lora2)
 
-set(GR_SWIG_DOC_FILE ${CMAKE_CURRENT_BINARY_DIR}/lora2_swig_doc.i)
-set(GR_SWIG_DOC_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+#configure_file(
+#  ${CMAKE_CURRENT_SOURCE_DIR}/lora2_swig.py.in
+#  ${CMAKE_CURRENT_BINARY_DIR}/lora2_swig.py
+#@ONLY)
 
-GR_SWIG_MAKE(lora2_swig lora2_swig.i)
+set(GR_SWIG_LORA2_IFILES
+  lora2_swig
+  lora2_css_mod_algo_swig
+)
 
-########################################################################
-# Install the build swig module
-########################################################################
-GR_SWIG_INSTALL(TARGETS lora2_swig DESTINATION ${GR_PYTHON_DIR}/lora2)
+foreach(swigfile ${GR_SWIG_LORA2_IFILES})
+  set(GR_SWIG_DOC_FILE ${CMAKE_CURRENT_BINARY_DIR}/${swigfile}_doc.i)
+  set(GR_SWIG_DOC_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
-########################################################################
-# Install swig .i files for development
-########################################################################
+  GR_SWIG_MAKE(${swigfile} ${swigfile}.i)
+
+  GR_SWIG_INSTALL(TARGETS ${swigfile} DESTINATION ${GR_PYTHON_DIR}/lora2)
+
+  list(APPEND SWIGFILES ${swigfile}.i)
+  list(APPEND SWIGDOCFILES ${CMAKE_CURRENT_BINARY_DIR}/${swigfile}_doc.i)
+endforeach(swigfile)
+
 install(
     FILES
-    lora2_swig.i
-    ${CMAKE_CURRENT_BINARY_DIR}/lora2_swig_doc.i
+    ${SWIGFILES}
+    ${SWIGDOCFILES}
     DESTINATION ${GR_INCLUDE_DIR}/lora2/swig
 )
