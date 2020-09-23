@@ -77,6 +77,71 @@ def soft_demodulate(*args):
     return (out_syms, out_confidence)
 %}
 
+%feature("shadow") complex_demodulate %{
+def complex_demodulate(*args):
+    import numpy
+
+    assert len(args) == 2
+
+    self = args[0]
+    _in = args[1]
+
+    assert isinstance(_in, numpy.ndarray), "Input must be a Numpy Array of complex64."
+    assert _in.dtype == numpy.complex64, "Input must be a Numpy Array of complex64."
+
+    n_syms = len(_in) // self.get_M()
+
+    in_grcomplex = grcomplexArray(len(_in))
+    out_syms_ushort = ushortArray(n_syms)
+    out_complex_grcomplex = grcomplexArray(n_syms)
+
+    for i in range(0, len(_in)):
+        in_grcomplex[i] = complex(_in[i])
+
+    $action(self, in_grcomplex.cast(), out_syms_ushort, out_complex_grcomplex.cast(), n_syms)
+
+    out_syms = numpy.zeros(n_syms, dtype=numpy.ushort)
+    out_complex = numpy.zeros(n_syms, dtype=numpy.complex64)
+    for i in range(0, n_syms):
+        out_syms[i] = out_syms_ushort[i]
+        out_complex[i] = out_complex_grcomplex[i]
+
+    return (out_syms, out_complex)
+%}
+
+%feature("shadow") demodulate_with_spectrum %{
+def demodulate_with_spectrum(*args):
+    import numpy
+
+    assert len(args) == 2
+
+    self = args[0]
+    _in = args[1]
+
+    assert isinstance(_in, numpy.ndarray), "Input must be a Numpy Array of complex64."
+    assert _in.dtype == numpy.complex64, "Input must be a Numpy Array of complex64."
+
+    n_syms = len(_in) // self.get_M()
+
+    in_grcomplex = grcomplexArray(len(_in))
+    out_syms_ushort = ushortArray(n_syms)
+    out_spectrum_grcomplex = grcomplexArray(len(_in))
+
+    for i in range(0, len(_in)):
+        in_grcomplex[i] = complex(_in[i])
+
+    $action(self, in_grcomplex.cast(), out_syms_ushort, out_spectrum_grcomplex.cast(), n_syms)
+
+    out_syms = numpy.zeros(n_syms, dtype=numpy.ushort)
+    out_spectrum = numpy.zeros((n_syms, self.get_M()), dtype=numpy.complex64)
+    for i in range(0, n_syms):
+        out_syms[i] = out_syms_ushort[i]
+        for j in range(0, self.get_M()):
+            out_spectrum[i,j] = out_spectrum_grcomplex[i*self.get_M()+j]
+
+    return (out_syms, out_spectrum)
+%}
+
 namespace gr {
 namespace lora2 {
 
@@ -96,6 +161,11 @@ public:
                     unsigned short *out_syms,
                     float *out_soft,
                     size_t n_syms);
+
+    void complex_demodulate(const gr_complex *in,
+            unsigned short *out_syms,
+            gr_complex *out_complex,
+            size_t n_syms);
 
     void demodulate_with_spectrum(const gr_complex *in,
                     unsigned short *out_syms,

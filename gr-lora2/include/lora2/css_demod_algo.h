@@ -31,21 +31,71 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description+>
+ * \brief A class to demodulate CSS signals.
+ *
+ * This class contains methods to non-coherently demodulate baseband, critically
+ * sampled M-ary CSS-modulated signals. Such signals are expressed as:
+ * \f[
+ * s[k] = e^{\alpha j2\pi\frac{k^2}{M}} \sum_n \Pi_M[k-nM] e^{j2\pi\frac{c_n}{M}k}
+ * \f]
+ * where:
+ *  - \f$\alpha=1\f$ for upchirp CSS signals, \f$\alpha=0\f$ for downchirp CSS signals.
+ *  - \f$\log_2(M)\f$ is the number of bits per symbol,
+ *  - \f$c_n \in [0;M-1]\f$ is the value taken by the \f$n\f$-th symbol,
+ *  - \f$\Pi_M[k] = 1\f$ if \f$k \in [0;M-1]\f$ else \f$\Pi_M[k] = 0\f$: the
+ *  rectangular window of length \f$M\f$.
  *
  */
 class LORA2_API css_demod_algo
 {
 	private:
+		//! Number of possible symbols
 		int d_M;
+
+		/*!
+		 * Contains the M samples of the conjugated base chirp:
+		 * \f[
+		 * chirp[k] = e^{-\alpha j2\pi\frac{k^2}{M}}
+		 * \f].
+		 */
 		gr_complex *chirp;
+
+		//! Object to perform FFT
 		fft::fft_complex d_fft;
+
+		//! Object to perform FFT-shift
 		fft::fft_shift<gr_complex> d_fft_shift;
 
 	public:
+		/*!
+		 * Construct an M-ary CSS demodulator.
+		 *
+		 * \param M Arity of the CSS modulated signal (\f$\log_2(M)\f$ being
+		 * the number of bits per symbol).
+		 * \param upchirp Set this to false if the signal is a downchirped CSS
+		 * modulated signal.
+		 */
 		css_demod_algo(int M, bool upchirp=true);
+
 		~css_demod_algo();
 
+		/*!
+		 * Demodulates CSS-modulated symbols.
+		 *
+		 * The input/output relationship is given by:
+		 * \f[
+		 * out[n] = \arg\max_{\hat c \in [0;M-1]} \left|
+		 * 		\mathcal{F}_M\left\{e^{-\alpha j2\pi\frac{k^2}{M}}.in[k-nM]\right\}[\hat c]
+		 * 		\right| \quad \forall n \in [0 ; n\_syms-1]
+		 * \f]
+		 * with \f$\mathcal{F}_M{s[k]}[m]\f$ the \f$M\f$-point discrete Fourier
+		 * transform of \f$s[k]\f$, evaluated at bin \f$m \in [0;M-1]\f$.
+		 *
+		 * \param in Input signal. Must contain `n_syms*M` elements.
+		 * \param out Estimated symbols. Must be allocated with a size of
+		 * `n_syms` elements.
+		 * \param n_syms Number of symbols to be demodulated.
+		 */
 		void demodulate(const gr_complex *in,
 				unsigned short *out,
 				size_t n_syms);
@@ -53,6 +103,11 @@ class LORA2_API css_demod_algo
 		void soft_demodulate(const gr_complex *in,
 				unsigned short *out_syms,
 				float *out_soft,
+				size_t n_syms);
+
+		void complex_demodulate(const gr_complex *in,
+				unsigned short *out_syms,
+				gr_complex *out_complex,
 				size_t n_syms);
 
 		void demodulate_with_spectrum(const gr_complex *in,

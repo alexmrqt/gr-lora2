@@ -83,7 +83,7 @@ class css_demod(gr.basic_block):
         new_delay = int_delay//gcd
         new_interp = self.Q_res//gcd
 
-        return scipy.signal.resample_poly(sig, new_interp, 1)[new_delay::new_interp]
+        return scipy.signal.resample_poly(sig, new_interp, 1)[new_delay::new_interp].astype(numpy.complex64)
 
     def cfo_detect(self):
         #Frequency discriminator
@@ -101,7 +101,7 @@ class css_demod(gr.basic_block):
     def vco_advance_vec(self, freq, n_samples):
         k = numpy.arange(0, n_samples)
 
-        phasor = numpy.exp(1j*2*numpy.pi*freq*k + 1j*self.init_phase)
+        phasor = numpy.exp(1j*2*numpy.pi*freq*k + 1j*self.init_phase, dtype=numpy.complex64)
 
         #Update initial phase
         self.init_phase = numpy.mod(self.init_phase \

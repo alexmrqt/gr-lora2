@@ -115,6 +115,35 @@ void css_demod_algo::soft_demodulate(const gr_complex *in,
 	volk_free(fft_abs);
 }
 
+void css_demod_algo::complex_demodulate(const gr_complex *in,
+    unsigned short *out_syms, gr_complex *out_complex, size_t n_syms)
+{
+	gr_complex *fft_in = d_fft.get_inbuf();
+	gr_complex *fft_out = d_fft.get_outbuf();
+
+	for (size_t i=0 ; i < n_syms ; ++i) {
+		// Dechirp and populate FFT input buffer
+		volk_32fc_x2_multiply_32fc(fft_in, in, chirp, d_M);
+
+		// Compute FFT
+		d_fft.execute();
+
+		// Find index of max(|d_fft|)
+		volk_32fc_index_max_16u(out_syms, fft_out, d_M);
+
+                // Store FFT-value of demodulated symbol
+		*out_complex = fft_out[*out_syms];
+
+                // Post-FFT FFT-shift
+                *out_syms = (*out_syms + d_M/2)%d_M;
+
+		// Update pointers
+		in += d_M;
+		++out_syms;
+		++out_complex;
+	}
+}
+
 void css_demod_algo::demodulate_with_spectrum(const gr_complex *in,
 		unsigned short *out_syms, gr_complex *out_spectrum, size_t n_syms)
 {

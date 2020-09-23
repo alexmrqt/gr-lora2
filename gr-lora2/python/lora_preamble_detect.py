@@ -168,7 +168,7 @@ class state_down:
     def __init__(self, M):
         self.M = M
 
-        self.demod = css_demod_algo(self.M, conjugate=True)
+        self.demod = css_demod_algo(self.M, upchirp=False)
 
         self.down_cnt = 0
 
@@ -321,7 +321,8 @@ class lora_preamble_detect(gr.sync_block):
     def vco_advance_vec(self, freq, n_samples):
         k = numpy.arange(0, n_samples)
 
-        phasor = numpy.exp(1j*2*numpy.pi*freq*k + 1j*self.vco_phase)
+        phasor = numpy.exp(1j*2*numpy.pi*freq*k + 1j*self.vco_phase,
+                dtype=numpy.complex64)
 
         #Update initial phase
         self.vco_phase = numpy.mod(self.vco_phase \
