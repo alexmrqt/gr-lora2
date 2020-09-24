@@ -100,22 +100,122 @@ class LORA2_API css_demod_algo
 				unsigned short *out,
 				size_t n_syms);
 
+		/*!
+		 * Demodulates CSS-modulated symbols, and gives confidence on the
+		 * estimated symbols.
+		 *
+		 * The input/output relationships are given below.
+		 * Define \f$\gamma[n,l]\f$ as the output of the \f$l\f$-th correlator 
+		 * for the \f$n\f$-th received symbol:
+		 * \f[
+		 * \gamma[n,l] = \mathcal{F}_M\left\{e^{-\alpha j2\pi\frac{k^2}{M}}.in[k-nM]\right\}[l]
+		 * 		\quad \forall n \in [0 ; n\_syms-1], l \in [0 ; M-1]
+		 * \f]
+		 * with \f$\mathcal{F}_M{s[k]}[m]\f$ the \f$M\f$-point discrete Fourier
+		 * transform of \f$s[k]\f$, evaluated at bin \f$m \in [0;M-1]\f$.
+		 * Then, the input output relationship is given by:
+		 * \f[
+		 * out\_syms[n] = \arg\max_{\hat c \in [0;M-1]} \left|\gamma[n,\hat c]\right|
+		 * \quad \forall n \in [0 ; n\_syms-1]
+		 * \f]
+		 * \f[
+		 * out\_soft[n] = \left|\gamma[n,out\_syms[n]]\right|
+		 * \quad \forall n \in [0 ; n\_syms-1]
+		 * \f]
+		 * Note that \f$out\_soft[n] \in [0;M]\f$, where \f$0\f$ is the lowest
+		 * confidence, and \f$M\f$ the highest.
+		 *
+		 * \param in Input signal. Must contain `n_syms*M` elements.
+		 * \param out_syms Estimated symbols. Must be allocated with a size of
+		 * `n_syms` elements.
+		 * \param out_soft Confidence in the estimated symbols.
+		 * Must be allocated with a size of `n_syms` elements.
+		 * \param n_syms Number of symbols to be demodulated.
+		 */
 		void soft_demodulate(const gr_complex *in,
 				unsigned short *out_syms,
 				float *out_soft,
 				size_t n_syms);
 
+		/*!
+		 * Demodulates CSS-modulated symbols. For each symbol, gives the
+		 * corresponding complex value at the output of the correlator.
+		 *
+		 * The input/output relationships are given below.
+		 * Define \f$\gamma[n,l]\f$ as the output of the \f$l\f$-th correlator 
+		 * for the \f$n\f$-th received symbol:
+		 * \f[
+		 * \gamma[n,l] = \mathcal{F}_M\left\{e^{-\alpha j2\pi\frac{k^2}{M}}.in[k-nM]\right\}[l]
+		 * 		\quad \forall n \in [0 ; n\_syms-1], l \in [0 ; M-1]
+		 * \f]
+		 * with \f$\mathcal{F}_M{s[k]}[m]\f$ the \f$M\f$-point discrete Fourier
+		 * transform of \f$s[k]\f$, evaluated at bin \f$m \in [0;M-1]\f$.
+		 * Then, the input output relationship is given by:
+		 * \f[
+		 * out\_syms[n] = \arg\max_{\hat c \in [0;M-1]} \left|\gamma[n,\hat c]\right|
+		 * \quad \forall n \in [0 ; n\_syms-1]
+		 * \f]
+		 * \f[
+		 * out\_complex[n] = \gamma[n,out\_syms[n]]
+		 * \quad \forall n \in [0 ; n\_syms-1]
+		 * \f]
+		 *
+		 * \param in Input signal. Must contain `n_syms*M` elements.
+		 * \param out_syms Estimated symbols. Must be allocated with a size of
+		 * `n_syms` elements.
+		 * \param out_complex Complex value at the output of the correlator
+		 * associated with each demodulated symbol. Must be allocated with a
+		 * size of `n_syms` elements.
+		 * \param n_syms Number of symbols to be demodulated.
+		 */
 		void complex_demodulate(const gr_complex *in,
 				unsigned short *out_syms,
 				gr_complex *out_complex,
 				size_t n_syms);
 
+		/*!
+		 * Demodulates CSS-modulated symbols. For each symbol, gives the \f$M\f$
+		 * complex values at the output of the correlator.
+		 *
+		 * The input/output relationships are given below.
+		 * Define \f$\gamma[n,l]\f$ as the output of the \f$l\f$-th correlator 
+		 * for the \f$n\f$-th received symbol:
+		 * \f[
+		 * \gamma[n,l] = \mathcal{F}_M\left\{e^{-\alpha j2\pi\frac{k^2}{M}}.in[k-nM]\right\}[l]
+		 * 		\quad \forall n \in [0 ; n\_syms-1], l \in [0 ; M-1]
+		 * \f]
+		 * with \f$\mathcal{F}_M{s[k]}[m]\f$ the \f$M\f$-point discrete Fourier
+		 * transform of \f$s[k]\f$, evaluated at bin \f$m \in [0;M-1]\f$.
+		 * Then, the input output relationship is given by:
+		 * \f[
+		 * out\_syms[n] = \arg\max_{\hat c \in [0;M-1]} \left|\gamma[n,\hat c]\right|
+		 * \quad \forall n \in [0 ; n\_syms-1]
+		 * \f]
+		 * \f[
+		 * out\_spectrum[n.M+l] = \gamma[n,l]
+		 * \quad \forall n \in [0 ; n\_syms-1], l \in [0 ; M-1]
+		 * \f]
+		 * Note that \f$out\_soft[n] \in [0;M]\f$, where \f$0\f$ is the lowest
+		 * confidence, and \f$M\f$ the highest.
+		 *
+		 * \param in Input signal. Must contain `n_syms*M` elements.
+		 * \param out_syms Estimated symbols. Must be allocated with a size of
+		 * `n_syms` elements.
+		 * \param out_spectrum Output of the bank of correlators, for each
+		 * demodulated symbol. Must be allocated with a size of `n_syms*M`
+		 * elements.
+		 * \param n_syms Number of symbols to be demodulated.
+		 */
 		void demodulate_with_spectrum(const gr_complex *in,
 				unsigned short *out_syms,
 				gr_complex *out_spectrum,
 				size_t n_syms);
 
-                int get_M() const { return d_M; }
+		/*!
+		 * \return Arity of the CSS modulated signal \f$M\f$ (\f$\log_2(M)\f$
+		 * being the number of bits per symbol).
+		 */
+		int get_M() const { return d_M; }
 };
 
 } // namespace lora2
