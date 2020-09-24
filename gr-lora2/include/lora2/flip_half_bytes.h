@@ -28,7 +28,7 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief A block to swap the higer and lower 4 bits of a byte.
  * \ingroup lora2
  *
  */
