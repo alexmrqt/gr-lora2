@@ -28,8 +28,18 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief Applies the "low data rate optimize" option of LoRa on the receive side.
  * \ingroup lora2
+ *
+ * The low data rate optimize option of LoRa make the transmission more robust
+ * by only using the \f$\log_2(M)-2\f$ most significant bits of
+ * \f$M\f$-ary CSS symbols (that can carry up to \f$\log_2(M)\f$ bits).
+ * This allows robustness with respect to small time/frequency impairments that
+ * can shifts the demodulated symbols by +/-1.
+ *
+ * The input-output relationship of this block is given as:
+ *
+ *     out[n] = in[n] >> 2;
  *
  */
 class LORA2_API lora_low_rate_opt_rx : virtual public gr::sync_block
