@@ -29,9 +29,31 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief A CSS Modulator.
  * \ingroup lora2
  *
+ * Modulates input symbols \f$in[k] \: \in [0:M-1]\f$ using CSS.
+ * Each modulated symbol is made of `M.interp` complex output samples.
+ *
+ * Denoting \f$Q \in \mathbb{N}^*\f$ the interpolating factor, and considering
+ * an input symbol \f$c \: \in [0:M-1]\f$, then the corresponding
+ * CSS-modulated symbol is given as:
+ * \f[
+ * e^{2\pi f_c[k] \frac{1}{M.Q}k} \quad \forall k \in [0:M.Q-1]
+ * \f]
+ * Where \f$f_c[k]\f$ is the instantaneous frequency of the symbol:
+ * \f[
+ * f_c[k] = \frac{k}{2.Q} + c - \frac{M}{2}
+ * - M.\left\lfloor \frac{k}{M.Q} - \frac{1}{2} + \frac{c}{M} \right\rceil 
+ * \f]
+ * Where \f$\left\lfloor \cdot \right\rceil\f$ is the nearest integer rounding
+ * operator.
+ *
+ * As a result the input-output relationship of this block is given as:
+ * \f[
+ * out[k] = \sum_n e^{2\pi f_{in[n]}[k] \frac{1}{M.Q} k}\Pi_{M.Q}[k - n.MQ]
+ * \f]
+ * with \f$\Pi_{M.Q}[k]\f$ is the rectangular window of length \f$M.Q\f$ symbols.
  */
 class LORA2_API css_mod : virtual public gr::sync_interpolator
 {
@@ -41,10 +63,10 @@ class LORA2_API css_mod : virtual public gr::sync_interpolator
 		/*!
 		 * \brief Return a shared_ptr to a new instance of lora2::css_mod.
 		 *
-		 * To avoid accidental use of raw pointers, lora2::css_mod's
-		 * constructor is in a private implementation
-		 * class. lora2::css_mod::make is the public interface for
-		 * creating new instances.
+		 * \param M Arity of the CSS modulated signal (\f$\log_2(M)\f$ being
+		 * the number of bits per symbol).
+		 * \param interp The interpolation factor (length of each symbol is
+		 * `M.interp` complex samples).
 		 */
 		static sptr make(int M, int interp = 1);
 };
