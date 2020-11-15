@@ -28,20 +28,20 @@
 namespace gr {
 namespace lora2 {
 
-css_llr_converter::sptr css_llr_converter::make(int M, bool true_llr, float sigma_b)
+css_llr_converter::sptr css_llr_converter::make(int M, bool true_llr, float sigma_n)
 {
 	return gnuradio::get_initial_sptr
-		(new css_llr_converter_impl(M, true_llr, sigma_b));
+		(new css_llr_converter_impl(M, true_llr, sigma_n));
 }
 
 /*
  * The private constructor
  */
-css_llr_converter_impl::css_llr_converter_impl(int M, bool true_llr, float sigma_b)
+css_llr_converter_impl::css_llr_converter_impl(int M, bool true_llr, float sigma_n)
 	: gr::sync_block("css_llr_converter",
 			gr::io_signature::make(1, 1, sizeof(float)*M),
 			gr::io_signature::make(1, 1, sizeof(float)*(int)log2(M))),
-	d_M(M), d_SF((int)log2(M)), d_true_llr(true_llr), d_sigma_b2(sigma_b*sigma_b)
+	d_M(M), d_SF((int)log2(M)), d_true_llr(true_llr), d_sigma_n2(sigma_n*sigma_n)
 {
 }
 
@@ -68,10 +68,10 @@ void css_llr_converter_impl::compute_block_true_llr(const float* in_block, float
 		shift = d_SF-1-j;
 		for (int i=0 ; i < d_M ; ++i) {
 			if ((i>>shift)&0x01) {
-				p1 = max_star(p1, in_block[i]/d_sigma_b2);
+				p1 = max_star(p1, in_block[i]/d_sigma_n2);
 			}
 			else {
-				p0 = max_star(p0, in_block[i]/d_sigma_b2);
+				p0 = max_star(p0, in_block[i]/d_sigma_n2);
 			}
 		}
 

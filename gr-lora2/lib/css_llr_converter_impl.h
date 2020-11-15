@@ -34,7 +34,7 @@ class css_llr_converter_impl : public css_llr_converter
 		int d_M;
 		int d_SF;
 		bool d_true_llr;
-		float d_sigma_b2;
+		float d_sigma_n2;
 
 		float max_star(float A, float B);
 
@@ -42,7 +42,7 @@ class css_llr_converter_impl : public css_llr_converter
 		void compute_block_llr(const float* in_block, float* out_block);
 
 	public:
-		css_llr_converter_impl(int M, bool true_llr, float sigma_b);
+		css_llr_converter_impl(int M, bool true_llr, float sigma_n);
 
 		// Where all the action really happens
 		int work(int noutput_items,
