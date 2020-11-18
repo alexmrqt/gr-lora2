@@ -28,8 +28,12 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief A Gray code decoder.
  * \ingroup lora2
+ *
+ * This block decodes 16-bit (short) Gray-encoded values.
+ * Let `b` be the original value then, after Gray encoding, is is given as `g=b^(b>>1)`.
+ * This blocks allows to get `b` from `g`.
  *
  */
 class LORA2_API gray_decode : virtual public gr::sync_block
@@ -39,11 +43,6 @@ class LORA2_API gray_decode : virtual public gr::sync_block
 
 		/*!
 		 * \brief Return a shared_ptr to a new instance of lora2::gray_decode.
-		 *
-		 * To avoid accidental use of raw pointers, lora2::gray_decode's
-		 * constructor is in a private implementation
-		 * class. lora2::gray_decode::make is the public interface for
-		 * creating new instances.
 		 */
 		static sptr make();
 };

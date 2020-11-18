@@ -28,8 +28,12 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief A Gray code encoder.
  * \ingroup lora2
+ *
+ * This block Gray-encodes 16-bit (short) values.
+ * Let `in[k]` be the input value then, after Gray encoding, the output is given
+ * as `out[k]=in[k]^(in[k]>>1)`.
  *
  */
 class LORA2_API gray_encode : virtual public gr::sync_block
@@ -39,11 +43,6 @@ class LORA2_API gray_encode : virtual public gr::sync_block
 
 		/*!
 		 * \brief Return a shared_ptr to a new instance of lora2::gray_encode.
-		 *
-		 * To avoid accidental use of raw pointers, lora2::gray_encode's
-		 * constructor is in a private implementation
-		 * class. lora2::gray_encode::make is the public interface for
-		 * creating new instances.
 		 */
 		static sptr make();
 };
