@@ -33,7 +33,7 @@ namespace lora2 {
  * \ingroup lora2
  *
  * Modulates input symbols \f$in[k] \: \in [0:M-1]\f$ using CSS.
- * Each modulated symbol is made of `M.interp` complex output samples.
+ * Each modulated symbol is made of `M*interp` complex output samples.
  *
  * Denoting \f$Q \in \mathbb{N}^*\f$ the interpolating factor, and considering
  * an input symbol \f$c \: \in [0:M-1]\f$, then the corresponding
@@ -54,6 +54,11 @@ namespace lora2 {
  * out[k] = \sum_n e^{2\pi f_{in[n]}[k] \frac{1}{M.Q} k}\Pi_{M.Q}[k - n.MQ]
  * \f]
  * with \f$\Pi_{M.Q}[k]\f$ is the rectangular window of length \f$M.Q\f$ symbols.
+ *
+ * When \f$Q=1\f$, the input-output relationship reduces to:
+ * \f[
+ * out[k] = e^{j2\pi\frac{k^2}{M}} \sum_n \Pi_M[k-nM] e^{j2\pi\frac{in[n]}{M}k}
+ * \f]
  */
 class LORA2_API css_mod : virtual public gr::sync_interpolator
 {
