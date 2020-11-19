@@ -28,8 +28,24 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief Check or compute the CRC of LoRa packets (as PDUs).
  * \ingroup lora2
+ *
+ * Depending on parameter `mode`, this block acts either as a CRC validator
+ * (`mode = true`), or a CRC generator (`mode = false`).
+ *
+ * When acting as a CRC generator, the CRC of the payload is computed and
+ * appended to it.
+ *
+ * When acting as a CRC validator, and if the metadata contains a field
+ * `has_crc` set to `PMT_T`, then the CRC is checked, and the packet, stripped
+ * from its CRC, is passed to the output.
+ * Else, if the metadata contains no `has_crc` field, or if it is set to `PMT_F`,
+ * then the input is passed to the output unaltered.
+ *
+ * The LoRa CRC is a 16 bit CCITT CRC, with polyniomial
+ * `\f$x^16 + x^12 + x^5 + 1\f$, and seed `0x0000`
+ * (see annex 1 of ITU-T Rec. V.41).
  *
  */
 class LORA2_API lora_crc : virtual public gr::sync_block
