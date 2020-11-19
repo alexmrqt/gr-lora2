@@ -33,13 +33,15 @@ namespace lora2 {
  * \ingroup lora2
  *
  * Assuming an \f$M\f$-arry CSS system, the input of this block must be vectors
- * of \f$M\f$ elements:
+ * of \f$M\f$ floats:
  * \f[
  * in[k] = (in_0[k] \dots in_{M-1}[k])^T \in \mathbb{R}^M
  * \f]
  * These elements must represent either the real part (using coherent demodulation)
  * or the absolute value (using non-coherent demodulation) of the output of the
  * CSS correlator.
+ * Elements must also be ordered so taht \f$in_i[k]\f$ (\f$i \in [0;M-1]\f$) is
+ * the confidence of having received symbol \f$i\f$.
  *
  * Then, this block outputs the \f$\log_2(M)\f$ LLR of each bit comprising the
  * CSS symbol:
