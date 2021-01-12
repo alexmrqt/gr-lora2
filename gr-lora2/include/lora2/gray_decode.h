@@ -29,7 +29,6 @@ namespace lora2 {
 
 /*!
  * \brief A Gray code decoder.
- * \ingroup lora2
  *
  * This block decodes 16-bit (short) Gray-encoded values.
  * Let `b` be the original value then, after Gray encoding, is is given as `g=b^(b>>1)`.

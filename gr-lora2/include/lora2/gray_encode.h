@@ -29,7 +29,6 @@ namespace lora2 {
 
 /*!
  * \brief A Gray code encoder.
- * \ingroup lora2
  *
  * This block Gray-encodes 16-bit (short) values.
  * Let `in[k]` be the input value then, after Gray encoding, the output is given

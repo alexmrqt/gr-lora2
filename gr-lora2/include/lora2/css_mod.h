@@ -30,7 +30,6 @@ namespace lora2 {
 
 /*!
  * \brief A CSS Modulator.
- * \ingroup lora2
  *
  * Modulates input symbols \f$in[k] \: \in [0:M-1]\f$ using CSS.
  * Each modulated symbol is made of `M*interp` complex output samples.

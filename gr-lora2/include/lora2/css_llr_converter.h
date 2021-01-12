@@ -30,7 +30,6 @@ namespace lora2 {
 
 /*!
  * \brief A block to compute bitwise log-likelihood ratios (LLR) for CSS signals.
- * \ingroup lora2
  *
  * Assuming an \f$M\f$-arry CSS system, the input of this block must be vectors
  * of \f$M\f$ floats:

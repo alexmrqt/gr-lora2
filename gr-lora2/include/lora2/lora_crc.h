@@ -29,7 +29,6 @@ namespace lora2 {
 
 /*!
  * \brief Check or compute the CRC of LoRa packets (as PDUs).
- * \ingroup lora2
  *
  * Depending on parameter `mode`, this block acts either as a CRC validator
  * (`mode = true`), or a CRC generator (`mode = false`).

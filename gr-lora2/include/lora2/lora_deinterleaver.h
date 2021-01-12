@@ -28,8 +28,27 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
- * \ingroup lora2
+ * \brief LoRa deinterleaver.
+ *
+ * Let us denote \f$ \mathbf{d} \in [0;1]^N\f$ some binary LoRa data, and
+ * \f$ D(\mathbf(d)) \in [0;1]^N\f$ the corresponding interleaved LoRa data.
+ * Then, the deinterleaving operation \f$ D^{-1} \f$ is such that
+ * \f$ D^{-1}(D(\mathbf(d))) = \mathbf(d) \f$: it cancels the effect of the
+ * interleaver on the binary stream.
+ *
+ * This blocks works on blocks of `CR+4` input symbols (`CR` being the coding
+ * rate, between 1 and 4), and output blocks of `SF.(CR+4)` binary elements,
+ * or `(SF-2).(CR+4)` binary elements if `reduced_rate == true`.
+ *
+ * The input-output relationship is as follows: let
+ * \f$ (in[0] \ldots in[CR+4-1]) \in [0;SF-1]^{CR+4} \f$ be the input block, and let us denote
+ * \f$ in_l[k] \in [0;1] \f$ the l-th bit of the k-th symbol of the input block.
+ * Then, the output binary items are given as:
+ * \f[
+ * out[i(CR+4) + j] = in_{SF-1 - (SF-1-i + CR+4-1-j)\%SF}[CR+4-1-j]
+ * \quad \in [0;1]
+ * \quad \forall i\in[0;SF-1], j\in[0;CR+4-1]
+ * \f]
  *
  */
 class LORA2_API lora_deinterleaver : virtual public gr::block

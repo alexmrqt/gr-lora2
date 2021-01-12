@@ -29,7 +29,6 @@ namespace lora2 {
 
 /*!
  * \brief A Gray-code deindexer (demapper).
- * \ingroup lora2
  *
  * Assuming an \f$M\f$-arry CSS system, the input of this block must be vectors
  * of \f$M\f$ floats:

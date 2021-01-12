@@ -28,9 +28,19 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
- * \ingroup lora2
+ * \brief Add two reserved chrips between the preamble and the payload.
  *
+ * This block adds two downchirps before the beginning of the LoRa payload,
+ * identified by a tag with key `payload_tag_key`.
+ *
+ * When there is no tag with key `payload_tag_key` in the input stream, then
+ * this block simply copy its input to its output.
+ *
+ * When a tag with key `payload_tag_key` is encountered in the input stream,
+ * then this blocks adds two \f$2.2^{SF}*interp\f$ items, encoding two
+ * unmodulated downchirps.
+ * When it is done appending the two downchirps, it goes back to copying its
+ * input to its output, so that no input item is lost in the process.
  */
 class LORA2_API lora_add_reversed_chirps : virtual public gr::block
 {
@@ -40,10 +50,14 @@ class LORA2_API lora_add_reversed_chirps : virtual public gr::block
 		/*!
 		 * \brief Return a shared_ptr to a new instance of lora2::lora_add_reversed_chirps.
 		 *
-		 * To avoid accidental use of raw pointers, lora2::lora_add_reversed_chirps's
-		 * constructor is in a private implementation
-		 * class. lora2::lora_add_reversed_chirps::make is the public interface for
-		 * creating new instances.
+		 * \param SF LoRa spreading factor.
+		 * \param interp Interpolation factor (length of each downchirp is
+		 * `interp * 2^SF` complex samples).
+		 * \param len_tag_key Length tag key for the tagged stream. 
+		 * \param payload_tag_key Name of the tag key used to identify the first
+		 * payload item.
+		 * \param rev_chirp_tag_key Name of the tag key used to identify the
+		 * first item of the first downchirp.
 		 */
 		static sptr make(int SF, int interp,
 				const std::string &len_tag_key,

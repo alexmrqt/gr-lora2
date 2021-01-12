@@ -30,7 +30,6 @@ namespace lora2 {
 
 /*!
  * \brief <+description of block+>
- * \ingroup lora2
  *
  */
 class LORA2_API lora_depad : virtual public gr::tagged_stream_block

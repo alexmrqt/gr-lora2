@@ -29,7 +29,6 @@ namespace lora2 {
 
 /*!
  * \brief A block to swap the higher and lower 4 bits of a byte.
- * \ingroup lora2
  *
  */
 class LORA2_API flip_half_bytes : virtual public gr::sync_block

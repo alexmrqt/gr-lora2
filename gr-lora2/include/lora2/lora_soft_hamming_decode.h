@@ -29,7 +29,6 @@ namespace lora2 {
 
 /*!
  * \brief <+description of block+>
- * \ingroup lora2
  *
  */
 class LORA2_API lora_soft_hamming_decode : virtual public gr::block

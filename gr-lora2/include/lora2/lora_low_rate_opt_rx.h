@@ -29,7 +29,6 @@ namespace lora2 {
 
 /*!
  * \brief Applies the "low data rate optimize" option of LoRa on the receive side.
- * \ingroup lora2
  *
  * The low data rate optimize option of LoRa make the transmission more robust
  * by only using the \f$\log_2(M)-2\f$ most significant bits of
