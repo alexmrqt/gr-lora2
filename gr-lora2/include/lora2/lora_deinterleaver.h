@@ -37,8 +37,9 @@ namespace lora2 {
  * interleaver on the binary stream.
  *
  * This blocks works on blocks of `CR+4` input symbols (`CR` being the coding
- * rate, between 1 and 4), and output blocks of `SF.(CR+4)` binary elements,
- * or `(SF-2).(CR+4)` binary elements if `reduced_rate == true`.
+ * rate, between 1 and 4, each symbol encoding SF bits), and output blocks of
+ * `SF.(CR+4)` binary elements, or `(SF-2).(CR+4)` binary elements if
+ * `reduced_rate == true`.
  *
  * The input-output relationship is as follows: let
  * \f$ (in[0] \ldots in[CR+4-1]) \in [0;SF-1]^{CR+4} \f$ be the input block, and let us denote
@@ -59,10 +60,9 @@ class LORA2_API lora_deinterleaver : virtual public gr::block
 		/*!
 		 * \brief Return a shared_ptr to a new instance of lora2::lora_deinterleaver.
 		 *
-		 * To avoid accidental use of raw pointers, lora2::lora_deinterleaver's
-		 * constructor is in a private implementation
-		 * class. lora2::lora_deinterleaver::make is the public interface for
-		 * creating new instances.
+		 * \param SF LoRa spreading factor.
+		 * \param CR LoRa coding rate (between 1 and 4).
+		 * \param reduced_rate Set to true for LoRa low datarate optimization.
 		 */
 		static sptr make(int SF, int CR, bool reduced_rate = false);
 };
