@@ -29,7 +29,30 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief Add/remove the LoRa whitening sequence to an input stream.
+ *
+ * This tagged stream block adds (modulo 2), the LoRa whitening sequence to the
+ * input bits of the tagged streams.
+ * LoRa does not whiten the CRC. Hence, if the input packet contains a CRC, then
+ * a tag with key "has_crc" with value `pmt::PMT_T` must be present on the first
+ * item of the tagged stream.
+ * In the latter situation, the last 16 bits of the packet are not whitened.
+ *
+ * The input-output relationship of this block is as follows.
+ * Let \f$ \mathbf{in} = (in[0] \dots in[L-1]) \: \in [0;1]^L \f$ be the input
+ * stream, then the output stream in given as:o
+ * \f[
+ *  \mathbf{out} = \mathbf{in} \oplus \mathbf{w} \: \in [0;1]^L
+ * \f]
+ * where \f$ \oplus \f$ denotes the binary exclusive OR (XOR) operation, and
+ * \f$ \mathbf{w} \: \in [0;1]^L \f$ is the whitening sequence, with
+ * \f$ \mathbf{w} = (w[0] \dots w[L-1])\f$ is no CRC is
+ * present and \f$ \mathbf{w} = (w[0] \dots w[L-16-1] \: 0 \dots 0)\f$ if a CRC is
+ * present.
+ *
+ * The whitening sequence itself is generated using a 64-bit linear feedback
+ * shift register (LFSR) with seed `0x1a3478f0f1f3f7ff` and polynomial
+ * \f$ x^{64} + x^{48} + x^{40} + x^{32} + 1\f$.
  *
  */
 class LORA2_API lora_whiten : virtual public gr::tagged_stream_block
@@ -40,10 +63,7 @@ class LORA2_API lora_whiten : virtual public gr::tagged_stream_block
 		/*!
 		 * \brief Return a shared_ptr to a new instance of lora2::lora_whiten.
 		 *
-		 * To avoid accidental use of raw pointers, lora2::lora_whiten's
-		 * constructor is in a private implementation
-		 * class. lora2::lora_whiten::make is the public interface for
-		 * creating new instances.
+		 * \param len_tag_key Length tag key for the tagged stream. 
 		 */
 		static sptr make(const std::string &len_tag_key);
 };
