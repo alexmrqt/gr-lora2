@@ -28,7 +28,26 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief Removes the first `20 - (SF-2)*4` payload bits, that are to be
+ * transmitted with the header.
+ *
+ * This tagged stream block will drop the first `(20 - (SF-2)*4)` samples of the
+ * tagged stream, and update its length tag accordingly.
+ * Let `L_in` the the length of the input tagged stream, then the output tagged
+ * stream will have a length of `L_out = L_in - (20 - (SF-2)*4)` samples, with
+ * `SF` the LoRa spreading factor.
+ *
+ * In LoRa, the header contains 20 information bit. Also, the header uses "low
+ * datarate optimize" and `CR=4`.
+ * Recalling that the minimum block size in LoRa, when taking into account the
+ * low datarate optimization, is `(SF-2)*4` (enforced by the interleaver), then
+ * extra bits `(20 - (SF-2)*4)` can be transmitted along with the header
+ * (for SF>7), within the header block.
+ * While zero-padding could be a possibility, LoRa use those extra bits to
+ * transmit the first bits of the payload.
+ *
+ * Note that these extra bits use the same transmission parameters as the rest
+ * of the header: they are encoded with `CR=4` and use low datarate optimization.
  *
  */
 class LORA2_API lora_drop_rem : virtual public gr::tagged_stream_block
@@ -39,10 +58,8 @@ class LORA2_API lora_drop_rem : virtual public gr::tagged_stream_block
 		/*!
 		 * \brief Return a shared_ptr to a new instance of lora2::lora_drop_rem.
 		 *
-		 * To avoid accidental use of raw pointers, lora2::lora_drop_rem's
-		 * constructor is in a private implementation
-		 * class. lora2::lora_drop_rem::make is the public interface for
-		 * creating new instances.
+		 * \param SF LoRa spreading factor.
+		 * \param len_tag_key Length tag key for the tagged stream.
 		 */
 		static sptr make(unsigned char SF, const std::string &len_tag_key);
 };
