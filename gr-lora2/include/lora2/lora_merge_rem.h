@@ -29,7 +29,18 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief Merge back the `20 - (SF-2)*4` payload bits included at the end of the
+ * header.
+ *
+ * This tagged stream block will merge the `20 - (SF-2)*4` payload bits included
+ * at the end of the header to the tagged stream.
+ * These `20 - (SF-2)*4` payload bits are to be suplied as a tag with key
+ * "rem_bits" (and a PMT `u8_vector` as value, where each element of the vector
+ * carries one bit) associated to the first sample of the input tagged stream.
+ *
+ * If no such tag is found, this block will simply copy its input to its output.
+ * Otherwise, it will append `20 - (SF-2)*4` samples to the begining of this
+ * tagged stream.
  *
  */
 class LORA2_API lora_merge_rem : virtual public gr::tagged_stream_block
@@ -40,10 +51,8 @@ class LORA2_API lora_merge_rem : virtual public gr::tagged_stream_block
 		/*!
 		 * \brief Return a shared_ptr to a new instance of lora2::lora_merge_rem.
 		 *
-		 * To avoid accidental use of raw pointers, lora2::lora_merge_rem's
-		 * constructor is in a private implementation
-		 * class. lora2::lora_merge_rem::make is the public interface for
-		 * creating new instances.
+		 * \param SF LoRa spreading factor.
+		 * \param len_tag_key Length tag key for the tagged stream.
 		 */
 		static sptr make(int SF, const std::string &len_tag_key);
 };
