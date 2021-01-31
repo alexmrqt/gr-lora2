@@ -692,6 +692,8 @@ EXCLUDE                = @abs_top_builddir@/docs/doxygen/html \
                          @abs_top_builddir@/docs/doxygen/xml \
                          @abs_top_builddir@/docs/doxygen/other/doxypy.py \
                          @abs_top_builddir@/_CPack_Packages \
+                         @abs_top_builddir@/lib \
+                         @abs_top_srcdir@/lib \
                          @abs_top_srcdir@/cmake
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
