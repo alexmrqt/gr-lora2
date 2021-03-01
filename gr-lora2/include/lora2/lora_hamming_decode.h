@@ -31,7 +31,7 @@ namespace lora2 {
  * \brief LoRa Hamming decoder.
  *
  * This block implements a syndrome decoder (a.k.a: maximum likelihood hard
- * decoder) for the LoRa hamming code.
+ * decoder) for the LoRa Hamming code.
  *
  * Denoting \f$in[n] \in [0,1] \f$ the \f$n\f$-th input sample, the \f$k\f$-th
  * input block is defined as
