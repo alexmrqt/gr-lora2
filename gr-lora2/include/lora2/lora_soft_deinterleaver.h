@@ -60,10 +60,9 @@ class LORA2_API lora_soft_deinterleaver : virtual public gr::block
 		/*!
 		 * \brief Return a shared_ptr to a new instance of lora2::lora_soft_deinterleaver.
 		 *
-		 * To avoid accidental use of raw pointers, lora2::lora_soft_deinterleaver's
-		 * constructor is in a private implementation
-		 * class. lora2::lora_soft_deinterleaver::make is the public interface for
-		 * creating new instances.
+		 * \param SF LoRa spreading factor.
+		 * \param CR LoRa coding rate (between 1 and 4).
+		 * \param reduced_rate Set to true for LoRa low datarate optimization.
 		 */
 		static sptr make(int SF, int CR, bool reduced_rate=false);
 };
