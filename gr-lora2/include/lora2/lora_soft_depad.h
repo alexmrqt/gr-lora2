@@ -28,7 +28,20 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief On soft bits streams, removes padding bits of LoRa packets.
+ *
+ * This tagged stream block removes padding bits, appended by the transmitter
+ * at the end of the LoRa packet in order to satisfy the block length
+ * constraints of the LoRa interleaver.
+ *
+ * The input-output relationship is as follows: let
+ * \f$ (in[0] \ldots in[L+L_{pad}-1]) \in [0;1]^{L+L_{pad}} \f$ be the input
+ * packet, then the output packet is given as:
+ * \f[
+ * 		(in[0] \ldots in[L-1]) \in [0;1]^L
+ * \f].
+ * The padding length must be supplied either at the block construction, as a
+ * parameter, or at runtime, using a tag with key `pad_len`.
  *
  */
 class LORA2_API lora_soft_depad : virtual public gr::tagged_stream_block
@@ -39,10 +52,9 @@ class LORA2_API lora_soft_depad : virtual public gr::tagged_stream_block
 		/*!
 		 * \brief Return a shared_ptr to a new instance of lora2::lora_soft_depad.
 		 *
-		 * To avoid accidental use of raw pointers, lora2::lora_soft_depad's
-		 * constructor is in a private implementation
-		 * class. lora2::lora_soft_depad::make is the public interface for
-		 * creating new instances.
+		 * \param len_tag_key Length tag key for the tagged stream.
+		 * \param n_pad The number of padding bits to be trimmed (can be changed
+		 * at runtime, using a tag with key `pad_len`).
 		 */
 		static sptr make(const std::string &len_tag_key, const uint8_t n_pad);
 };
