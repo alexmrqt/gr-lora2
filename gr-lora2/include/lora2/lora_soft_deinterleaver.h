@@ -28,7 +28,28 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief LoRa deinterleaver for soft bits streams.
+ *
+ * The effect of the interleaver is to shuffle input bits. The deinterleaver
+ * then applies de-shuffling, to put bits back in their original position.
+ *
+ * Here, this block acts on soft bits, that is: values whose size represent the
+ * binary value, and whose amplitude gives the confidence on the binary value..
+ *
+ * This blocks works on blocks of `CR+4` input vectors (`CR` being the coding
+ * rate, between 1 and 4), each composed of SF soft bits, and output blocks of
+ * `SF.(CR+4)` soft bits, or `(SF-2).(CR+4)` soft bits if `reduced_rate == true`.
+ *
+ * The input-output relationship is as follows: let
+ * \f$ (in[0] \ldots in[CR+4-1]) \in \mathbb{R}^{SF.(CR+4)} \f$ be the input
+ * block, and let us denote \f$ in_l[k] \in \mathbb{R} \f$ the l-th soft bit of
+ * \f$in[k]\f$ (the k-th symbol of the input block).
+ * Then, the output binary items are given as:
+ * \f[
+ * out[i(CR+4) + j] = in_{SF-1 - (SF-1-i + CR+4-1-j)\%SF}[CR+4-1-j]
+ * \quad \in [0;1]
+ * \quad \forall i\in[0;SF-1], j\in[0;CR+4-1]
+ * \f]
  *
  */
 class LORA2_API lora_soft_deinterleaver : virtual public gr::block
