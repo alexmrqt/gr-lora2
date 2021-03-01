@@ -42,8 +42,9 @@ namespace lora2 {
  * `reduced_rate == true`.
  *
  * The input-output relationship is as follows: let
- * \f$ (in[0] \ldots in[CR+4-1]) \in [0;SF-1]^{CR+4} \f$ be the input block, and let us denote
- * \f$ in_l[k] \in [0;1] \f$ the l-th bit of the k-th symbol of the input block.
+ * \f$ (in[0] \ldots in[CR+4-1]) \in [0;SF-1]^{CR+4} \f$ be the input block,
+ * and let us denote \f$ in_l[k] \in [0;1] \f$ the l-th bit of \f$in[k]\f$
+ * (the k-th symbol of the input block).
  * Then, the output binary items are given as:
  * \f[
  * out[i(CR+4) + j] = in_{SF-1 - (SF-1-i + CR+4-1-j)\%SF}[CR+4-1-j]
