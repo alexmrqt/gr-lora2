@@ -31,13 +31,13 @@ namespace lora2 {
 /*!
  * \brief Removes padding bits of LoRa packets.
  *
- * This tagged stream block removed padding bits, appended by the transmitter
+ * This tagged stream block removes padding bits, appended by the transmitter
  * at the end of the LoRa packet in order to satisfy the block length
  * constraints of the LoRa interleaver.
  *
  * The input-output relationship is as follows: let
- * \f$ (in[0] \ldots in[L-1], 0 \ldots 0) \in [0;1]^{L+L_{pad}} \f$ be the input
- * block, then the output block is given as:
+ * \f$ (in[0] \ldots in[L+L_{pad}-1]) \in [0;1]^{L+L_{pad}} \f$ be the input
+ * packet, then the output packet is given as:
  * \f[
  * 		(in[0] \ldots in[L-1]) \in [0;1]^L
  * \f].
