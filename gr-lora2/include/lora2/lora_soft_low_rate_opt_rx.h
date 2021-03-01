@@ -28,7 +28,20 @@ namespace gr {
 namespace lora2 {
 
 /*!
- * \brief <+description of block+>
+ * \brief On soft bits, applies the "low data rate optimize" option of LoRa on the receive side.
+ *
+ * The low data rate optimize option of LoRa make the transmission more robust
+ * by only using the \f$\log_2(M)-2\f$ most significant bits of
+ * \f$M\f$-ary CSS symbols (that can carry up to \f$\log_2(M)\f$ bits).
+ * This allows robustness with respect to small time/frequency impairments that
+ * can shifts the demodulated symbols by +/-1.
+ *
+ * This blocks drops the two last elements of the input vector.
+ * Let \f$in[k] = (in_0[k] \dots in_{SF-1}[k]) \: \in \mathbb{R}^{SF}\f$ be the
+ * k-th input sample, then the corresponding output sample is given as:
+ * \f[
+ *	 out[k] = (in_0[k] \dots in_{SF-3}[k]) \: \in \mathbb{R}^{SF-2}
+ * \f]
  *
  */
 class LORA2_API lora_soft_low_rate_opt_rx : virtual public gr::sync_block
@@ -39,10 +52,8 @@ class LORA2_API lora_soft_low_rate_opt_rx : virtual public gr::sync_block
 		/*!
 		 * \brief Return a shared_ptr to a new instance of lora2::lora_soft_low_rate_opt_rx.
 		 *
-		 * To avoid accidental use of raw pointers, lora2::lora_soft_low_rate_opt_rx's
-		 * constructor is in a private implementation
-		 * class. lora2::lora_soft_low_rate_opt_rx::make is the public interface for
-		 * creating new instances.
+		 * \param SF LoRa spreading factor.
+		 *
 		 */
 		static sptr make(int SF);
 };
