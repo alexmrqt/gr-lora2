@@ -31,7 +31,19 @@ _STATE_SYNC = 2
 _STATE_DOWN = 3
 
 class state_wait:
+    """
+    Class used when waiting for a preamble detection.
+    """
     def __init__(self, M, N_up, thres):
+        """
+        Constructor.
+
+        Parameters:
+            M       -- Arity of the CSS modulated signal
+                    ($\log_2(M)$ being the number of bits per symbol). 
+            N_up    -- Number of upchirp in a preamble.
+            thres   -- Detection threshold, between 0 and 1.
+        """
         self.M = M
         self.N_up = N_up
         self.thres = thres
@@ -46,13 +58,51 @@ class state_wait:
         self.phi = 0.0 #Fine frequency shift estimate
 
     def init_buffers(self):
+        """
+        (Re)Initialize internal buffers, in order to detect a new preamble.
+        """
         self.buffer = numpy.zeros(self.N_up//2, dtype=numpy.int) - 1
         self.buffer_phi = numpy.zeros(self.N_up//2-1)
 
-    def compute_phi(self, cmplx_val):
-        return numpy.angle(self.cmplx_val_pre * numpy.conjugate(cmplx_val)) / (2*numpy.pi)
+    def compute_phi(self, cmplx_val_pre, cmplx_val):
+        """
+        Fine frequency offset estimator.
+
+        Estimate the frequency offset between `cmplx_val` and `cmplx_val_pre`.
+        The estimate is computed as:
+        \f[
+            \phi = \frac{1}{2.\pi} \arg\left{z_{k-1}.z_k^*\right}
+        \f]
+        Where \f$z_{k-1} = \f$`cmplx_val_pre`, and \f$z_k=\f$`cmplx_val`.
+
+        Parameters:
+            cmplx_val_pre   -- Complex number.
+            cmplx_val       -- Complex number.
+
+        Returns:
+            An estimate of the frequency offset between the two complex arguments.
+        """
+        return numpy.angle(cmplx_val_pre * numpy.conjugate(cmplx_val)) / (2*numpy.pi)
 
     def detect_preamble(self):
+        """
+        LoRa preamble detector.
+
+        This functions uses the lase `N_up/2` (see constructor) received symbols
+        to detect a preamble.
+
+        Let us denote \f$c_n \in \mathbb{C}\f$ the \f$n\f$-th demodulated value.
+        A preamble is then detected if the following condition is met.
+        \f[
+            \frac{1}{M^2}.\sum_{n=0}^{N_{up}/2-1} |c_n - \mu|^2 < \epsilon
+        \f]
+        Where:
+        * \f$ \mu = \sum_{n=0}^{N_{up}/2-1} c_n \f$
+        * \f$ \epsilon= \f$`thres` (see constructor).
+
+        Returns:
+            True if a preamble is detected, else False.
+        """
         #Buffer not full yet
         if self.buffer[0] == -1:
             return False
@@ -72,7 +122,7 @@ class state_wait:
         (self.buffer[-1], cmplx_val) = self.demod.complex_demodulate(samples)
 
         self.buffer_phi = numpy.roll(self.buffer_phi, -1)
-        self.buffer_phi[-1] = self.compute_phi(cmplx_val)
+        self.buffer_phi[-1] = self.compute_phi(self.cmplx_val_pre, cmplx_val)
 
         if self.detect_preamble():
             self.phi = numpy.mean(self.buffer_phi) / self.M
