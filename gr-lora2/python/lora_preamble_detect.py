@@ -32,11 +32,21 @@ _STATE_DOWN = 3
 
 class state_wait:
     """
-    Class used when waiting for a preamble detection.
+    Class for the preamble detection state.
+
+    This states takes M=2^SF (with SF the LoRa spreading factor) complex
+    samples of a signal, and tries to detect if a LoRa preamble is present.
+
+    A LoRa preamble is declared present if when the probability that `N_up/2`
+    consecutive demodulated symbols being the same value exceeds a threshold
+    \f$T \in ]0;1[\f$.
+
+    When a preamble is detected, this state also estimates the fine frequency
+    offset between of the received upchirps.
     """
     def __init__(self, M, N_up, thres):
         """
-        Constructor.
+        Construct a preamble detection state.
 
         Parameters:
             M       -- Arity of the CSS modulated signal
@@ -60,6 +70,8 @@ class state_wait:
     def init_buffers(self):
         """
         (Re)Initialize internal buffers, in order to detect a new preamble.
+
+        This function is called at each changement of state.
         """
         self.buffer = numpy.zeros(self.N_up//2, dtype=numpy.int) - 1
         self.buffer_phi = numpy.zeros(self.N_up//2-1)
@@ -118,6 +130,21 @@ class state_wait:
 
 
     def work(self, samples):
+        """
+        Process M (2^SF) samples and gives next state (state_wait or state_up).
+
+        Denoting SF the LoRa spreading factor, this functions process M=2^SF
+        samples, and tries to detect a preamble.
+        If a preamble is detected, then this function return `_STATE_UP`, for the
+        FSM to go into the upchirp detection state.
+        Else, it returns `_STATE_WAIT` to stay in the preamble detection state.
+
+        Parameters:
+            samples -- M=2^SF complex samples of a received signal.
+
+        Returns
+            `_STATE_UP` if a preamble has been detected, or `_STATE_WAIT`.
+        """
         self.buffer = numpy.roll(self.buffer, -1)
         (self.buffer[-1], cmplx_val) = self.demod.complex_demodulate(samples)
 
@@ -135,10 +162,34 @@ class state_wait:
         return _STATE_WAIT
 
     def get_fine_freq_shift(self):
+        """
+        Return the fine frequency offset associated with the last detected
+        preamble.
+
+        The returned value of this method is valid only if the last call to
+        `work()` returned `_STATE_UP`.
+        """
         return self.phi
 
 class state_up:
+    """
+    Class for the upchirp processing state.
+
+    This state counts \f$N_up/2\f$ LoRa symbols before passing to the next
+    state (state_sync).
+    It is also used to retrieve auxiliary quantities that allows to estimate the
+    time and frequency offset of the incoming LoRa transmission (state_down),
+    as well as the LoRa sync word (state_sync).
+    """
     def __init__(self, M, N_up):
+        """
+        Construct an upchirp processing state.
+
+        Parameters:
+            M       -- Arity of the CSS modulated signal
+                    ($\log_2(M)$ being the number of bits per symbol). 
+            N_up    -- Number of upchirp in a preamble.
+        """
         self.M = M
         self.N_up = N_up
 
@@ -152,9 +203,28 @@ class state_up:
         self.neigh_up_val = numpy.zeros(3, dtype=numpy.complex64)
 
     def init_buffer(self):
+        """
+        (Re)Initialize internal buffers.
+
+        This function is called at each changement of state.
+        """
         self.buffer = numpy.zeros((self.N_up//2, self.M), dtype=numpy.complex64)
 
     def work(self, samples):
+        """
+        Process M (2^SF) samples and gives next state (state_up or state_sync).
+
+        Denoting SF the LoRa spreading factor, this functions process M=2^SF
+        samples.
+        It returns `_STATE_UP` for the first `N_up/2-1` calls, then returns
+        `_STATE_SYNC`.
+
+        Parameters:
+            samples -- M=2^SF complex samples of a received signal.
+
+        Returns
+            `_STATE_UP` for the first `N_up/2` calls, then `_STATE_SYNC`.
+        """
         if self.up_cnt < (self.N_up//2-1):
             self.buffer[self.up_cnt][:] = samples
 
@@ -177,13 +247,78 @@ class state_up:
             return _STATE_SYNC
 
     def get_up(self):
+        """
+        Return the demodulated value representative of the last `N_up/2` symbols
+        of the preamble.
+
+        Let \f$ r_n = (r_n[0] \dots r_n[M-1]) \in \mathbb{C}^M, n\in[0, N_{up}/2]\f$
+        be the n-th input of the state (n-th call to `work()`).
+        We define:
+        \f[
+        \bar r = \left(\frac{2}{N_up}\sum_{n=0}^{N_{up}/2} r_n[0] \dots
+        \frac{2}{N_up}\sum_{n=0}^{N_{up}/2} r_n[M-1]\right)
+        \f]
+
+        Then this method returns the CSS demodulated symbol corresponding to
+        \f$\bar r\f$.
+
+        The returned value of this method is valid only if the last call to
+        `work()` returned `_STATE_SYNC`.
+
+        Returns:
+            The demodulated value representative of the last `N_up/2` symbols
+            of the preamble.
+        """
         return self.up
 
     def get_neigh_up_val(self):
+        """
+        Return the correlator output corresponding to the demodulated value
+        representative of the last `N_up/2` symbols of the preamble, as well
+        as the two adjacent correlator outputs.
+
+        Let \f$ r_n = (r_n[0] \dots r_n[M-1]) \in \mathbb{C}^M, n\in[0, N_{up}/2]\f$
+        be the n-th input of the state (n-th call to `work()`).
+        We define:
+        \f[
+        \bar r = \left(\frac{2}{N_up}\sum_{n=0}^{N_{up}/2} r_n[0] \dots
+        \frac{2}{N_up}\sum_{n=0}^{N_{up}/2} r_n[M-1]\right)
+        \f]
+
+        Next, we define \f$\bar c\f$ and \f$ \bar R = (R[0] \dots R[M-1]) \in \mathbb{C}^M \f$,
+        the demodulated symbol associated with samples \f$\bar r\f$, and the
+        output of the demodulator's correlater, respectively.
+
+        Then, this function returns
+        \f$ R[(\bar c - 1 \text{mod} M)] ; R[\bar c] ; R[(\bar c + 1 \text{mod} M)] \f$
+        as an array of three complex values.
+
+        The returned value of this method is valid only if the last call to
+        `work()` returned `_STATE_SYNC`.
+
+        Returns:
+            \f$ R[(\bar c - 1 \text{mod} M)] ; R[\bar c] ; R[(\bar c + 1 \text{mod} M)] \f$
+            as an array of three complex values.
+        """
         return self.neigh_up_val
 
 class state_sync:
+    """
+    Class for the LoRa sync word processing state.
+
+    This state counts 2 LoRa symbols before passing to the next state (state_down).
+    It is also used to estimate the LoRa sync word, based on the demodulated
+    value representative of the last `N_up/2` symbols of the preamble,
+    determined in state_up.
+    """
     def __init__(self, M):
+        """
+        Construct LoRa sync word processing state.
+
+        Parameters:
+            M       -- Arity of the CSS modulated signal
+                    ($\log_2(M)$ being the number of bits per symbol). 
+        """
         self.M = M
 
         self.demod = css_demod_algo(self.M)
@@ -195,13 +330,30 @@ class state_sync:
         self.sync_conf = numpy.zeros(2, dtype=numpy.float32)
 
     def work(self, samples, sym_up):
+        """
+        Process M (2^SF) samples and gives next state (state_sync or state_down).
+
+        Denoting SF the LoRa spreading factor, this functions process M=2^SF
+        samples.
+        It returns _STATE_SYNC for the first call, then returns _STATE_DOWN.
+
+        Parameters:
+            samples -- M=2^SF complex samples of a received signal.
+            sym_up  -- The demodulated value representative of the last `N_up/2`
+                    symbols of the preamble.
+
+        Returns:
+            _STATE_SYNC for the first call, then _STATE_DOWN.
+        """
         if self.sync_cnt == 0:
             self.sync_cnt += 1
 
+            # TODO: demodulate instead of soft_demodulate
             (self.sync_idx[0], self.sync_conf[0]) = self.demod.soft_demodulate(samples)
 
             return _STATE_SYNC
         else:
+            # TODO: demodulate instead of soft_demodulate
             (self.sync_idx[1], self.sync_conf[1]) = self.demod.soft_demodulate(samples)
 
             self.sync_val = 0
@@ -212,10 +364,40 @@ class state_sync:
             return _STATE_DOWN
 
     def get_sync_val(self):
+        """
+        Return the estimated LoRa sync word.
+
+        Let `c0` and `c1` be the demodulated values of the two LoRa symbols in
+        the sync word section of the preamble.
+        Let `c_up` be the demodulated value representative of the last `N_up/2`
+        symbols of the preamble.
+        Then this function decodes the sync word as
+        `sync_word = (((c0-c_up)%M)/8 << 4) | ((c1-c_up)%M)/8`.
+
+        The returned value of this method is valid only if the last call to
+        `work()` returned `_STATE_DOWN`.
+
+        Returns:
+            The estimated LoRa sync word.
+        """
         return self.sync_val
 
 class state_down:
+    """
+    Class for the LoRa down chirp processing state.
+
+    This state counts 2 LoRa symbols before passing to the next state (state_wait).
+    It is also used to estimate the coarse time and frequency offset, as well as
+    the fine time frequency offset, based on the outputs of state_up.
+    """
     def __init__(self, M):
+        """
+        Construct LoRa sync word processing state.
+
+        Parameters:
+            M       -- Arity of the CSS modulated signal
+                    ($\log_2(M)$ being the number of bits per symbol). 
+        """
         self.M = M
 
         self.demod = css_demod_algo(self.M, upchirp=False)
@@ -250,7 +432,6 @@ class state_down:
         Gamma = lambda N,k: k if (k < N/2) else (k-N)
 
         tmp = int(up) + int(down) + gamma
-        #print(str(0.5*Gamma(self.M, tmp%self.M)) + ", " + str(up) + ", " + str(down) + ", " + str(gamma))
         self.freq_shift = int(numpy.ceil(0.5*Gamma(self.M, tmp%self.M)))
 
     def compute_time_shift(self, up):
