@@ -287,7 +287,7 @@ class state_up:
 
         Next, we define \f$\bar c\f$ and \f$ \bar R = (R[0] \dots R[M-1]) \in \mathbb{C}^M \f$,
         the demodulated symbol associated with samples \f$\bar r\f$, and the
-        output of the demodulator's correlater, respectively.
+        output of the demodulator's correlator, respectively.
 
         Then, this function returns
         \f$ R[(\bar c - 1 \text{mod} M)] ; R[\bar c] ; R[(\bar c + 1 \text{mod} M)] \f$
@@ -412,6 +412,51 @@ class state_down:
         self.time_shift = 0
 
     def compute_freq_shift(self, up, down, neigh_up_val, neigh_down_val):
+        """
+        Estimate the coarse frequency offset of the received preamble.
+
+        This function is an implementation of the integer frequency offset
+        described in Misc Xhonneux, M. et al., "A Low-complexity Synchronization
+        Scheme for LoRa End Nodes", 2019.
+
+        The estimated integer frequency offet is estimated as:
+        \f[
+            \hat L = \left\lceil \frac{1}{2}\Gamma_{2.SF}\left((\hat{S}_{up} + \hat{S}_{down} + \gamma) mod M\right)\right\rceil
+        \f]
+        where:
+         - \f$ \Gamma_N[k] = k \: \forall k\in[0;N/2[\f$, \Gamma_N[k] = k-N \: \forall k\in[N/2;N[\f$,
+         - \f$ \gamma = \nu \f$ if \f$ \nu = \nu^* \f$ else $\gamma = 0$,
+         - \f$ \nu = sgn\left(|R[\hat{S_{up}+1]| - |R[\hat{S_{up}-1]|\right) \f$
+             if \f$\left| |R[\hat{S_{up}+1]| - |R[\hat{S_{up}-1]| \right| > 10^{-6} \f$ else 
+             \f$ \nu=0 \f$
+         - \f$ \nu^* = sgn\left(|R^*[\hat{S_{down}+1]| - |R^*[\hat{S_{down}-1]|\right) \f$
+             if \f$\left| |R^*[\hat{S_{down}+1]| - |R^*[\hat{S_{down}-1]| \right| > 10^{-6} \f$ else 
+             \f$ \nu^*=0 \f$
+         - \f$ R[k] \: \forall k\in[0;M-1]\f$ is the output of the correlator
+           associated with the received upchirps in the first part of the preamble.
+         - \f$ \hat{S}_{up} \f$ is the demodulated symbol value associated with
+            \f$ R[k] \f$.
+         - \f$ R^*[k] \: \forall k\in[0;M-1]\f$ is the output of the correlator
+             associated the received downchirps.
+         - \f$ \hat{S}_{down} \f$ is the demodulated symbol value associated
+             with \f$ R^*[k] \f$.
+
+        Parameters:
+            up              -- Estimated demodulated value of the upchirp symbols.
+                            See \f$ \hat{S}_{up} \f$ above.
+            down            -- Estimated demodulated value of the downchirp symbols
+                            See \f$ \hat{S}_{down} \f$ above.
+            neigh_up_val    -- Output of the upchirp correlator at indices
+                            `up-1`, `up` and `up+1` (as an array).
+                            Equivalent to \f$ R[\hat{S_{up}-1]\f$,
+                            \f$ R[\hat{S_{up}]\f$ and \f$ R[\hat{S_{up}+1]\f$,
+                            see above.
+            neigh_up_val    -- Output of the downchirp correlator at indices
+                            `down-1`, `down` and `down+1` (as an array).
+                            Equivalent to \f$ R^*[\hat{S_{down}-1]\f$,
+                            \f$ R^*[\hat{S_{down}]\f$ and \f$ R^*[\hat{S_{down}+1]\f$,
+                            see above.
+        """
         eps = 1e-6
         up_diff = numpy.abs(neigh_up_val[2]) - numpy.abs(neigh_up_val[0])
         down_diff = numpy.abs(neigh_down_val[2]) - numpy.abs(neigh_down_val[0])
@@ -429,12 +474,31 @@ class state_down:
             nu_star = -1
         gamma = nu if nu == nu_star else 0
 
-        Gamma = lambda N,k: k if (k < N/2) else (k-N)
+        Gamma = lambda N,k: k if (k < N//2) else (k-N)
 
         tmp = int(up) + int(down) + gamma
         self.freq_shift = int(numpy.ceil(0.5*Gamma(self.M, tmp%self.M)))
 
     def compute_time_shift(self, up):
+        """
+        Estimate the coarse timing offset of the received preamble.
+
+        Knowing the value of the unmodulated upchirp symbols at the beginning
+        of the preamble, as well as the coarse frequency offset, then it can be
+        shown that the coarse timing offset is given as:
+        \f[
+            (\hat{S}_up - \hat{L}) mod M
+        \f]
+        See Xhonneux, M. et al., "A Low-complexity Synchronization
+        Scheme for LoRa End Nodes", 2019, where :
+         - \f$ \hat{S}_{up} \f$ is the estimated value of the unmodulated
+             upchirp symbols at the beginning of the preamble.
+         - \f$ \hat{L} \f$ is the estimated coarse frequenci.
+
+
+        Parameters:
+            up  -- Estimated demodulated value of the upchirp symbols.
+        """
         tmp = int(up) - int(self.freq_shift)
         self.time_shift = numpy.uint16(tmp%self.M)
 
