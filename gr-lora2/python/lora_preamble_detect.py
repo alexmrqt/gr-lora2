@@ -48,9 +48,9 @@ class state_wait:
         """
         Construct a preamble detection state.
 
-        Parameters:
+        Args:
             M       -- Arity of the CSS modulated signal
-                    ($\log_2(M)$ being the number of bits per symbol). 
+                    (\f$log_2(M)\f$ being the number of bits per symbol). 
             N_up    -- Number of upchirp in a preamble.
             thres   -- Detection threshold, between 0 and 1.
         """
@@ -71,7 +71,7 @@ class state_wait:
         """
         (Re)Initialize internal buffers, in order to detect a new preamble.
 
-        This function is called at each changement of state.
+    This function is called at each changement of state.
         """
         self.buffer = numpy.zeros(self.N_up//2, dtype=numpy.int) - 1
         self.buffer_phi = numpy.zeros(self.N_up//2-1)
@@ -80,14 +80,14 @@ class state_wait:
         """
         Fine frequency offset estimator.
 
-        Estimate the frequency offset between `cmplx_val` and `cmplx_val_pre`.
-        The estimate is computed as:
-        \f[
-            \phi = \frac{1}{2.\pi} \arg\left{z_{k-1}.z_k^*\right}
-        \f]
-        Where \f$z_{k-1} = \f$`cmplx_val_pre`, and \f$z_k=\f$`cmplx_val`.
+    Estimate the frequency offset between `cmplx_val` and `cmplx_val_pre`.
+    The estimate is computed as:
+    \f[
+        \phi = \frac{1}{2.\pi} \arg\left\{z_{k-1}.z_k^*\right\}
+    \f]
+    Where \f$z_{k-1} = \f$`cmplx_val_pre`, and \f$z_k=\f$`cmplx_val`.
 
-        Parameters:
+        Args:
             cmplx_val_pre   -- Complex number.
             cmplx_val       -- Complex number.
 
@@ -100,17 +100,17 @@ class state_wait:
         """
         LoRa preamble detector.
 
-        This functions uses the lase `N_up/2` (see constructor) received symbols
-        to detect a preamble.
+    This functions uses the lase `N_up/2` (see constructor) received symbols
+    to detect a preamble.
 
-        Let us denote \f$c_n \in \mathbb{C}\f$ the \f$n\f$-th demodulated value.
-        A preamble is then detected if the following condition is met.
-        \f[
-            \frac{1}{M^2}.\sum_{n=0}^{N_{up}/2-1} |c_n - \mu|^2 < \epsilon
-        \f]
-        Where:
-        * \f$ \mu = \sum_{n=0}^{N_{up}/2-1} c_n \f$
-        * \f$ \epsilon= \f$`thres` (see constructor).
+    Let us denote \f$c_n \in \mathbb{C}\f$ the \f$n\f$-th demodulated value.
+    A preamble is then detected if the following condition is met.
+    \f[
+        \frac{1}{M^2}.\sum_{n=0}^{N_{up}/2-1} |c_n - \mu|^2 < \epsilon
+    \f]
+    Where:
+    * \f$ \mu = \sum_{n=0}^{N_{up}/2-1} c_n \f$
+    * \f$ \epsilon= \f$`thres` (see constructor).
 
         Returns:
             True if a preamble is detected, else False.
@@ -133,16 +133,16 @@ class state_wait:
         """
         Process M (2^SF) samples and gives next state (state_wait or state_up).
 
-        Denoting SF the LoRa spreading factor, this functions process M=2^SF
-        samples, and tries to detect a preamble.
-        If a preamble is detected, then this function return `_STATE_UP`, for the
-        FSM to go into the upchirp detection state.
-        Else, it returns `_STATE_WAIT` to stay in the preamble detection state.
+    Denoting SF the LoRa spreading factor, this functions process M=2^SF
+    samples, and tries to detect a preamble.
+    If a preamble is detected, then this function return `_STATE_UP`, for the
+    FSM to go into the upchirp detection state.
+    Else, it returns `_STATE_WAIT` to stay in the preamble detection state.
 
-        Parameters:
+        Args:
             samples -- M=2^SF complex samples of a received signal.
 
-        Returns
+        Returns:
             `_STATE_UP` if a preamble has been detected, or `_STATE_WAIT`.
         """
         self.buffer = numpy.roll(self.buffer, -1)
@@ -163,11 +163,10 @@ class state_wait:
 
     def get_fine_freq_shift(self):
         """
-        Return the fine frequency offset associated with the last detected
-        preamble.
+        Return the fine frequency offset associated with the last detected preamble.
 
-        The returned value of this method is valid only if the last call to
-        `work()` returned `_STATE_UP`.
+    The returned value of this method is valid only if the last call to
+    `work()` returned `_STATE_UP`.
         """
         return self.phi
 
@@ -175,7 +174,7 @@ class state_up:
     """
     Class for the upchirp processing state.
 
-    This state counts \f$N_up/2\f$ LoRa symbols before passing to the next
+    This state counts \f$N_{up}/2\f$ LoRa symbols before passing to the next
     state (state_sync).
     It is also used to retrieve auxiliary quantities that allows to estimate the
     time and frequency offset of the incoming LoRa transmission (state_down),
@@ -185,9 +184,9 @@ class state_up:
         """
         Construct an upchirp processing state.
 
-        Parameters:
+        Args:
             M       -- Arity of the CSS modulated signal
-                    ($\log_2(M)$ being the number of bits per symbol). 
+                    (\f$log_2(M)\f$ being the number of bits per symbol). 
             N_up    -- Number of upchirp in a preamble.
         """
         self.M = M
@@ -206,7 +205,7 @@ class state_up:
         """
         (Re)Initialize internal buffers.
 
-        This function is called at each changement of state.
+    This function is called at each changement of state.
         """
         self.buffer = numpy.zeros((self.N_up//2, self.M), dtype=numpy.complex64)
 
@@ -214,16 +213,16 @@ class state_up:
         """
         Process M (2^SF) samples and gives next state (state_up or state_sync).
 
-        Denoting SF the LoRa spreading factor, this functions process M=2^SF
-        samples.
-        It returns `_STATE_UP` for the first `N_up/2-1` calls, then returns
-        `_STATE_SYNC`.
+    Denoting SF the LoRa spreading factor, this functions process M=2^SF
+    samples.
+    It returns `_STATE_UP` for the first `N_{up}/2-1` calls, then returns
+    `_STATE_SYNC`.
 
-        Parameters:
+        Args:
             samples -- M=2^SF complex samples of a received signal.
 
-        Returns
-            `_STATE_UP` for the first `N_up/2` calls, then `_STATE_SYNC`.
+        Returns:
+            `_STATE_UP` for the first `N_{up}/2` calls, then `_STATE_SYNC`.
         """
         if self.up_cnt < (self.N_up//2-1):
             self.buffer[self.up_cnt][:] = samples
@@ -248,22 +247,22 @@ class state_up:
 
     def get_up(self):
         """
-        Return the demodulated value representative of the last `N_up/2` symbols
-        of the preamble.
+        Return the demodulated value representative of the last `N_up/2` symbols of the preamble.
 
-        Let \f$ r_n = (r_n[0] \dots r_n[M-1]) \in \mathbb{C}^M, n\in[0, N_{up}/2]\f$
-        be the n-th input of the state (n-th call to `work()`).
-        We define:
-        \f[
-        \bar r = \left(\frac{2}{N_up}\sum_{n=0}^{N_{up}/2} r_n[0] \dots
-        \frac{2}{N_up}\sum_{n=0}^{N_{up}/2} r_n[M-1]\right)
-        \f]
+    Let \f$ r_n = (r_n[0] \dots r_n[M-1]) \in \mathbb{C}^M, n\in[0, N_{up}/2]\f$
+    be the n-th input of the state (n-th call to `work()`).
+    We define:
+    \f[
+    \bar r = \left(\frac{2}{N_{up}}\sum_{n=0}^{N_{up}/2} r_n[0] \dots
+    \frac{2}{N_{up}}\sum_{n=0}^{N_{up}/2} r_n[M-1]\right)
+    \f]
 
-        Then this method returns the CSS demodulated symbol corresponding to
-        \f$\bar r\f$.
+    Then this method returns the CSS demodulated symbol corresponding to
+    \f$\bar r\f$, using a non-coherent demodulator.
+    It will be denoted \f$\hat{S}_{up}\f$ in the rest of the document.
 
-        The returned value of this method is valid only if the last call to
-        `work()` returned `_STATE_SYNC`.
+    The returned value of this method is valid only if the last call to
+    `work()` returned `_STATE_SYNC`.
 
         Returns:
             The demodulated value representative of the last `N_up/2` symbols
@@ -273,31 +272,34 @@ class state_up:
 
     def get_neigh_up_val(self):
         """
-        Return the correlator output corresponding to the demodulated value
-        representative of the last `N_up/2` symbols of the preamble, as well
-        as the two adjacent correlator outputs.
+        Return demodulated and adjacent symbols and associated correlator outputs.
 
-        Let \f$ r_n = (r_n[0] \dots r_n[M-1]) \in \mathbb{C}^M, n\in[0, N_{up}/2]\f$
-        be the n-th input of the state (n-th call to `work()`).
-        We define:
-        \f[
-        \bar r = \left(\frac{2}{N_up}\sum_{n=0}^{N_{up}/2} r_n[0] \dots
-        \frac{2}{N_up}\sum_{n=0}^{N_{up}/2} r_n[M-1]\right)
-        \f]
+    Return the correlator output corresponding to the demodulated value
+    representative of the last `N_up/2` symbols of the preamble, as well
+    as the two adjacent correlator outputs.
 
-        Next, we define \f$\bar c\f$ and \f$ \bar R = (R[0] \dots R[M-1]) \in \mathbb{C}^M \f$,
-        the demodulated symbol associated with samples \f$\bar r\f$, and the
-        output of the demodulator's correlator, respectively.
+    Let \f$ r_n = (r_n[0] \dots r_n[M-1]) \in \mathbb{C}^M, n\in[0, N_{up}/2]\f$
+    be the n-th input of the state (n-th call to `work()`).
+    We define:
+    \f[
+    \bar r = \left(\frac{2}{N_{up}}\sum_{n=0}^{N_{up}/2} r_n[0] \dots
+    \frac{2}{N_{up}}\sum_{n=0}^{N_{up}/2} r_n[M-1]\right)
+    \f]
 
-        Then, this function returns
-        \f$ R[(\bar c - 1 \text{mod} M)] ; R[\bar c] ; R[(\bar c + 1 \text{mod} M)] \f$
-        as an array of three complex values.
+    Next, we define \f$\hat{S}_{up}\f$ and \f$ \bar R = (R[0] \dots R[M-1]) \in \mathbb{C}^M \f$,
+    the demodulated symbol associated with samples \f$\bar r\f$ (using
+    non-coherent demodulation), and the output of the non-coherent demodulator
+    correlator, respectively.
 
-        The returned value of this method is valid only if the last call to
-        `work()` returned `_STATE_SYNC`.
+    Then, this function returns
+    \f$ R[(\hat{S}_{up} - 1) \text{mod} M] ; R[\hat{S}_{up}] ; R[(\hat{S}_{up} + 1) \text{mod} M] \f$
+    as an array of three complex values.
+
+    The returned value of this method is valid only if the last call to
+    `work()` returned `_STATE_SYNC`.
 
         Returns:
-            \f$ R[(\bar c - 1 \text{mod} M)] ; R[\bar c] ; R[(\bar c + 1 \text{mod} M)] \f$
+            \f$ R[(\hat{S}_{up} - 1) \text{mod} M] ; R[\hat{S}_{up}] ; R[(\hat{S}_{up} + 1) \text{mod} M] \f$
             as an array of three complex values.
         """
         return self.neigh_up_val
@@ -315,9 +317,9 @@ class state_sync:
         """
         Construct LoRa sync word processing state.
 
-        Parameters:
+        Args:
             M       -- Arity of the CSS modulated signal
-                    ($\log_2(M)$ being the number of bits per symbol). 
+                    (\f$log_2(M)\f$ being the number of bits per symbol). 
         """
         self.M = M
 
@@ -333,11 +335,11 @@ class state_sync:
         """
         Process M (2^SF) samples and gives next state (state_sync or state_down).
 
-        Denoting SF the LoRa spreading factor, this functions process M=2^SF
-        samples.
-        It returns _STATE_SYNC for the first call, then returns _STATE_DOWN.
+    Denoting SF the LoRa spreading factor, this functions process \f$M=2^\text{SF}\f$
+    samples.
+    It returns _STATE_SYNC for the first call, then returns _STATE_DOWN.
 
-        Parameters:
+        Args:
             samples -- M=2^SF complex samples of a received signal.
             sym_up  -- The demodulated value representative of the last `N_up/2`
                     symbols of the preamble.
@@ -367,15 +369,15 @@ class state_sync:
         """
         Return the estimated LoRa sync word.
 
-        Let `c0` and `c1` be the demodulated values of the two LoRa symbols in
-        the sync word section of the preamble.
-        Let `c_up` be the demodulated value representative of the last `N_up/2`
-        symbols of the preamble.
-        Then this function decodes the sync word as
-        `sync_word = (((c0-c_up)%M)/8 << 4) | ((c1-c_up)%M)/8`.
+    Let `c0` and `c1` be the demodulated values of the two LoRa symbols in
+    the sync word section of the preamble.
+    Let `c_up` be the demodulated value representative of the last `N_up/2`
+    symbols of the preamble.
+    Then this function decodes the sync word as
+    `sync_word = (((c0-c_up)%M)/8 << 4) | ((c1-c_up)%M)/8`.
 
-        The returned value of this method is valid only if the last call to
-        `work()` returned `_STATE_DOWN`.
+    The returned value of this method is valid only if the last call to
+    `work()` returned `_STATE_DOWN`.
 
         Returns:
             The estimated LoRa sync word.
@@ -394,9 +396,9 @@ class state_down:
         """
         Construct LoRa sync word processing state.
 
-        Parameters:
+        Args:
             M       -- Arity of the CSS modulated signal
-                    ($\log_2(M)$ being the number of bits per symbol). 
+                    (\f$log_2(M)\f$ being the number of bits per symbol). 
         """
         self.M = M
 
@@ -415,46 +417,47 @@ class state_down:
         """
         Estimate the coarse frequency offset of the received preamble.
 
-        This function is an implementation of the integer frequency offset
-        described in Misc Xhonneux, M. et al., "A Low-complexity Synchronization
-        Scheme for LoRa End Nodes", 2019.
+    This function is an implementation of the integer frequency offset
+    described in Misc Xhonneux, M. et al., "A Low-complexity Synchronization
+    Scheme for LoRa End Nodes", 2019.
 
-        The estimated integer frequency offet is estimated as:
-        \f[
-            \hat L = \left\lceil \frac{1}{2}\Gamma_{2.SF}\left((\hat{S}_{up} + \hat{S}_{down} + \gamma) mod M\right)\right\rceil
-        \f]
-        where:
-         - \f$ \Gamma_N[k] = k \: \forall k\in[0;N/2[\f$, \Gamma_N[k] = k-N \: \forall k\in[N/2;N[\f$,
-         - \f$ \gamma = \nu \f$ if \f$ \nu = \nu^* \f$ else $\gamma = 0$,
-         - \f$ \nu = sgn\left(|R[\hat{S_{up}+1]| - |R[\hat{S_{up}-1]|\right) \f$
-             if \f$\left| |R[\hat{S_{up}+1]| - |R[\hat{S_{up}-1]| \right| > 10^{-6} \f$ else 
-             \f$ \nu=0 \f$
-         - \f$ \nu^* = sgn\left(|R^*[\hat{S_{down}+1]| - |R^*[\hat{S_{down}-1]|\right) \f$
-             if \f$\left| |R^*[\hat{S_{down}+1]| - |R^*[\hat{S_{down}-1]| \right| > 10^{-6} \f$ else 
-             \f$ \nu^*=0 \f$
-         - \f$ R[k] \: \forall k\in[0;M-1]\f$ is the output of the correlator
-           associated with the received upchirps in the first part of the preamble.
-         - \f$ \hat{S}_{up} \f$ is the demodulated symbol value associated with
-            \f$ R[k] \f$.
-         - \f$ R^*[k] \: \forall k\in[0;M-1]\f$ is the output of the correlator
-             associated the received downchirps.
-         - \f$ \hat{S}_{down} \f$ is the demodulated symbol value associated
-             with \f$ R^*[k] \f$.
+    The estimated integer frequency offet is estimated as \f$\hat L/M\f$, with:
+    \f[
+        \hat L = \left\lceil \frac{1}{2}\Gamma_{2.SF}\left((\hat{S}_{up} + \hat{S}_{down} + \gamma) mod M\right)\right\rceil
+    \f]
+    and where:
+    * \f$ \Gamma_N[k] = k \: \forall k\in[0;N/2[\f$, \f$\Gamma_N[k] = k-N \: \forall k\in[N/2;N[\f$,
+    * \f$ \gamma = \nu \f$ if \f$ \nu = \nu^* \f$ else \f$\gamma = 0\f$,
+    * \f$ \nu = sgn\left(|R[\hat{S_{up}}+1]| - |R[\hat{S_{up}}-1]|\right) \f$
+        if \f$\left| |R[\hat{S_{up}}+1]| - |R[\hat{S_{up}}-1]| \right| > 10^{-6} \f$ else 
+        \f$ \nu=0 \f$
+    * \f$ \nu^* = sgn\left(|R^*[\hat{S_{down}}+1]| - |R^*[\hat{S_{down}}-1]|\right) \f$
+        if \f$\left| |R^*[\hat{S_{down}}+1]| - |R^*[\hat{S_{down}}-1]| \right| > 10^{-6} \f$ else 
+        \f$ \nu^*=0 \f$
+    * \f$ R[k] \: \forall k\in[0;M-1]\f$ is the output of the non-coherent
+        CSS correlator associated with the received upchirps in the first part
+        of the preamble.
+    * \f$ \hat{S}_{up} \f$ is the demodulated symbol value associated with
+       \f$ R[k] \f$.
+    * \f$ R^*[k] \: \forall k\in[0;M-1]\f$ is the output of the correlator
+        associated the received downchirps.
+    * \f$ \hat{S}_{down} \f$ is the demodulated symbol value associated
+        with \f$ R^*[k] \f$.
 
-        Parameters:
+        Args:
             up              -- Estimated demodulated value of the upchirp symbols.
                             See \f$ \hat{S}_{up} \f$ above.
             down            -- Estimated demodulated value of the downchirp symbols
                             See \f$ \hat{S}_{down} \f$ above.
             neigh_up_val    -- Output of the upchirp correlator at indices
                             `up-1`, `up` and `up+1` (as an array).
-                            Equivalent to \f$ R[\hat{S_{up}-1]\f$,
-                            \f$ R[\hat{S_{up}]\f$ and \f$ R[\hat{S_{up}+1]\f$,
+                            Equivalent to \f$ R[\hat{S_{up}}-1]\f$,
+                            \f$ R[\hat{S_{up}}]\f$ and \f$ R[\hat{S_{up}}+1]\f$,
                             see above.
-            neigh_up_val    -- Output of the downchirp correlator at indices
+            neigh_down_val  -- Output of the downchirp correlator at indices
                             `down-1`, `down` and `down+1` (as an array).
-                            Equivalent to \f$ R^*[\hat{S_{down}-1]\f$,
-                            \f$ R^*[\hat{S_{down}]\f$ and \f$ R^*[\hat{S_{down}+1]\f$,
+                            Equivalent to \f$ R^*[\hat{S_{down}}-1]\f$,
+                            \f$ R^*[\hat{S_{down}}]\f$ and \f$ R^*[\hat{S_{down}}+1]\f$,
                             see above.
         """
         eps = 1e-6
@@ -483,26 +486,55 @@ class state_down:
         """
         Estimate the coarse timing offset of the received preamble.
 
-        Knowing the value of the unmodulated upchirp symbols at the beginning
-        of the preamble, as well as the coarse frequency offset, then it can be
-        shown that the coarse timing offset is given as:
-        \f[
-            (\hat{S}_up - \hat{L}) mod M
-        \f]
-        See Xhonneux, M. et al., "A Low-complexity Synchronization
-        Scheme for LoRa End Nodes", 2019, where :
-         - \f$ \hat{S}_{up} \f$ is the estimated value of the unmodulated
-             upchirp symbols at the beginning of the preamble.
-         - \f$ \hat{L} \f$ is the estimated coarse frequenci.
+    Knowing the value of the unmodulated upchirp symbols at the beginning
+    of the preamble, as well as the coarse frequency offset, then it can be
+    shown that the coarse timing offset is given as:
+    \f[
+        \hat{M} = \left(\hat{S}_{up} - \hat{L}\right) \: mod \: M
+    \f]
+    where :
+     - \f$ \hat{S}_{up} \f$ is the estimated value of the unmodulated
+         upchirp symbols at the beginning of the preamble.
+     - \f$ \hat{L} \f$ is the estimated coarse frequency.
 
+    See Xhonneux, M. et al., "A Low-complexity Synchronization Scheme for LoRa
+    End Nodes", 2019.
 
-        Parameters:
+        Args:
             up  -- Estimated demodulated value of the upchirp symbols.
         """
         tmp = int(up) - int(self.freq_shift)
         self.time_shift = numpy.uint16(tmp%self.M)
 
     def compute_fine_time_shift(self, neigh_up_val):
+        """
+        Estimate the fine timing offset of the received preamble.
+
+    The estimator uses the following formula:
+    \f[
+        \hat\lambda = -\mathcal{R}\left\{\frac{W^{-\hat{M}}.R[(\hat{S_{up}}+1)\text{mod}M] - W^{\hat{M}}.R[(\hat{S_{up}}-1)\text{mod}M]}{2.R[\hat{S_{up}}] - W^{-\hat{M}}.R[(\hat{S_{up}}+1)\text{mod}M] - W^{\hat{M}}.R[(\hat{S_{up}}-1)\text{mod}M]}\right\}
+    \f]
+    Where:
+    * \f$\mathcal{R}\{z\}\f$ is the real part or \f$z \in \mathbb{C}\f$.
+    * \f$W^k = e^{j2\pi\frac{k}{M}}\f$
+    * \f$M\f$ is the arity of the CSS modulated signal.
+    * \f$\hat{M}\f$ is the coarse timing offset, as estimated by compute_time_shift().
+    * \f$ R[k] \: \forall k\in[0;M-1]\f$ is the output of the non-coherent
+        CSS correlator associated with the received upchirps in the first part
+        of the preamble.
+    * \f$ \hat{S}_{up} \f$ is the demodulated symbol value associated with
+       \f$ R[k] \f$.
+
+    See Xhonneux, M. et al., "A Low-complexity Synchronization Scheme for LoRa
+    End Nodes", 2019.
+
+    Note that the fine time shift is set to 0.0 if \f$|\hat\lambda| < 1.0\f$ or
+    if the computation resulted in an invalid value (NaN).
+    Otherwite, the fine time shift value is set to \f$\hat\lambda\f$.
+        
+        Args:
+            neigh_up_val    -- \f$ R[(\hat{S}_{up} - 1) \text{mod} M] ; R[\hat{S}_{up}] ; R[(\hat{S}_{up} + 1) \text{mod} M] \f$ as an array of three complex values.
+        """
         w = 1j*2*numpy.pi*self.time_shift/self.M
         tmp = numpy.exp(-w) * neigh_up_val[2] - numpy.exp(w) * neigh_up_val[0]
         tmp /= 2*neigh_up_val[1] \
@@ -515,7 +547,28 @@ class state_down:
         else:
             self.fine_time_shift = 0.0
 
-    def work(self, samples, up, neigh_up_val):
+    def work(self, samples, sym_up, neigh_up_val):
+        """
+        Process M (2^SF) samples and gives next state (state_down or state_wait).
+
+    Denoting SF the LoRa spreading factor, this functions process \f$M=2^\text{SF}\f$
+    samples.
+    It returns _STATE_DOWN for the first call, then returns _STATE_WAIT.
+
+    Of the two received downchirps, the one that leads to the (non-coherently)
+    demodulated symbol associated with the highest correlator output is used to
+    estimate the coarse frequency offset (see compute_freq_shift()).
+
+        Args:
+            samples -- \f$M=2^\text{SF}\f$ complex samples of a received signal.
+            sym_up  -- The demodulated value representative of the last `N_up/2`
+                    symbols of the preamble.
+            neigh_up_val    -- Output of the upchirp correlator at indices
+                            `sym_up-1`, `sym_up` and `sym_up+1` (as an array).
+
+        Returns:
+            _STATE_DOWN for the first call, then _STATE_WAIT.
+        """
         if self.down_cnt == 0:
             self.down_cnt += 1
 
@@ -534,23 +587,50 @@ class state_down:
             self.neigh_down_val[1][2] = spectrum[0][(sym[0]+1)%self.M]
 
             if numpy.abs(self.neigh_down_val[0][1]) > numpy.abs(self.neigh_down_val[1][1]):
-                self.compute_freq_shift(up, self.down_val[0], neigh_up_val, self.neigh_down_val[0])
+                self.compute_freq_shift(sym_up, self.down_val[0], neigh_up_val, self.neigh_down_val[0])
             else:
-                self.compute_freq_shift(up, self.down_val[1], neigh_up_val, self.neigh_down_val[1])
+                self.compute_freq_shift(sym_up, self.down_val[1], neigh_up_val, self.neigh_down_val[1])
 
-            self.compute_time_shift(up)
+            self.compute_time_shift(sym_up)
             self.compute_fine_time_shift(neigh_up_val)
 
             self.down_cnt = 0
             return _STATE_WAIT
 
     def get_freq_shift(self):
+        """
+        Returns the estimated coarse frequency offset.
+
+    The returned value of this method is only valid if the last call to work()
+    returned _STATE_WAIT.
+
+        Returns:
+            The estimated coarse frequency offset.
+        """
         return self.freq_shift / self.M
 
     def get_fine_time_shift(self):
+        """
+        Returns the estimated fine frequency offset.
+
+    The returned value of this method is only valid if the last call to work()
+    returned _STATE_WAIT.
+
+        Returns:
+            the estimated fine frequency offset.
+        """
         return self.fine_time_shift
 
     def get_time_shift(self):
+        """
+        Returns the estimated coarse timing offset.
+
+    The returned value of this method is only valid if the last call to work()
+    returned _STATE_WAIT.
+
+        Returns:
+            the estimated coarse timing offset.
+        """
         return self.time_shift
 
 class lora_preamble_detect(gr.sync_block):
