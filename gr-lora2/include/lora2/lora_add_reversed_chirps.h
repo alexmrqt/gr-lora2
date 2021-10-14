@@ -37,7 +37,7 @@ namespace lora2 {
  * this block simply copy its input to its output.
  *
  * When a tag with key `payload_tag_key` is encountered in the input stream,
- * then this blocks adds two \f$2.2^{SF}*interp\f$ items, encoding two
+ * then this blocks adds \f$2.2^{SF}*interp\f$ items, encoding two
  * unmodulated downchirps.
  * When it is done appending the two downchirps, it goes back to copying its
  * input to its output, so that no input item is lost in the process.

@@ -38,9 +38,11 @@ namespace lora2 {
  *
  * LoRa Header have the following structure:
  *
+ * <pre>
  * | Payload length |   CR    | Has CRC | CRC (opt.) | 1st bits of payload |
  * <-----8 bits----><-3 bits-><-1 bit--><---8 bits-->
  * <--------------------------(SF-2) * 4 bits----------------------------->
+ * </pre>
  *
  * The reason why there is some payload bits in the header is explained
  * hereafter.

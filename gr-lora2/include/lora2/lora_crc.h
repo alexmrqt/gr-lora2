@@ -43,7 +43,7 @@ namespace lora2 {
  * then the input is passed to the output unaltered.
  *
  * The LoRa CRC is a 16 bit CCITT CRC, with polyniomial
- * `\f$x^16 + x^12 + x^5 + 1\f$, and seed `0x0000`
+ * \f$x^{16} + x^{12} + x^5 + 1\f$, and seed `0x0000`
  * (see annex 1 of ITU-T Rec. V.41).
  *
  */
