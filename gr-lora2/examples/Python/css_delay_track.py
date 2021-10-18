@@ -7,7 +7,7 @@ from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import gr
 from lora2 import css_mod
-from lora2 import css_fine_delay_track
+from lora2 import css_demod
 import channels
 
 class css_delay_track(gr.top_block):
@@ -67,8 +67,12 @@ class css_delay_track(gr.top_block):
         self.multiplicator = blocks.multiply_vcc(1)
 
         #Delay Estimator
-        self.delay_track = css_fine_delay_track(self.M, interp, B)
+        self.delay_track = css_demod(self.M, 0.4, 0.1, 4) 
         self.delay_sink = blocks.vector_sink_f()
+
+        self.null_sink0 = blocks.null_sink(gr.sizeof_short)
+        self.null_sink1 = blocks.null_sink(self.M*gr.sizeof_gr_complex)
+        self.null_sink2 = blocks.null_sink(gr.sizeof_float)
 
         ##################################################
         # Connections
@@ -85,7 +89,11 @@ class css_delay_track(gr.top_block):
         self.connect((self.multiplicator, 0), (self.awgn_chan, 0))
 
         self.connect((self.awgn_chan, 0), (self.delay_track, 0))
-        self.connect((self.delay_track, 0), (self.delay_sink, 0))
+
+        self.connect((self.delay_track, 0), (self.null_sink0, 0))
+        self.connect((self.delay_track, 1), (self.null_sink1, 0))
+        self.connect((self.delay_track, 2), (self.null_sink2, 0))
+        self.connect((self.delay_track, 3), (self.delay_sink, 0))
 
 if __name__ == "__main__":
     params = {

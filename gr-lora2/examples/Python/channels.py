@@ -1,7 +1,6 @@
 import numpy
 from gnuradio import gr
 from gnuradio import analog, blocks, channels, filter
-from lora2 import tag_delay
 
 class awgn(gr.hier_block2):
     """
@@ -97,15 +96,13 @@ class proakis_b(gr.hier_block2):
 
         self.chan = filter.fir_filter_ccf(1, [0.407, 0.815, 0.407])
         self.delay = blocks.skiphead(gr.sizeof_gr_complex, 1)
-        self.tag_delay = tag_delay(1)
 
         ##################################################
         # Connections
         ##################################################
 
         self.connect((self, 0), (self.chan, 0))
-        self.connect((self.chan, 0), (self.tag_delay, 0))
-        self.connect((self.tag_delay, 0), (self.delay, 0))
+        self.connect((self.chan, 0), (self.delay, 0))
         self.connect((self.delay, 0), (self, 0))
 
 class itu_outdoor_indoor_ped(gr.hier_block2):

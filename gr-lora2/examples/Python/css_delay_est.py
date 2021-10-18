@@ -7,7 +7,7 @@ from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import gr
 from lora2 import css_mod
-from lora2 import css_fine_delay_detector
+from lora2 import css_demod
 import channels
 
 class css_delay_est(gr.top_block):
@@ -63,8 +63,12 @@ class css_delay_est(gr.top_block):
         self.decim = filter.fir_filter_ccf(self.intern_interp*interp, [1.0])
 
         #Delay Estimator
-        self.delay_est = css_fine_delay_detector(self.M, interp, algo=1)
+        self.delay_est = css_demod(self.M, 0.0, 0.0, 4) 
         self.delay_sink = blocks.vector_sink_f()
+
+        self.null_sink0 = blocks.null_sink(gr.sizeof_short)
+        self.null_sink1 = blocks.null_sink(self.M*gr.sizeof_gr_complex)
+        self.null_sink2 = blocks.null_sink(gr.sizeof_float)
 
         ##################################################
         # Connections
@@ -81,7 +85,10 @@ class css_delay_est(gr.top_block):
         self.connect((self.multiplicator, 0), (self.awgn_chan, 0))
 
         self.connect((self.awgn_chan, 0), (self.delay_est, 0))
-        self.connect((self.delay_est, 0), (self.delay_sink, 0))
+        self.connect((self.delay_est, 0), (self.null_sink0, 0))
+        self.connect((self.delay_est, 1), (self.null_sink1, 0))
+        self.connect((self.delay_est, 2), (self.null_sink2, 0))
+        self.connect((self.delay_est, 3), (self.delay_sink, 0))
 
 if __name__ == "__main__":
     params = {
