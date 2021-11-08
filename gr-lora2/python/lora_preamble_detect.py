@@ -635,9 +635,45 @@ class state_down:
 
 class lora_preamble_detect(gr.sync_block):
     """
-    docstring for block lora_preamble_detect
+    A block to detect the begining of a LoRa packet.
+
+    Inputs are critically sampled (\f$M\f$ samples per symbol, with
+    \f$M=2^{SF}\f$ and \f$SF\f$ the spreading factor), baseband complex
+    equivalent of an incoming LoRa signal to be demodulated.
+
+    Inputs are passed to the output, but upon detection of a LoRa preamble, the
+    last sample of the preamble received the following tags:
+     - fine_freq_offset: the estimated fine frequency offset
+     (\f$\lt \pm 1/M\f$) of the LoRa signal,
+     - coarse_freq_offset: the coarse fine frequency offset
+     (\f$\geq \pm 1/M\f$) of the LoRa signal
+     - time_offset: the estimated coarse timing offset, as a number of samples
+     (used to position the tags on the last sample of the preamble),
+     - fine_freq_offset: the fractional timing offset
+     (i.e.: fraction of a sample) of the LoRa signal,
+     - sync_word: estimated value of the LoRa sync word.
+
+    This block implements a finite state machine with four states:
+     - wait (class state_wait): detects `preamble_len/2` similar symbols
+     and estimates fine frequency offset,
+     - up (class state_up): uses the remaining `preamble_len/2` symbols of the
+     start of frame pattern to estimate auxiliary quantities for the next states.
+     - sync (class state_sync): estimates the LoRa preamble so-called "sync word".
+     - down (class state_down): estimates coarse frequency offset coarse
+     and fine timing offset.
     """
+
     def __init__(self, SF, preamble_len, thres=1e-4):
+        """
+        Constructs a LoRa preamble detector.
+
+        Args:
+            SF              -- LoRa spreading factor.
+            preamble_len    -- Number of identical LoRa symbols at the begining
+                            of the preamble (length of the start of frame pattern).
+            thres           -- Detection threshold for the start of frame
+                            pattern, between 0 and 1.
+        """
         gr.sync_block.__init__(self,
             name="lora_preamble_detect",
             in_sig=[numpy.complex64],
@@ -667,6 +703,20 @@ class lora_preamble_detect(gr.sync_block):
         self.set_output_multiple(self.M)
 
     def tag_end_preamble(self, sof_idx):
+        """
+        Add tags at the end of the preamble.
+
+    The following tags are added on the estimated last sample of the preamble:
+     - `fine_freq_offset`,
+     - `coarse_freq_offset`,
+     - `sync_word`,
+     - `time_offset`,
+     - `fine_time_offset`.
+
+        Args:
+            sof_idx -- The index of the LoRa symbol on which the end of the
+                    preamble was detected.
+        """
 
         time_shift = (self.M - self.time_shift) if self.time_shift != 0 else 0
 
@@ -694,6 +744,23 @@ class lora_preamble_detect(gr.sync_block):
         self.add_item_tag(0, tag_offset, pmt.intern('pkt_start'), pmt.PMT_NIL)
 
     def vco_advance_vec(self, freq, n_samples):
+        r"""
+        Run the voltage controlled oscillator on several samples.
+
+    Let \f$\phi_0\f$ be the initial phase of the oscillator, then this
+    function return `n_samples` samples as:
+    \f[
+    e^{j2\pi.f.k}.e^{j\phi_0} \quad \forall k\in[0 ; \text{n_samples}[
+    \f]
+    where \f$f\f$ takes the value of input parameter `freq`.
+
+        Args:
+            freq        -- Frequency of the VCO.
+            n_samples   -- Number of samples to generate.
+
+        Returns:
+            A phasor of `n_samples` samples oscillating at frequency `freq`
+        """
         k = numpy.arange(0, n_samples)
 
         phasor = numpy.exp(1j*2*numpy.pi*freq*k + 1j*self.vco_phase,
@@ -706,9 +773,11 @@ class lora_preamble_detect(gr.sync_block):
         return phasor
 
     def cfo_correct(self, in_sig):
+        """Correct the carrier frequency offset (CFO) of input signal `in_sig`"""
         return in_sig*self.vco_advance_vec(self.fine_freq_shift, self.M)
 
     def work(self, input_items, output_items):
+        """Process input items to find a preamble, estimate parameters, and tag the output stream."""
         in0 = input_items[0]
         out0 = output_items[0]
 
