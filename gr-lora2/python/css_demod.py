@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2019 Alexandre Marquet.
+# Copyright 2022 Alexandre Marquet.
 #
 # This is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,44 @@ from lora2 import css_demod_algo
 
 class css_demod(gr.basic_block):
     """
-    docstring for block css_demod
+    A block to demodulate CSS signals while tracking delay and carrier frequency offset.
+
+    This block can receive initial estimates of the tracking delay and carrier
+    frequency offset, using the following tags:
+     * `fine_time_offset`: fractional delay (float in [0;1[),
+     * `coarse_freq_offset`: coarse frequency offset (float in [0/M;1[, expected steps of 1/M),
+     * `fine_freq_offset`: fractional frequency offset (float in [0/M, 1/M[).
+    these tags are expected to be received on the sample identifying the start
+    of the packet (that is, the sample carrying a `pkt_start` tag).
+
+    Delay and frequency offsets are tracked using first order feedback loops,
+    as described below.
+    <pre>
+           +---------+      +-----+
+    ------>| Variable+----->|Mixer+------------------------------------+--------------+------>
+           |  delay  |      +-----+                                    |              |
+           +---------+         ^                                       |              |
+                ^              |                                       v              |
+                |              |          +-----------+        +----------------+     |
+                |           +--+--+       |    a_f    |        |Frequency offset|     |
+                |           | VCO |<------+ --------- |<-------+    estimator   |     |
+                |           +-----+       | 1-z**(-1) |        +----------------+     |
+                |                         +-----------+                               |
+                |                                                                     |
+                |                         +-----------+         +-------------+       |
+                |                         |    a_t    |         |Timing offset|<------+
+                +-------------------------+ --------- |<--------+  estimator  |
+                                          | 1-z**(-1) |         +-------------+
+                                          +-----------+
+    </pre>
+    Where \f$\frac{a}{1-z^{-1}}\f$ represents a discrete integrator followed
+    by a gain \f$a\f$.
+
+    In this implementation:
+        - Variable delay is performed on a sample-by-sample basis (no fractional delay).
+        - Mixer and VCO are grouped in method `cfo_correct()`.
+        - Frequency offset estimator is based on quadrature detection, see method `cfo_detect()`.
+        - Timing offset estimator is based on correlation with a time-shifted version of the estimated received symbol, see method `delay_detect()`.
     """
     def __init__(self, M, B_cfo, B_delay, Q_res, Q_det=4):
         gr.basic_block.__init__(self,
