@@ -1809,6 +1809,7 @@ connections:
 - [lora2_flip_half_bytes_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [lora2_gray_encode_0, '0', lora2_lora_deinterleaver_0, '0']
 - [lora2_gray_encode_0_0, '0', lora2_lora_deinterleaver_0_0, '0']
+- [lora2_lora_crc_0, pdus, blocks_message_debug_0, print_pdu]
 - [lora2_lora_crc_0, pdus, blocks_socket_pdu_0, pdus]
 - [lora2_lora_deinterleaver_0, '0', lora2_lora_hamming_decode_0, '0']
 - [lora2_lora_deinterleaver_0_0, '0', lora2_lora_depad_0, '0']

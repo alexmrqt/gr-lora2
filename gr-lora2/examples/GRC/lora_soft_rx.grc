@@ -1588,6 +1588,7 @@ connections:
 - [lora2_css_llr_converter_0, '0', virtual_sink_3, '0']
 - [lora2_flip_half_bytes_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [lora2_gray_deindexer_0, '0', lora2_css_llr_converter_0, '0']
+- [lora2_lora_crc_0, pdus, blocks_message_debug_0, print_pdu]
 - [lora2_lora_crc_0, pdus, blocks_socket_pdu_0, pdus]
 - [lora2_lora_merge_rem_0, '0', lora2_lora_whiten_0, '0']
 - [lora2_lora_preamble_detect_0_0, '0', lora2_css_demod_0, '0']

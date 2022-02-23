@@ -129,7 +129,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '75000'
+    value: chan_bw/(5/3)
   states:
     bus_sink: false
     bus_source: false
@@ -153,7 +153,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 4e6
+    value: 2e6
   states:
     bus_sink: false
     bus_source: false
@@ -513,7 +513,7 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    center_freq: freq_offset
+    center_freq: -freq_offset
     comment: ''
     decim: '1'
     maxoutbuf: '0'
@@ -548,7 +548,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    interp: '2'
+    interp: interp
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
@@ -1106,9 +1106,9 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    bw: samp_rate
+    bw: RF_samp_rate
     comment: ''
-    fc: '0'
+    fc: chan_freq-freq_offset
     fftsize: '1024'
     gui_hint: ''
     maxoutbuf: '0'
@@ -1120,7 +1120,7 @@ blocks:
     plotwaterfall: 'True'
     rate: '10'
     showports: 'False'
-    showrf: 'False'
+    showrf: 'True'
     type: complex
     wintype: firdes.WIN_BLACKMAN_hARRIS
   states:
