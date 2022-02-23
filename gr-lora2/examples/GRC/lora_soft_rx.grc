@@ -351,7 +351,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [32, 1392.0]
+    coordinate: [32, 1552.0]
     rotation: 180
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -426,6 +426,26 @@ blocks:
     coordinate: [784, 1444.0]
     rotation: 180
     state: enabled
+- name: blocks_repack_bits_bb_0_0
+  id: blocks_repack_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    align_output: 'False'
+    comment: ''
+    endianness: gr.GR_MSB_FIRST
+    k: '1'
+    l: '8'
+    len_tag_key: packet_len_bits
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [672, 1604.0]
+    rotation: 180
+    state: enabled
 - name: blocks_socket_pdu_0
   id: blocks_socket_pdu
   parameters:
@@ -443,9 +463,48 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [32, 1500.0]
+    coordinate: [32, 1428.0]
     rotation: 180
     state: enabled
+- name: blocks_stream_to_tagged_stream_0
+  id: blocks_stream_to_tagged_stream
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    len_tag_key: '"packet_len_bits"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    packet_len: (SF-2)*4
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 1132.0]
+    rotation: 0
+    state: true
+- name: blocks_tagged_stream_mux_1
+  id: blocks_tagged_stream_mux
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    lengthtagname: '"packet_len_bits"'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    ninputs: '2'
+    tag_preserve_head_pos: '0'
+    type: byte
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [880, 1600.0]
+    rotation: 180
+    state: true
 - name: blocks_tagged_stream_to_pdu_0
   id: blocks_tagged_stream_to_pdu
   parameters:
@@ -461,6 +520,23 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [400, 1452.0]
+    rotation: 180
+    state: enabled
+- name: blocks_tagged_stream_to_pdu_0_0
+  id: blocks_tagged_stream_to_pdu
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    tag: packet_len_bits
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [400, 1612.0]
     rotation: 180
     state: enabled
 - name: blocks_throttle_0
@@ -1475,6 +1551,32 @@ blocks:
     coordinate: [1304, 1068.0]
     rotation: 0
     state: enabled
+- name: virtual_sink_2_0
+  id: virtual_sink
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: hdr_bits
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1312, 1140.0]
+    rotation: 0
+    state: enabled
+- name: virtual_sink_2_0_0
+  id: virtual_sink
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: payload_bits
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 1516.0]
+    rotation: 0
+    state: enabled
 - name: virtual_sink_3
   id: virtual_sink
   parameters:
@@ -1513,6 +1615,32 @@ blocks:
     bus_structure: null
     coordinate: [48, 532.0]
     rotation: 0
+    state: enabled
+- name: virtual_source_0_0
+  id: virtual_source
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: hdr_bits
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1152, 1580.0]
+    rotation: 180
+    state: enabled
+- name: virtual_source_0_0_0
+  id: virtual_source
+  parameters:
+    alias: ''
+    comment: ''
+    stream_id: payload_bits
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1152, 1644.0]
+    rotation: 180
     state: enabled
 - name: virtual_source_1
   id: virtual_source
@@ -1572,7 +1700,11 @@ connections:
 - [blocks_file_source_0, '0', blocks_throttle_0, '0']
 - [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0_0_0, '0']
 - [blocks_repack_bits_bb_0, '0', lora2_flip_half_bytes_0, '0']
+- [blocks_repack_bits_bb_0_0, '0', blocks_tagged_stream_to_pdu_0_0, '0']
+- [blocks_stream_to_tagged_stream_0, '0', virtual_sink_2_0, '0']
+- [blocks_tagged_stream_mux_1, '0', blocks_repack_bits_bb_0_0, '0']
 - [blocks_tagged_stream_to_pdu_0, pdus, lora2_lora_crc_0, pdus]
+- [blocks_tagged_stream_to_pdu_0_0, pdus, blocks_message_debug_0, print_pdu]
 - [blocks_throttle_0, '0', virtual_sink_0_0, '0']
 - [blocks_vector_to_stream_1, '0', digital_header_payload_demux_0, '0']
 - [digital_header_payload_demux_0, '0', virtual_sink_1, '0']
@@ -1588,22 +1720,25 @@ connections:
 - [lora2_css_llr_converter_0, '0', virtual_sink_3, '0']
 - [lora2_flip_half_bytes_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [lora2_gray_deindexer_0, '0', lora2_css_llr_converter_0, '0']
-- [lora2_lora_crc_0, pdus, blocks_message_debug_0, print_pdu]
 - [lora2_lora_crc_0, pdus, blocks_socket_pdu_0, pdus]
 - [lora2_lora_merge_rem_0, '0', lora2_lora_whiten_0, '0']
 - [lora2_lora_preamble_detect_0_0, '0', lora2_css_demod_0, '0']
 - [lora2_lora_soft_deinterleaver_0, '0', lora2_lora_soft_hamming_decode_0, '0']
 - [lora2_lora_soft_deinterleaver_0_0, '0', lora2_lora_soft_depad_0, '0']
 - [lora2_lora_soft_depad_0, '0', lora2_lora_soft_hamming_decode_0_0, '0']
+- [lora2_lora_soft_hamming_decode_0, '0', blocks_stream_to_tagged_stream_0, '0']
 - [lora2_lora_soft_hamming_decode_0, '0', digital_protocol_parser_b_0, '0']
 - [lora2_lora_soft_hamming_decode_0_0, '0', lora2_lora_merge_rem_0, '0']
 - [lora2_lora_soft_low_rate_opt_rx_0, '0', lora2_lora_soft_deinterleaver_0, '0']
 - [lora2_lora_whiten_0, '0', blocks_repack_bits_bb_0, '0']
+- [lora2_lora_whiten_0, '0', virtual_sink_2_0_0, '0']
 - [low_pass_filter_0, '0', mmse_resampler_xx_0, '0']
 - [mmse_resampler_xx_0, '0', blocks_file_sink_1, '0']
 - [mmse_resampler_xx_0, '0', virtual_sink_0_0, '0']
 - [osmosdr_source_0, '0', freq_xlating_fir_filter_xxx_0, '0']
 - [virtual_source_0, '0', lora2_lora_preamble_detect_0_0, '0']
+- [virtual_source_0_0, '0', blocks_tagged_stream_mux_1, '0']
+- [virtual_source_0_0_0, '0', blocks_tagged_stream_mux_1, '1']
 - [virtual_source_1, '0', lora2_lora_soft_low_rate_opt_rx_0, '0']
 - [virtual_source_2, '0', digital_header_payload_demux_0, header_data]
 - [virtual_source_3, '0', blocks_vector_to_stream_1, '0']
