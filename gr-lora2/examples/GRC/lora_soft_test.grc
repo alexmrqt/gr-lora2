@@ -90,8 +90,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1184, 204.0]
-    rotation: 0
+    coordinate: [504, 236.0]
+    rotation: 180
     state: enabled
 - name: hdr_format_0
   id: lora2_lora_header_format
@@ -103,7 +103,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 1532.0]
+    coordinate: [1192, 1604.0]
     rotation: 0
     state: enabled
 - name: analog_quadrature_demod_cf_0
@@ -112,14 +112,14 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    gain: 1.0/numpy.pi
+    gain: 1.0/3.14
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [664, 1260.0]
+    coordinate: [664, 1276.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_mag_0_0
@@ -135,9 +135,22 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [952, 1092.0]
+    coordinate: [952, 1108.0]
     rotation: 0
     state: enabled
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [56, 2128.0]
+    rotation: 180
+    state: true
 - name: blocks_null_sink_0_0
   id: blocks_null_sink
   parameters:
@@ -152,7 +165,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [864, 1128.0]
+    coordinate: [1096, 1144.0]
     rotation: 0
     state: true
 - name: blocks_null_sink_0_0_0
@@ -169,7 +182,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [960, 1160.0]
+    coordinate: [960, 1176.0]
     rotation: 0
     state: true
 - name: blocks_null_sink_0_0_1
@@ -186,7 +199,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [864, 1064.0]
+    coordinate: [1104, 1080.0]
     rotation: 0
     state: true
 - name: blocks_pdu_set_0
@@ -203,7 +216,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [192, 156.0]
+    coordinate: [504, 156.0]
     rotation: 0
     state: true
 - name: blocks_pdu_set_0_0
@@ -220,7 +233,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [336, 156.0]
+    coordinate: [696, 156.0]
     rotation: 0
     state: true
 - name: blocks_pdu_to_tagged_stream_0_0_0
@@ -237,7 +250,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [224, 308.0]
+    coordinate: [1096, 164.0]
     rotation: 0
     state: true
 - name: blocks_pdu_to_tagged_stream_0_0_0_0
@@ -291,8 +304,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [576, 284.0]
-    rotation: 0
+    coordinate: [1280, 292.0]
+    rotation: 180
     state: enabled
 - name: blocks_repack_bits_bb_0_0
   id: blocks_repack_bits_bb
@@ -311,7 +324,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [984, 1996.0]
+    coordinate: [984, 2036.0]
     rotation: 180
     state: enabled
 - name: blocks_socket_pdu_0
@@ -331,7 +344,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 1980.0]
+    coordinate: [64, 2020.0]
     rotation: 180
     state: enabled
 - name: blocks_socket_pdu_0_0
@@ -351,7 +364,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [32, 140.0]
+    coordinate: [312, 140.0]
     rotation: 0
     state: enabled
 - name: blocks_tag_gate_0
@@ -370,7 +383,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [480, 860.0]
+    coordinate: [600, 924.0]
     rotation: 0
     state: true
 - name: blocks_tagged_stream_mux_0
@@ -390,7 +403,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [304, 712.0]
+    coordinate: [304, 728.0]
     rotation: 0
     state: true
 - name: blocks_tagged_stream_to_pdu_0
@@ -407,8 +420,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [960, 308.0]
-    rotation: 0
+    coordinate: [768, 300.0]
+    rotation: 180
     state: true
 - name: blocks_tagged_stream_to_pdu_0_0
   id: blocks_tagged_stream_to_pdu
@@ -424,7 +437,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [600, 2004.0]
+    coordinate: [600, 2044.0]
     rotation: 180
     state: enabled
 - name: blocks_vector_to_stream_1
@@ -442,7 +455,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [376, 1400.0]
+    coordinate: [472, 1416.0]
     rotation: 0
     state: enabled
 - name: digital_header_payload_demux_0
@@ -468,7 +481,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [552, 1364.0]
+    coordinate: [720, 1380.0]
     rotation: 0
     state: enabled
 - name: digital_protocol_formatter_async_0
@@ -484,8 +497,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1184, 280.0]
-    rotation: 0
+    coordinate: [504, 288.0]
+    rotation: 180
     state: true
 - name: digital_protocol_parser_b_0
   id: digital_protocol_parser_b
@@ -500,7 +513,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1192, 1620.0]
+    coordinate: [1192, 1660.0]
     rotation: 0
     state: true
 - name: fir_filter_xxx_0
@@ -519,20 +532,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 860.0]
-    rotation: 0
-    state: true
-- name: import_0
-  id: import
-  parameters:
-    alias: ''
-    comment: ''
-    imports: import numpy
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [344, 36.0]
+    coordinate: [880, 924.0]
     rotation: 0
     state: true
 - name: lora2_css_demod_0
@@ -551,7 +551,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [664, 1064.0]
+    coordinate: [664, 1080.0]
     rotation: 0
     state: enabled
 - name: lora2_css_llr_converter_0
@@ -570,7 +570,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1200, 1068.0]
+    coordinate: [1200, 1084.0]
     rotation: 0
     state: true
 - name: lora2_css_mod_0
@@ -587,7 +587,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [848, 700.0]
+    coordinate: [848, 732.0]
     rotation: 0
     state: true
 - name: lora2_flip_half_bytes_0
@@ -602,7 +602,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [432, 304.0]
+    coordinate: [1336, 168.0]
     rotation: 0
     state: enabled
 - name: lora2_flip_half_bytes_0_0
@@ -617,7 +617,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [824, 2008.0]
+    coordinate: [824, 2048.0]
     rotation: 180
     state: enabled
 - name: lora2_gray_decode_0
@@ -632,7 +632,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [984, 424.0]
+    coordinate: [1032, 440.0]
     rotation: 0
     state: true
 - name: lora2_gray_decode_0_0
@@ -647,7 +647,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1272, 552.0]
+    coordinate: [1360, 568.0]
     rotation: 0
     state: true
 - name: lora2_lora_add_preamble_0
@@ -703,7 +703,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [64, 308.0]
+    coordinate: [880, 164.0]
     rotation: 0
     state: true
 - name: lora2_lora_crc_0_0
@@ -719,7 +719,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [376, 2004.0]
+    coordinate: [376, 2044.0]
     rotation: 180
     state: enabled
 - name: lora2_lora_drop_rem_0
@@ -736,7 +736,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [440, 524.0]
+    coordinate: [440, 556.0]
     rotation: 0
     state: true
 - name: lora2_lora_hamming_encode_0
@@ -753,7 +753,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 396.0]
+    coordinate: [472, 428.0]
     rotation: 0
     state: true
 - name: lora2_lora_hamming_encode_0_0
@@ -770,7 +770,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [656, 524.0]
+    coordinate: [672, 556.0]
     rotation: 0
     state: true
 - name: lora2_lora_interleaver_0
@@ -789,7 +789,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 380.0]
+    coordinate: [752, 412.0]
     rotation: 0
     state: true
 - name: lora2_lora_interleaver_1
@@ -808,7 +808,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1064, 508.0]
+    coordinate: [1136, 540.0]
     rotation: 0
     state: true
 - name: lora2_lora_low_rate_opt_tx_0
@@ -823,7 +823,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1160, 424.0]
+    coordinate: [1248, 440.0]
     rotation: 0
     state: true
 - name: lora2_lora_merge_rem_0
@@ -840,7 +840,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1208, 1804.0]
+    coordinate: [1208, 1844.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_pad_0
@@ -859,7 +859,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [864, 508.0]
+    coordinate: [904, 540.0]
     rotation: 0
     state: true
 - name: lora2_lora_preamble_detect_0_0
@@ -877,7 +877,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [264, 1092.0]
+    coordinate: [264, 1108.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_soft_deinterleaver_0
@@ -895,13 +895,13 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [664, 1604.0]
+    coordinate: [664, 1644.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_soft_deinterleaver_0_0
   id: lora2_lora_soft_deinterleaver
   parameters:
-    CR: CR
+    CR: '0'
     SF: SF
     affinity: ''
     alias: ''
@@ -913,7 +913,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [480, 1796.0]
+    coordinate: [480, 1836.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_soft_depad_0
@@ -930,7 +930,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 1804.0]
+    coordinate: [728, 1844.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_soft_hamming_decode_0
@@ -947,13 +947,13 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [904, 1612.0]
+    coordinate: [904, 1652.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_soft_hamming_decode_0_0
   id: lora2_lora_soft_hamming_decode
   parameters:
-    CR: CR
+    CR: '0'
     affinity: ''
     alias: ''
     comment: ''
@@ -964,7 +964,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [968, 1804.0]
+    coordinate: [968, 1844.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_soft_low_rate_opt_rx_0
@@ -980,7 +980,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [232, 1620.0]
+    coordinate: [232, 1660.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_whiten_0
@@ -996,8 +996,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 308.0]
-    rotation: 0
+    coordinate: [1016, 300.0]
+    rotation: 180
     state: enabled
 - name: lora2_lora_whiten_0_0
   id: lora2_lora_whiten
@@ -1012,7 +1012,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1208, 2004.0]
+    coordinate: [1208, 2044.0]
     rotation: 180
     state: enabled
 - name: lora2_soft_gray_encode_0
@@ -1028,7 +1028,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [480, 1620.0]
+    coordinate: [480, 1660.0]
     rotation: 0
     state: true
 - name: lora2_soft_gray_encode_0_0
@@ -1044,7 +1044,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [264, 1812.0]
+    coordinate: [264, 1852.0]
     rotation: 0
     state: true
 - name: qtgui_time_sink_x_0_0_1
@@ -1141,7 +1141,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [896, 1244.0]
+    coordinate: [896, 1260.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_0_1
@@ -1154,8 +1154,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1480, 276.0]
-    rotation: 0
+    coordinate: [272, 268.0]
+    rotation: 180
     state: true
 - name: virtual_sink_0_1_0
   id: virtual_sink
@@ -1167,8 +1167,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1480, 340.0]
-    rotation: 0
+    coordinate: [272, 332.0]
+    rotation: 180
     state: true
 - name: virtual_sink_1
   id: virtual_sink
@@ -1180,7 +1180,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1424, 436.0]
+    coordinate: [1528, 436.0]
     rotation: 0
     state: true
 - name: virtual_sink_1_0
@@ -1193,7 +1193,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1424, 564.0]
+    coordinate: [1528, 564.0]
     rotation: 0
     state: true
 - name: virtual_sink_1_0_0
@@ -1206,7 +1206,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1280, 740.0]
+    coordinate: [1288, 740.0]
     rotation: 0
     state: true
 - name: virtual_sink_1_0_0_0
@@ -1219,7 +1219,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1000, 884.0]
+    coordinate: [1120, 932.0]
     rotation: 0
     state: true
 - name: virtual_sink_1_1
@@ -1232,7 +1232,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [936, 1412.0]
+    coordinate: [1128, 1404.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_2
@@ -1245,7 +1245,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1464, 1620.0]
+    coordinate: [1464, 1660.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_3
@@ -1258,7 +1258,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1448, 1092.0]
+    coordinate: [1448, 1108.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_4
@@ -1271,7 +1271,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [936, 1460.0]
+    coordinate: [1128, 1476.0]
     rotation: 0
     state: enabled
 - name: virtual_source_0
@@ -1323,7 +1323,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [232, 884.0]
+    coordinate: [352, 932.0]
     rotation: 0
     state: true
 - name: virtual_source_0_1
@@ -1349,7 +1349,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [56, 1108.0]
+    coordinate: [56, 1124.0]
     rotation: 0
     state: enabled
 - name: virtual_source_1
@@ -1362,7 +1362,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 1620.0]
+    coordinate: [24, 1660.0]
     rotation: 0
     state: enabled
 - name: virtual_source_2
@@ -1375,7 +1375,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [360, 1460.0]
+    coordinate: [456, 1476.0]
     rotation: 0
     state: enabled
 - name: virtual_source_3
@@ -1388,7 +1388,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [168, 1396.0]
+    coordinate: [232, 1412.0]
     rotation: 0
     state: enabled
 - name: virtual_source_4
@@ -1401,7 +1401,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 1812.0]
+    coordinate: [24, 1852.0]
     rotation: 0
     state: enabled
 
@@ -1440,6 +1440,7 @@ connections:
 - [lora2_lora_add_preamble_0, '0', lora2_css_mod_0, '0']
 - [lora2_lora_add_reversed_chirps_0, '0', virtual_sink_1_0_0, '0']
 - [lora2_lora_crc_0, pdus, blocks_pdu_to_tagged_stream_0_0_0, pdus]
+- [lora2_lora_crc_0_0, pdus, blocks_message_debug_0, print_pdu]
 - [lora2_lora_crc_0_0, pdus, blocks_socket_pdu_0, pdus]
 - [lora2_lora_drop_rem_0, '0', lora2_lora_hamming_encode_0_0, '0']
 - [lora2_lora_hamming_encode_0, '0', lora2_lora_interleaver_0, '0']
@@ -1449,6 +1450,7 @@ connections:
 - [lora2_lora_low_rate_opt_tx_0, '0', virtual_sink_1, '0']
 - [lora2_lora_merge_rem_0, '0', lora2_lora_whiten_0_0, '0']
 - [lora2_lora_pad_0, '0', lora2_lora_interleaver_1, '0']
+- [lora2_lora_preamble_detect_0_0, '0', analog_quadrature_demod_cf_0, '0']
 - [lora2_lora_preamble_detect_0_0, '0', lora2_css_demod_0, '0']
 - [lora2_lora_soft_deinterleaver_0, '0', lora2_lora_soft_hamming_decode_0, '0']
 - [lora2_lora_soft_deinterleaver_0_0, '0', lora2_lora_soft_depad_0, '0']
@@ -1463,7 +1465,6 @@ connections:
 - [virtual_source_0, '0', blocks_pdu_to_tagged_stream_0_0_0_0, pdus]
 - [virtual_source_0_0, '0', blocks_pdu_to_tagged_stream_0_0_0_0_0, pdus]
 - [virtual_source_0_0_0, '0', blocks_tagged_stream_mux_0, '1']
-- [virtual_source_0_0_0_0, '0', analog_quadrature_demod_cf_0, '0']
 - [virtual_source_0_0_0_0, '0', blocks_tag_gate_0, '0']
 - [virtual_source_0_1, '0', blocks_tagged_stream_mux_0, '0']
 - [virtual_source_0_2, '0', lora2_lora_preamble_detect_0_0, '0']
