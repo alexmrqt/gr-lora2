@@ -56,25 +56,20 @@ int soft_gray_encode_impl::work(int noutput_items,
 
 	// For each vector item (of d_bpw elements)
 	for (int i=0 ; i < noutput_items ; ++i) {
-		// Construct binary value based on signs
+		// Pack signbits and complement to get binary value
+		hard_val = 0;
 		for (unsigned int j=0 ; j < d_bpw ; ++j) {
 			hard_val |= signbit(in[j])<<j;
 		}
-		hard_val = ~hard_val;
 
 		// Gray encode
-		hard_val ^= hard_val>>1;
+		hard_val ^= hard_val<<1;
 
-		// Output soft values with the right size
+		// Unpack gray encoded sign bits to soft values
 		for (unsigned int j=0 ; j < d_bpw ; ++j) {
-			out[j] *= (hard_val&0x01)?-1.0:1.0;
+			*(out++) = copysign(*(in++), 1-2*(hard_val&0x01));
 			hard_val >>= 1;
 		}
-
-		// Go to next vector
-		hard_val = 0;
-		in += d_bpw;
-		out += d_bpw;
 	}
 
 	// Tell runtime system how many output items we produced.
