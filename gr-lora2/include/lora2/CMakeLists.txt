@@ -35,7 +35,7 @@ install(FILES
     lora_drop_rem.h
     gray_encode.h
     gray_decode.h
-    gray_deindexer.h
+    soft_gray_encode.h
     lora_low_rate_opt_tx.h
     lora_low_rate_opt_rx.h
     flip_half_bytes.h

@@ -20,7 +20,7 @@
 #include "lora2/lora_drop_rem.h"
 #include "lora2/gray_encode.h"
 #include "lora2/gray_decode.h"
-#include "lora2/gray_deindexer.h"
+#include "lora2/soft_gray_encode.h"
 #include "lora2/lora_low_rate_opt_tx.h"
 #include "lora2/lora_low_rate_opt_rx.h"
 #include "lora2/flip_half_bytes.h"
@@ -66,8 +66,8 @@ GR_SWIG_BLOCK_MAGIC2(lora2, lora_drop_rem);
 GR_SWIG_BLOCK_MAGIC2(lora2, gray_encode);
 %include "lora2/gray_decode.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, gray_decode);
-%include "lora2/gray_deindexer.h"
-GR_SWIG_BLOCK_MAGIC2(lora2, gray_deindexer);
+%include "lora2/soft_gray_encode.h"
+GR_SWIG_BLOCK_MAGIC2(lora2, soft_gray_encode);
 %include "lora2/lora_low_rate_opt_tx.h"
 GR_SWIG_BLOCK_MAGIC2(lora2, lora_low_rate_opt_tx);
 %include "lora2/lora_low_rate_opt_rx.h"

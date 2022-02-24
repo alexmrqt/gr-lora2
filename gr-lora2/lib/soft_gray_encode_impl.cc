@@ -23,46 +23,58 @@
 #endif
 
 #include <gnuradio/io_signature.h>
-#include "gray_deindexer_impl.h"
+#include "soft_gray_encode_impl.h"
 
 namespace gr {
 namespace lora2 {
 
-gray_deindexer::sptr gray_deindexer::make(unsigned int M)
+soft_gray_encode::sptr soft_gray_encode::make(unsigned int bpw)
 {
 	return gnuradio::get_initial_sptr
-		(new gray_deindexer_impl(M));
+		(new soft_gray_encode_impl(bpw));
 }
 
 
 /*
  * The private constructor
  */
-gray_deindexer_impl::gray_deindexer_impl(unsigned int M)
-	: gr::sync_block("gray_deindexer",
-			gr::io_signature::make(1, 1, M*sizeof(float)),
-			gr::io_signature::make(1, 1, M*sizeof(float))), d_M(M)
+soft_gray_encode_impl::soft_gray_encode_impl(unsigned int bpw)
+	: gr::sync_block("soft_gray_encode",
+			gr::io_signature::make(1, 1, bpw*sizeof(float)),
+			gr::io_signature::make(1, 1, bpw*sizeof(float))), d_bpw(bpw)
 {
 }
 
-int gray_deindexer_impl::work(int noutput_items,
+int soft_gray_encode_impl::work(int noutput_items,
 		gr_vector_const_void_star &input_items,
 		gr_vector_void_star &output_items)
 {
 	const float *in = (const float*) input_items[0];
 	float *out = (float*) output_items[0];
+	
+	uint16_t hard_val = 0;
 
-	// For each vector item (of d_M elements)
+	// For each vector item (of d_bpw elements)
 	for (int i=0 ; i < noutput_items ; ++i) {
+		// Construct binary value based on signs
+		for (unsigned int j=0 ; j < d_bpw ; ++j) {
+			hard_val |= signbit(in[j])<<j;
+		}
+		hard_val = ~hard_val;
 
-		// Shuffle vector
-		for (unsigned int j=0 ; j < d_M ; ++j) {
-			// out[gray[j]] = in[j]
-			out[j^(j>>1)] = *(in++);
+		// Gray encode
+		hard_val ^= hard_val>>1;
+
+		// Output soft values with the right size
+		for (unsigned int j=0 ; j < d_bpw ; ++j) {
+			out[j] *= (hard_val&0x01)?-1.0:1.0;
+			hard_val >>= 1;
 		}
 
 		// Go to next vector
-		out += d_M;
+		hard_val = 0;
+		in += d_bpw;
+		out += d_bpw;
 	}
 
 	// Tell runtime system how many output items we produced.

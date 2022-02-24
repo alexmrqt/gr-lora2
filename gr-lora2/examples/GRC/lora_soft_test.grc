@@ -311,7 +311,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [792, 1996.0]
+    coordinate: [984, 1996.0]
     rotation: 180
     state: enabled
 - name: blocks_socket_pdu_0
@@ -331,7 +331,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [32, 1980.0]
+    coordinate: [64, 1980.0]
     rotation: 180
     state: enabled
 - name: blocks_socket_pdu_0_0
@@ -424,7 +424,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [408, 2004.0]
+    coordinate: [600, 2004.0]
     rotation: 180
     state: enabled
 - name: blocks_vector_to_stream_1
@@ -500,7 +500,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1048, 1620.0]
+    coordinate: [1192, 1620.0]
     rotation: 0
     state: true
 - name: fir_filter_xxx_0
@@ -570,7 +570,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1272, 1068.0]
+    coordinate: [1200, 1068.0]
     rotation: 0
     state: true
 - name: lora2_css_mod_0
@@ -617,7 +617,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [632, 2008.0]
+    coordinate: [824, 2008.0]
     rotation: 180
     state: enabled
 - name: lora2_gray_decode_0
@@ -648,22 +648,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1272, 552.0]
-    rotation: 0
-    state: true
-- name: lora2_gray_deindexer_0
-  id: lora2_gray_deindexer
-  parameters:
-    M: M
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1112, 1092.0]
     rotation: 0
     state: true
 - name: lora2_lora_add_preamble_0
@@ -735,7 +719,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [248, 2004.0]
+    coordinate: [376, 2004.0]
     rotation: 180
     state: enabled
 - name: lora2_lora_drop_rem_0
@@ -911,7 +895,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [488, 1604.0]
+    coordinate: [664, 1604.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_soft_deinterleaver_0_0
@@ -929,7 +913,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [408, 1796.0]
+    coordinate: [480, 1796.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_soft_depad_0
@@ -963,7 +947,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 1612.0]
+    coordinate: [904, 1612.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_soft_hamming_decode_0_0
@@ -996,7 +980,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [264, 1620.0]
+    coordinate: [232, 1620.0]
     rotation: 0
     state: enabled
 - name: lora2_lora_whiten_0
@@ -1031,6 +1015,38 @@ blocks:
     coordinate: [1208, 2004.0]
     rotation: 180
     state: enabled
+- name: lora2_soft_gray_encode_0
+  id: lora2_soft_gray_encode
+  parameters:
+    affinity: ''
+    alias: ''
+    bpw: SF-2
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 1620.0]
+    rotation: 0
+    state: true
+- name: lora2_soft_gray_encode_0_0
+  id: lora2_soft_gray_encode
+  parameters:
+    affinity: ''
+    alias: ''
+    bpw: SF
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [264, 1812.0]
+    rotation: 0
+    state: true
 - name: qtgui_time_sink_x_0_0_1
   id: qtgui_time_sink_x
   parameters:
@@ -1229,7 +1245,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1320, 1620.0]
+    coordinate: [1464, 1620.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_3
@@ -1346,7 +1362,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [72, 1620.0]
+    coordinate: [24, 1620.0]
     rotation: 0
     state: enabled
 - name: virtual_source_2
@@ -1391,7 +1407,7 @@ blocks:
 
 connections:
 - [analog_quadrature_demod_cf_0, '0', qtgui_time_sink_x_0_0_1, '0']
-- [blocks_complex_to_mag_0_0, '0', lora2_gray_deindexer_0, '0']
+- [blocks_complex_to_mag_0_0, '0', lora2_css_llr_converter_0, '0']
 - [blocks_pdu_set_0, pdus, blocks_pdu_set_0_0, pdus]
 - [blocks_pdu_set_0_0, pdus, lora2_lora_crc_0, pdus]
 - [blocks_pdu_to_tagged_stream_0_0_0, '0', lora2_flip_half_bytes_0, '0']
@@ -1400,7 +1416,6 @@ connections:
 - [blocks_repack_bits_bb_0, '0', lora2_lora_whiten_0, '0']
 - [blocks_repack_bits_bb_0_0, '0', lora2_flip_half_bytes_0_0, '0']
 - [blocks_socket_pdu_0_0, pdus, blocks_pdu_set_0, pdus]
-- [blocks_tag_gate_0, '0', analog_quadrature_demod_cf_0, '0']
 - [blocks_tag_gate_0, '0', fir_filter_xxx_0, '0']
 - [blocks_tagged_stream_mux_0, '0', lora2_lora_add_preamble_0, '0']
 - [blocks_tagged_stream_to_pdu_0, pdus, digital_protocol_formatter_async_0, in]
@@ -1422,7 +1437,6 @@ connections:
 - [lora2_flip_half_bytes_0_0, '0', blocks_tagged_stream_to_pdu_0_0, '0']
 - [lora2_gray_decode_0, '0', lora2_lora_low_rate_opt_tx_0, '0']
 - [lora2_gray_decode_0_0, '0', virtual_sink_1_0, '0']
-- [lora2_gray_deindexer_0, '0', lora2_css_llr_converter_0, '0']
 - [lora2_lora_add_preamble_0, '0', lora2_css_mod_0, '0']
 - [lora2_lora_add_reversed_chirps_0, '0', virtual_sink_1_0_0, '0']
 - [lora2_lora_crc_0, pdus, blocks_pdu_to_tagged_stream_0_0_0, pdus]
@@ -1441,19 +1455,22 @@ connections:
 - [lora2_lora_soft_depad_0, '0', lora2_lora_soft_hamming_decode_0_0, '0']
 - [lora2_lora_soft_hamming_decode_0, '0', digital_protocol_parser_b_0, '0']
 - [lora2_lora_soft_hamming_decode_0_0, '0', lora2_lora_merge_rem_0, '0']
-- [lora2_lora_soft_low_rate_opt_rx_0, '0', lora2_lora_soft_deinterleaver_0, '0']
+- [lora2_lora_soft_low_rate_opt_rx_0, '0', lora2_soft_gray_encode_0, '0']
 - [lora2_lora_whiten_0, '0', blocks_tagged_stream_to_pdu_0, '0']
 - [lora2_lora_whiten_0_0, '0', blocks_repack_bits_bb_0_0, '0']
+- [lora2_soft_gray_encode_0, '0', lora2_lora_soft_deinterleaver_0, '0']
+- [lora2_soft_gray_encode_0_0, '0', lora2_lora_soft_deinterleaver_0_0, '0']
 - [virtual_source_0, '0', blocks_pdu_to_tagged_stream_0_0_0_0, pdus]
 - [virtual_source_0_0, '0', blocks_pdu_to_tagged_stream_0_0_0_0_0, pdus]
 - [virtual_source_0_0_0, '0', blocks_tagged_stream_mux_0, '1']
+- [virtual_source_0_0_0_0, '0', analog_quadrature_demod_cf_0, '0']
 - [virtual_source_0_0_0_0, '0', blocks_tag_gate_0, '0']
 - [virtual_source_0_1, '0', blocks_tagged_stream_mux_0, '0']
 - [virtual_source_0_2, '0', lora2_lora_preamble_detect_0_0, '0']
 - [virtual_source_1, '0', lora2_lora_soft_low_rate_opt_rx_0, '0']
 - [virtual_source_2, '0', digital_header_payload_demux_0, header_data]
 - [virtual_source_3, '0', blocks_vector_to_stream_1, '0']
-- [virtual_source_4, '0', lora2_lora_soft_deinterleaver_0_0, '0']
+- [virtual_source_4, '0', lora2_soft_gray_encode_0_0, '0']
 
 metadata:
   file_format: 1

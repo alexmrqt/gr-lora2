@@ -35,7 +35,7 @@ list(APPEND lora2_sources
     lora_drop_rem_impl.cc
     gray_encode_impl.cc
     gray_decode_impl.cc
-    gray_deindexer_impl.cc
+    soft_gray_encode_impl.cc
     lora_low_rate_opt_tx_impl.cc
     lora_low_rate_opt_rx_impl.cc
     flip_half_bytes_impl.cc

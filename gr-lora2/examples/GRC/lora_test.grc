@@ -883,7 +883,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    len_tag_key: packet_len
+    len_tag_key: ''
     maxoutbuf: '0'
     minoutbuf: '0'
     reduced_rate: 'False'
@@ -1381,7 +1381,6 @@ connections:
 - [blocks_tag_gate_0, '0', fir_filter_xxx_0, '0']
 - [blocks_tagged_stream_mux_0, '0', lora2_lora_add_preamble_0, '0']
 - [blocks_tagged_stream_to_pdu_0, pdus, digital_protocol_formatter_async_0, in]
-- [blocks_tagged_stream_to_pdu_0_0, pdus, blocks_message_debug_0, print_pdu]
 - [blocks_tagged_stream_to_pdu_0_0, pdus, lora2_lora_crc_0_0, pdus]
 - [digital_header_payload_demux_0, '0', virtual_sink_1_1, '0']
 - [digital_header_payload_demux_0, '1', virtual_sink_4, '0']
@@ -1403,6 +1402,7 @@ connections:
 - [lora2_lora_add_preamble_0, '0', lora2_css_mod_0, '0']
 - [lora2_lora_add_reversed_chirps_0, '0', virtual_sink_1_0_0, '0']
 - [lora2_lora_crc_0, pdus, blocks_pdu_to_tagged_stream_0_0_0, pdus]
+- [lora2_lora_crc_0_0, pdus, blocks_message_debug_0, print_pdu]
 - [lora2_lora_crc_0_0, pdus, blocks_socket_pdu_0, pdus]
 - [lora2_lora_deinterleaver_0, '0', lora2_lora_hamming_decode_0, '0']
 - [lora2_lora_deinterleaver_0_0, '0', lora2_lora_depad_0, '0']

@@ -23,7 +23,7 @@ from gnuradio import gr, gr_unittest
 from gnuradio import blocks
 import lora2_swig as lora2
 
-class qa_gray_deindexer(gr_unittest.TestCase):
+class qa_soft_gray_encode(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.top_block()
@@ -38,4 +38,4 @@ class qa_gray_deindexer(gr_unittest.TestCase):
 
 
 if __name__ == '__main__':
-    gr_unittest.run(qa_gray_deindexer)
+    gr_unittest.run(qa_soft_gray_encode)

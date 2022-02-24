@@ -18,21 +18,22 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_LORA2_GRAY_DEINDEXER_IMPL_H
-#define INCLUDED_LORA2_GRAY_DEINDEXER_IMPL_H
+#ifndef INCLUDED_LORA2_SOFT_GRAY_ENCODE_IMPL_H
+#define INCLUDED_LORA2_SOFT_GRAY_ENCODE_IMPL_H
 
-#include <lora2/gray_deindexer.h>
+#include <math.h>
+#include <lora2/soft_gray_encode.h>
 
 namespace gr {
 namespace lora2 {
 
-class gray_deindexer_impl : public gray_deindexer
+class soft_gray_encode_impl : public soft_gray_encode
 {
 	private:
-		unsigned int d_M;
+		unsigned int d_bpw;
 
 	public:
-		gray_deindexer_impl(unsigned int M);
+		soft_gray_encode_impl(unsigned int bpw);
 
 		// Where all the action really happens
 		int work(
@@ -45,5 +46,5 @@ class gray_deindexer_impl : public gray_deindexer
 } // namespace lora2
 } // namespace gr
 
-#endif /* INCLUDED_LORA2_GRAY_DEINDEXER_IMPL_H */
+#endif /* INCLUDED_LORA2_SOFT_GRAY_ENCODE_IMPL_H */
 
