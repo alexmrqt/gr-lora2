@@ -21,6 +21,7 @@
 #ifndef INCLUDED_LORA2_LORA_DEINTERLEAVER_IMPL_H
 #define INCLUDED_LORA2_LORA_DEINTERLEAVER_IMPL_H
 
+#include <pmt/pmt.h>
 #include <lora2/lora_deinterleaver.h>
 
 namespace gr {

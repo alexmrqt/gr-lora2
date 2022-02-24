@@ -193,7 +193,33 @@ int lora_soft_hamming_decode_impl::general_work (int noutput_items,
 	// Number of blocks to be processed
 	int n_blocks = std::min(ninput_items[0]/d_cw_len, noutput_items/4);
 
+	int tag_CR = 0;
+	int nitems_consumed = 0;
+	int nitems_produced = 0;
+	std::vector<tag_t> tags;
+
 	for (int i=0 ; i < n_blocks ; ++i) {
+		// Handle CR tag, if any
+		//Retrieve tags in input block
+		tags.clear();
+		get_tags_in_window(tags, 0, i*d_cw_len, i*d_cw_len+1, pmt::intern("CR"));
+
+		//Set CR if needed
+		if ((tags.size() > 0) && pmt::is_integer(tags[0].value)) {
+			tag_CR = pmt::to_long(tags[0].value);
+
+			if (tag_CR != d_CR) {
+				nitems_consumed = i * d_cw_len;
+				nitems_produced = i * 4;
+
+				d_CR = tag_CR;
+				d_cw_len = d_CR+4;
+
+				consume_each(nitems_consumed);
+				return nitems_produced;
+			}
+		}
+
 		// Decode
 		decode_one_block(in, out);
 

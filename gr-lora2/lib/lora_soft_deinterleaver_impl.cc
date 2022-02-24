@@ -87,7 +87,35 @@ int lora_soft_deinterleaver_impl::general_work (int noutput_items,
 	int n_blocks = std::min(ninput_items[0]/d_len_block_in,
 			noutput_items/d_len_block_out);
 
+	int tag_CR = 0;
+	int nitems_consumed = 0;
+	int nitems_produced = 0;
+	std::vector<tag_t> tags;
+
 	for(int k=0 ; k < n_blocks ; ++k) {
+		//Retrieve tags in input block
+		tags.clear();
+		get_tags_in_window(tags, 0, k*d_len_block_in, k*d_len_block_in+1, pmt::intern("CR"));
+
+		//Set CR if needed
+		if ((tags.size() > 0) && pmt::is_integer(tags[0].value)) {
+			tag_CR = pmt::to_long(tags[0].value);
+
+			if (tag_CR != d_CR) {
+				nitems_consumed = k * d_len_block_in;
+				nitems_produced = k * d_len_block_out;
+
+				d_CR = tag_CR;
+				d_len_block_in = d_CR+4;
+				d_len_block_out = d_SF*(d_CR+4);
+
+				set_output_multiple(d_len_block_out);
+
+				consume_each(nitems_consumed);
+				return nitems_produced;
+			}
+		}
+
 		// Handle tag propagation
 		handle_tag_propagation(k*d_len_block_in, k*d_len_block_out);
 
